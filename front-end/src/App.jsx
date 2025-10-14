@@ -1,14 +1,27 @@
 import React from 'react'
+import Login from './pages/Login'
+import AdminLogin from './pages/auth/AdminLogin'
+import TeacherLogin from './pages/auth/TeacherLogin'
+
+import {Route,Routes} from 'react-router-dom'
+import Home from './pages/Home'
+
+
 
 const App = () => {
   return (
-    <>
-    <div className='mt-6 bg-red-400'>
-      <h1 className='text-center text-3xl text-white p-8'>Routine Project</h1>
+    
+    <div>
+      <Routes>
+        <Route path='/' element={<Home/>} />
+        <Route path='/TeacherLogin' element={<TeacherLogin />} />
+        <Route path='/AdminLogin' element={<AdminLogin />} />
+      </Routes>
+
     </div>
     
     
-    </>
+    
   )
 }
 
