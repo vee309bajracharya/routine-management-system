@@ -1,26 +1,29 @@
-import React from 'react'
-import Login from './pages/Login'
-import AdminLogin from './pages/auth/AdminLogin'
-import TeacherLogin from './pages/auth/TeacherLogin'
-
-import {Route,Routes} from 'react-router-dom'
-import Home from './pages/Home'
-
+import { lazy, Suspense } from 'react'
+import { Route, Routes} from 'react-router-dom'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Loader from './components/common/Loader';
+const Home = lazy(()=> import('./pages/Home/Home'));
+const AdminLogin = lazy(()=> import('./pages/features/auth/AdminLogin'));
+const TeacherLogin = lazy(()=> import('./pages/features/auth/TeacherLogin'));
+const PageNotFound = lazy(()=> import('./pages/Errors/PageNotFound/PageNotFound'));
 
 
 const App = () => {
   return (
     
-    <div>
+    <Suspense fallback={<Loader/>}>
+      <ToastContainer position='top-right' autoClose={2000} hideProgressBar={false}/>
       <Routes>
         <Route path='/' element={<Home/>} />
-        <Route path='/TeacherLogin' element={<TeacherLogin />} />
-        <Route path='/AdminLogin' element={<AdminLogin />} />
-      </Routes>
+        <Route path='/teacher-login' element={<TeacherLogin />} />
+        <Route path='/admin-login' element={<AdminLogin />} />
 
-    </div>
-    
-    
+        {/* unknown routes */}
+        <Route path='*' element={<PageNotFound/>}/>
+
+      </Routes>
+    </Suspense>
     
   )
 }

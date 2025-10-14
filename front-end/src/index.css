@@ -1,65 +1,47 @@
-
-/* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap'); */
-
-@import url('https://fonts.cdnfonts.com/css/general-sans');
-
-
+/* primary font - General Sans */
+@import url("https://fonts.cdnfonts.com/css/general-sans");
 @import "tailwindcss";
 
-/* Custom setting */
-@theme{
-    /* Custom color setting */
-    --color-primary-blue: oklch(0.3112 0.1345 262.74); /* primary blue */
-    --color-mouse-pressed-blue: oklch(0.4123 0.1717 262.75); /*mouse pressed blue*/
-    --color-main-blue: oklch(0.5146 0.2025 262.8); /*main blue*/
-    --color-hover-blue: oklch(0.69 0.1623 263.67);/*hover blue*/
-    --color-primary5-blue: oklch(0.8686 0.0641 264.59);
-    --color-primary6-blue: oklch(0.9693 0.0144 264.5);
-    --color-box-outline:oklch(0.8765 0.0056 274.96); /* box outline */
-    
+@theme {
+  /* colors */
+  --color-primary-blue: oklch(0.3112 0.1345 262.74);
+  --color-mouse-pressed-blue: oklch(0.4123 0.1717 262.75);
+  --color-main-blue: oklch(0.5146 0.2025 262.8);
+  --color-hover-blue: oklch(0.69 0.1623 263.67);
+  --color-primary5-blue: oklch(0.8686 0.0641 264.59);
+  --color-primary6-blue: oklch(0.9693 0.0144 264.5);
+  --color-box-outline: oklch(0.8765 0.0056 274.96);
+  --color-primary-text: oklch(0.2492 0.0363 265.49);
+  --color-sub-text: oklch(0.4841 0.0227 262.91);
+  --color-sub-text: oklch(0.4841 0.0227 262.91);
+  --color-error-red: oklch(0.5683 0.2157 27.65);
+  --color-success-green: oklch(0.7471 0.2315 144.6);
+  --color-information-purple: oklch(0.446 0.2505 277.18);
+  --color-warning-orange: oklch(0.6872 0.1468 62.72);
 
-    
+  /* font */
+  --font-general-sans: "General Sans", sans-serif;
 
-/* Text color*/
-    --color-primary-text: oklch(0.2492 0.0363 265.49);
-    
-    --color-sub-text: oklch(0.4841 0.0227 262.91);
-    --color-sub-text: oklch(0.4841 0.0227 262.91);
-    --color-error-red:oklch(0.5683 0.2157 27.65); /* error red text */
-    --color-success-green:oklch(0.7471 0.2315 144.6); /* success green text */
-    --color-information-purple:oklch(0.446 0.2505 277.18); /* information purple text */
-    --color-warning-orange:oklch(0.6872 0.1468 62.72); /* warning orange text */
-
-
-    
-    
-/* Background color*/
-
-
-      
-
-
-    /*font family */
-    /* --font-poppins: 'Poppins', sans-serif; */
-    --font-general-sans: 'General Sans', sans-serif;
-                                                
-    
-    
-
-    /*responsive breakpoints*/
-    --breakpoint-xs:12.5rem; /* 200px */
-
-    
-
-
-
-
+  /* responsive */
+  --breakpoint-xs: 12.5rem; /* 200px */
 }
-/*custom styling*/
 
-.inputbox{
-        @apply w-full border border-box-outline rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-main-blue;
-    }
-.wrapper{
-        @apply max-w-7xl mx-auto my-0 px-8 py-3 ;
-    }
+/* custom styling */
+.inputbox {
+  @apply w-full border border-box-outline rounded-lg px-3 py-2 focus:outline-none;
+}
+.wrapper {
+  @apply max-w-7xl mx-auto my-0 px-8 py-3;
+}
+.auth-btn {
+  @apply w-full bg-main-blue text-white py-2 rounded-lg hover:bg-mouse-pressed-blue transition-colors duration-200 cursor-pointer;
+}
+.auth-role-link {
+  @apply block text-center mt-5 text-main-blue cursor-pointer;
+}
+.showError{
+    @apply text-error-red my-2 text-sm font-general-sans;
+}
+.back-page-link{
+  @apply flex items-center text-gray-400 hover:text-main-blue transition-colors duration-200 text-sm font-medium cursor-pointer;
+}
