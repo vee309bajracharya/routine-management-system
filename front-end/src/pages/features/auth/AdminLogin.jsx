@@ -1,12 +1,45 @@
 /* eslint-disable no-unused-vars */
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, ChevronLeft } from 'lucide-react';
+import { Eye, EyeOff, ChevronLeft, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from "react";
+import { LoginValidationSchema } from '../../../validations/LoginValidationSchema';
+import { useFormik } from 'formik';
+import { LoginInitialValues } from '../../../validations/LoginValidationSchema';
+import { useAuth } from '../../../contexts/AuthContext';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
 
 const AdminLogin = () => {
 
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const formik = useFormik({
+    initialValues: LoginInitialValues,
+    validationSchema: LoginValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+        const response = await login(values.email, values.password, "admin");
+
+        if (response.success) {
+          toast.success('Login successful');
+          navigate('/admin/dashboard');
+        }
+      } catch (error) {
+        toast.error(error.message || "Login failed. Please try again");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+  });
+
+  const { values, errors, handleBlur, handleSubmit, handleChange, touched } = formik;
+
 
   return (
     <section className="bg-primary6-blue">
@@ -21,19 +54,28 @@ const AdminLogin = () => {
           </p>
 
           {/* form starts here */}
-          <form className="space-y-4">
+          <form
+            className="space-y-4"
+            onSubmit={handleSubmit}>
             <div>
-              <label 
+              <label
                 className="block text-primary-text mb-1 font-medium"
                 htmlFor="email">
                 Email
               </label>
               <input
                 type="email"
+                id="email"
                 placeholder="Email"
                 className="inputbox"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 autoComplete="off"
               />
+              {errors.email && touched.email && (
+                <p className='showError'>{errors.email}</p>
+              )}
             </div>
 
             <div className="relative mb-3">
@@ -44,8 +86,12 @@ const AdminLogin = () => {
               </label>
               <input
                 type={showPassword ? 'text' : 'password'}
+                id="password"
                 placeholder="Password"
                 className="inputbox"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 autoComplete="off"
               />
               <button
@@ -55,6 +101,9 @@ const AdminLogin = () => {
                 className="absolute right-4 top-12 -translate-y-1/2 transition-base cursor-pointer">
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
+              {errors.password && touched.password && (
+                <p className='showError'>{errors.password}</p>
+              )}
             </div>
 
             {/* Remember Me */}
@@ -72,9 +121,9 @@ const AdminLogin = () => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               className="auth-btn"
-              aria-label="Submit Button"
             >
-              Submit
+              {isLoading ? <Loader className='animate-spin mx-auto w-6 h-6' /> : 'Submit'}
+
             </motion.button>
           </form>
 
