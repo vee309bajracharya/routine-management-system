@@ -7,6 +7,8 @@ const Home = lazy(()=> import('./pages/Home/Home'));
 const AdminLogin = lazy(()=> import('./pages/features/auth/AdminLogin'));
 const TeacherLogin = lazy(()=> import('./pages/features/auth/TeacherLogin'));
 const PageNotFound = lazy(()=> import('./pages/Errors/PageNotFound/PageNotFound'));
+const AdminDashboard = lazy(()=> import('./pages/users/admin/AdminDashboard'));
+const TeacherDashboard = lazy(()=> import('./pages/users/teacher/TeacherDashboard'));
 
 
 const App = () => {
@@ -15,9 +17,15 @@ const App = () => {
     <Suspense fallback={<Loader/>}>
       <ToastContainer position='top-right' autoClose={2000} hideProgressBar={false}/>
       <Routes>
+
+        {/* public routes */}
         <Route path='/' element={<Home/>} />
         <Route path='/teacher-login' element={<TeacherLogin />} />
         <Route path='/admin-login' element={<AdminLogin />} />
+
+        {/* auth routes  */}
+        <Route path='/teacher/dashboard' element={<TeacherDashboard/>}/>
+        <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
 
         {/* unknown routes */}
         <Route path='*' element={<PageNotFound/>}/>

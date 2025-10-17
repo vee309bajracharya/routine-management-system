@@ -20,4 +20,30 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::post('/logout-all', [AuthController::class, 'logoutAll']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
     });
+
+    // admin routes
+    Route::middleware('check.role:admin')->prefix('admin')->group(function(){
+
+        // dashboard route
+        Route::get('/dashboard', function (Request $request){
+            return response()->json([
+                'success'=> true,
+                'message'=> 'Admin dashboard data',
+                'user'=> $request->user(),
+            ]);
+        });
+    });
+
+    // teacher routes
+        Route::middleware('check.role:teacher')->prefix('teacher')->group(function(){
+
+        // dashboard route
+        Route::get('/dashboard', function (Request $request){
+            return response()->json([
+                'success'=> true,
+                'message'=> 'Teacher dashboard data',
+                'user'=> $request->user(),
+            ]);
+        });
+    });
 });
