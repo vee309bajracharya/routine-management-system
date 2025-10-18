@@ -3,6 +3,9 @@ import { Route, Routes} from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from './components/common/Loader';
+import Navbar from './components/navigation/Navbar';
+import Footer from './components/navigation/Footer';
+import HeroSection from './components/HeroSection';
 const Home = lazy(()=> import('./pages/Home/Home'));
 const AdminLogin = lazy(()=> import('./pages/features/auth/AdminLogin'));
 const TeacherLogin = lazy(()=> import('./pages/features/auth/TeacherLogin'));
@@ -15,6 +18,7 @@ const App = () => {
   return (
     
     <Suspense fallback={<Loader/>}>
+
       <ToastContainer position='top-right' autoClose={2000} hideProgressBar={false}/>
       <Routes>
 
@@ -22,6 +26,8 @@ const App = () => {
         <Route path='/' element={<Home/>} />
         <Route path='/teacher-login' element={<TeacherLogin />} />
         <Route path='/admin-login' element={<AdminLogin />} />
+        
+        
 
         {/* auth routes  */}
         <Route path='/teacher/dashboard' element={<TeacherDashboard/>}/>
@@ -31,8 +37,9 @@ const App = () => {
         <Route path='*' element={<PageNotFound/>}/>
 
       </Routes>
+      
     </Suspense>
-    
+      
   )
 }
 

@@ -1,9 +1,94 @@
-import React from 'react'
+import React, { useState } from "react";
+import mainLogo from "../../assets/svg/default_logo.svg";
+import { Link } from "react-router-dom";
+import {Menu,X} from "lucide-react";
 
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <div>Navbar</div>
-  )
-}
+    <nav className="relative px-8 py-4 mt-5 flex rounded-lg font-general-sans">
+      <div className="wrapper flex justify-between items-center w-full">
+        {/* Navbar content goes here */}
+        <div>
+          <img src={mainLogo} alt="Logo" className="h-10 w-30 object-contain" />
+        </div>
+        {/* Center navigation*/}
+        <div className="hidden md:flex space-x-8 text-primary-text font-medium">
+          <Link to="/" className="Navbar-center-link">
+            Home
+          </Link>
+          <Link to="/Routine" className="Navbar-center-link">
+            Routine
+          </Link>
+          <Link to="/Room" className="Navbar-center-link">
+            Rooms
+          </Link>
+          <Link to="/Labs" className="Navbar-center-link">
+            Labs
+          </Link>
+          <Link to="/Contacts" className="Navbar-center-link">
+            Contacts
+          </Link>
+        </div>
+        {/* Right side button */}
+        <div>
+          <button className="hidden md:flex bg-main-blue text-white cursor-pointer px-4 py-2 rounded-lg hover:bg-hover-blue transition">
+            <Link to="/Teacher-login">Sign in</Link>
+          </button>
+        </div>
+        {/* Mobile menu button */}
+        <button
+         className="md:hidden flex items-center text-primary-text"
+         onClick={()=>setIsOpen(!isOpen)}
+        >
+          {isOpen ?<X size={28}/> : <Menu size={28}/>}
+        </button>
+      </div>
+      {/* Mobile Menu */}
+       {isOpen && (
+        <div className="md:hidden absolute top-full left-0 w-full mt-2 bg-white border border-box-outline p-4 rounded-lg shadow-lg z-10 flex flex-col space-y-3">
+          <Link
+            to="/"
+            className="Mobile-nav-link "
+            onClick={() => setIsOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            to="/Routine"
+            className="Mobile-nav-link block "
+            onClick={() => setIsOpen(false)}
+          >
+            Routine
+          </Link>
+          <Link
+            to="/Room"
+            className="Mobile-nav-link block "
+            onClick={() => setIsOpen(false)}
+          >
+            Room
+          </Link>
+          <Link
+            to="/Labs"
+            className="Mobile-nav-link block "
+            onClick={() => setIsOpen(false)}
+          >
+            Labs
+          </Link>
+          <Link
+            to="/Contacts"
+            className="Mobile-nav-link block "
+            onClick={() => setIsOpen(false)}
+          >
+            Contacts
+          </Link>
+          <button className="bg-main-blue text-white px-4 py-2 rounded-lg hover:bg-hover-blue transition">
+            <Link to="/Teacher-login" onClick={() => setIsOpen(false)}>Sign in</Link>
+          </button>
+        </div>
+      )}
+    </nav>
+  );
+};
 
-export default Navbar
+export default Navbar;

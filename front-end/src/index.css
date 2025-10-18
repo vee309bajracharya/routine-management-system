@@ -10,6 +10,7 @@
   --color-hover-blue: oklch(0.69 0.1623 263.67);
   --color-primary5-blue: oklch(0.8686 0.0641 264.59);
   --color-primary6-blue: oklch(0.9693 0.0144 264.5);
+
   --color-box-outline: oklch(0.8765 0.0056 274.96);
   --color-primary-text: oklch(0.2492 0.0363 265.49);
   --color-sub-text: oklch(0.4841 0.0227 262.91);
@@ -44,4 +45,17 @@
 }
 .back-page-link{
   @apply flex items-center text-gray-400 hover:text-main-blue transition-colors duration-200 text-sm font-medium cursor-pointer;
+}
+.HeroStateBar-h3{
+  @apply text-3xl font-bold text-primary-text;
+}
+
+.HeroStateBar-p {
+  @apply text-sub-text text-sm mt-1;
+}
+.Navbar-center-link{
+  @apply text-primary-text hover:text-hover-blue
+}
+.Mobile-nav-link{
+  @apply block text-primary-text hover:text-main-blue transition block text-left py-2 px-4 hover:bg-primary6-blue rounded
 }
