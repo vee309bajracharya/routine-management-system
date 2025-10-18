@@ -14,19 +14,19 @@ const Navbar = () => {
         </div>
         {/* Center navigation*/}
         <div className="hidden md:flex space-x-8 text-primary-text font-medium">
-          <Link to="/" className="Navbar-center-link">
+          <Link to="/" className="navbar-center-link">
             Home
           </Link>
-          <Link to="/Routine" className="Navbar-center-link">
+          <Link to="/routine" className="navbar-center-link">
             Routine
           </Link>
-          <Link to="/Room" className="Navbar-center-link">
+          <Link to="/room" className="navbar-center-link">
             Rooms
           </Link>
-          <Link to="/Labs" className="Navbar-center-link">
+          <Link to="/labs" className="navbar-center-link">
             Labs
           </Link>
-          <Link to="/Contacts" className="Navbar-center-link">
+          <Link to="/contacts" className="navbar-center-link">
             Contacts
           </Link>
         </div>
@@ -49,41 +49,41 @@ const Navbar = () => {
         <div className="md:hidden absolute top-full left-0 w-full mt-2 bg-white border border-box-outline p-4 rounded-lg shadow-lg z-10 flex flex-col space-y-3">
           <Link
             to="/"
-            className="Mobile-nav-link "
+            className="mobile-nav-link "
             onClick={() => setIsOpen(false)}
           >
             Home
           </Link>
           <Link
-            to="/Routine"
-            className="Mobile-nav-link block "
+            to="/routine"
+            className="mobile-nav-link block "
             onClick={() => setIsOpen(false)}
           >
             Routine
           </Link>
           <Link
-            to="/Room"
-            className="Mobile-nav-link block "
+            to="/room"
+            className="mobile-nav-link block "
             onClick={() => setIsOpen(false)}
           >
             Room
           </Link>
           <Link
-            to="/Labs"
-            className="Mobile-nav-link block "
+            to="/labs"
+            className="mobile-nav-link block "
             onClick={() => setIsOpen(false)}
           >
             Labs
           </Link>
           <Link
-            to="/Contacts"
-            className="Mobile-nav-link block "
+            to="/contacts"
+            className="mobile-nav-link block "
             onClick={() => setIsOpen(false)}
           >
             Contacts
           </Link>
           <button className="bg-main-blue text-white px-4 py-2 rounded-lg hover:bg-hover-blue transition">
-            <Link to="/Teacher-login" onClick={() => setIsOpen(false)}>Sign in</Link>
+            <Link to="/teacher-login" onClick={() => setIsOpen(false)}>Sign in</Link>
           </button>
         </div>
       )}

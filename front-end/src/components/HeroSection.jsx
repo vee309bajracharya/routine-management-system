@@ -40,24 +40,24 @@ const HeroSection = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row  sm:justify-between sm:items-end gap-4 text-center">
               <div className="flex-1">
-                <h3 className="HeroStateBar-h3">10,000+</h3>
-                <p className="HeroStateBar-p">Students</p>
+                <h3 className="heroStateBar-num">10,000+</h3>
+                <p className="heroStateBar-title">Students</p>
               </div>
               <div className="flex-1 sm:border-l border-blue-200 pl-4">
-                <h3 className="HeroStateBar-h3">6</h3>
-                <p className="HeroStateBar-p">Labs</p>
+                <h3 className="heroStateBar-num">6</h3>
+                <p className="heroStateBar-title">Labs</p>
               </div>
               <div className="flex-1 sm:border-l border-blue-200 pl-4">
-                <h3 className="HeroStateBar-h3">10,000+</h3>
-                <p className="HeroStateBar-p">Rooms</p>
+                <h3 className="heroStateBar-num">10,000+</h3>
+                <p className="heroStateBar-title">Rooms</p>
               </div>
               <div className="flex-1 sm:border-l border-blue-200 pl-4">
-                <h3 className="HeroStateBar-h3">10</h3>
-                <p className="HeroStateBar-p">Departments</p>
+                <h3 className="heroStateBar-num">10</h3>
+                <p className="heroStateBar-title">Departments</p>
               </div>
               <div className="flex-1 sm:border-l border-blue-200 pl-4">
-                <h3 className="HeroStateBar-h3">500+</h3>
-                <p className="HeroStateBar-p">Teachers</p>
+                <h3 className="heroStateBar-num">500+</h3>
+                <p className="heroStateBar-title">Teachers</p>
               </div>
             </div>
           </div>

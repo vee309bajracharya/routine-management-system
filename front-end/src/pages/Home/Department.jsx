@@ -73,7 +73,7 @@ const Department = () => {
         {/* Department cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {departments.map((dept) => (
-            <div key={dept.id} className="bg-white   shadow-md hover:shadow-lg transition-shadow py-4 px-6 rounded">
+            <div key={dept.id} className="bg-white shadow-md hover:shadow-lg transition-shadow py-4 px-6 rounded">
               <img className="w-8 h-8 bg-primary5-blue px-1 py-2 rounded-lg mb-6" src={dept.icon} alt={dept.name}  />
               <h3 className="text-xl font-bold text-primary-text ">{dept.name}</h3>
               <p className="text-primary-text mb-6">{dept.description}</p>

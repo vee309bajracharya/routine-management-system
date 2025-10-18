@@ -19,6 +19,9 @@
   --color-success-green: oklch(0.7471 0.2315 144.6);
   --color-information-purple: oklch(0.446 0.2505 277.18);
   --color-warning-orange: oklch(0.6872 0.1468 62.72);
+  --color-blue-gradient: oklch(0.8665 0.0651 265.84);
+  
+
 
   /* font */
   --font-general-sans: "General Sans", sans-serif;
@@ -46,16 +49,16 @@
 .back-page-link{
   @apply flex items-center text-gray-400 hover:text-main-blue transition-colors duration-200 text-sm font-medium cursor-pointer;
 }
-.HeroStateBar-h3{
+.heroStateBar-num{
   @apply text-3xl font-bold text-primary-text;
 }
 
-.HeroStateBar-p {
+.heroStateBar-title{
   @apply text-sub-text text-sm mt-1;
 }
-.Navbar-center-link{
+.navbar-center-link{
   @apply text-primary-text hover:text-hover-blue
 }
-.Mobile-nav-link{
-  @apply block text-primary-text hover:text-main-blue transition block text-left py-2 px-4 hover:bg-primary6-blue rounded
+.mobile-nav-link{
+  @apply block text-primary-text hover:text-main-blue transition text-left py-2 px-4 hover:bg-primary6-blue rounded
 }

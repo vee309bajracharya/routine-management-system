@@ -7,9 +7,9 @@ import Department from '../../pages/Home/Department'
 
 const Home = () => {
   return (
-    
-    <div className='bg-gradient-to-b from-white to-[#BFD3FF] w-full h-full '>
-      <Navbar /> 
+
+    <div className='bg-gradient-to-b from-white to-blue-gradient w-full h-full '>
+      <Navbar />
       <HeroSection />
       <Department />
       <Footer />
