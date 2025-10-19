@@ -1,6 +1,10 @@
 /* primary font - General Sans */
 @import url("https://fonts.cdnfonts.com/css/general-sans");
+
 @import "tailwindcss";
+
+/* for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* colors */
@@ -10,7 +14,6 @@
   --color-hover-blue: oklch(0.69 0.1623 263.67);
   --color-primary5-blue: oklch(0.8686 0.0641 264.59);
   --color-primary6-blue: oklch(0.9693 0.0144 264.5);
-
   --color-box-outline: oklch(0.8765 0.0056 274.96);
   --color-primary-text: oklch(0.2492 0.0363 265.49);
   --color-sub-text: oklch(0.4841 0.0227 262.91);
@@ -20,8 +23,6 @@
   --color-information-purple: oklch(0.446 0.2505 277.18);
   --color-warning-orange: oklch(0.6872 0.1468 62.72);
   --color-blue-gradient: oklch(0.8665 0.0651 265.84);
-  
-
 
   /* font */
   --font-general-sans: "General Sans", sans-serif;
@@ -31,6 +32,10 @@
 }
 
 /* custom styling */
+
+*{
+  @apply transition-colors duration-200;
+}
 .inputbox {
   @apply w-full border border-box-outline rounded-lg px-3 py-2 focus:outline-none;
 }
@@ -50,15 +55,14 @@
   @apply flex items-center text-gray-400 hover:text-main-blue transition-colors duration-200 text-sm font-medium cursor-pointer;
 }
 .heroStateBar-num{
-  @apply text-3xl font-bold text-primary-text;
+  @apply xs:text-2xl md:text-3xl font-bold text-primary-text;
 }
-
 .heroStateBar-title{
   @apply text-sub-text text-sm mt-1;
 }
 .navbar-center-link{
-  @apply text-primary-text hover:text-hover-blue
+  @apply text-primary-text hover:text-hover-blue;
 }
 .mobile-nav-link{
-  @apply block text-primary-text hover:text-main-blue transition text-left py-2 px-4 hover:bg-primary6-blue rounded
+  @apply block text-primary-text hover:text-main-blue transition text-left py-2 px-4 hover:bg-primary6-blue rounded;
 }

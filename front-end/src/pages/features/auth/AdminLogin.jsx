@@ -42,9 +42,13 @@ const AdminLogin = () => {
 
 
   return (
-    <section className="bg-primary6-blue">
+    <section
+      className="bg-primary6-blue">
       <section className="wrapper min-h-screen flex flex-col items-center justify-center font-general-sans">
-        <div className="bg-white shadow-md rounded-2xl px-6 py-8 w-full max-w-sm">
+        <div
+          data-aos="zoom-in"
+          data-aos-duration="4000"
+          className="bg-white shadow-md rounded-2xl px-6 py-8 w-full max-w-sm">
 
           <h1 className="text-2xl font-bold text-center text-primary-text">
             Admin Login
