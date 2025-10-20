@@ -3,14 +3,11 @@ import { Route, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from './components/common/Loader';
-import Navbar from './components/navigation/Navbar';
-import Footer from './components/navigation/Footer';
-import HeroSection from './components/HeroSection';
 import ProtectedRoute from './pages/features/auth/ProtectedRoute';
 const Home = lazy(() => import('./pages/Home/Home'));
 const AdminLogin = lazy(() => import('./pages/features/auth/AdminLogin'));
 const TeacherLogin = lazy(() => import('./pages/features/auth/TeacherLogin'));
-const PageNotFound = lazy(() => import('./pages/Errors/PageNotFound/PageNotFound'));
+const PageNotFound = lazy(() => import('./components/common/PageNotFound'));
 const AdminDashboard = lazy(() => import('./pages/users/admin/AdminDashboard'));
 const TeacherDashboard = lazy(() => import('./pages/users/teacher/TeacherDashboard'));
 

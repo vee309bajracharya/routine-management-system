@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import lightning from "../assets/svg/lightning.svg";
+import lightning from '../../assets/svg/lightning.svg';
 import { motion } from "framer-motion";
 
 const HeroSection = () => {

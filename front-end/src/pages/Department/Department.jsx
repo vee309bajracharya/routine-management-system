@@ -84,7 +84,7 @@ const Department = () => {
           {departments.map((dept) => (
             <div
               key={dept.id}
-              className="bg-white shadow-md hover:shadow-lg transition-shadow py-4 px-6 rounded">
+              className="bg-white transition-shadow py-4 px-6 rounded">
               <img
                 className="w-8 h-8 bg-primary5-blue px-1 py-2 rounded-lg mb-6"
                 src={dept.icon}
