@@ -114,8 +114,7 @@ export const AuthProvider = ({children})=>{
             console.error('Logout error : ', error);
         } finally{
             //clear sessionStorage and state
-            sessionStorage.removeItem('auth_token');
-            sessionStorage.removeItem('user_data');
+            sessionStorage.clear();
             setToken(null);
             setUser(null);
         }

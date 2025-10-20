@@ -11,7 +11,7 @@ Route::prefix('auth')->group(function(){
 });
 
 // Protected routes (Auth required)
-Route::middleware('auth:sanctum')->group(function(){
+Route::middleware(['auth:sanctum','prevent.back.history'])->group(function(){
 
     // Auth routes
     Route::prefix('auth')->group(function(){
@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     // admin routes
-    Route::middleware('check.role:admin')->prefix('admin')->group(function(){
+    Route::middleware(['check.role:admin'])->prefix('admin')->group(function(){
 
         // dashboard route
         Route::get('/dashboard', function (Request $request){
@@ -35,7 +35,7 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     // teacher routes
-        Route::middleware('check.role:teacher')->prefix('teacher')->group(function(){
+        Route::middleware(['check.role:teacher'])->prefix('teacher')->group(function(){
 
         // dashboard route
         Route::get('/dashboard', function (Request $request){
