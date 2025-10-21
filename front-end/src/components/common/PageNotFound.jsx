@@ -1,4 +1,4 @@
-import PageError from '../../../assets/svg/error.svg';
+import PageError from '../../assets/svg/error.svg';
 import { ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
