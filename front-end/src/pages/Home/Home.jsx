@@ -5,6 +5,7 @@ import Department from '../Department/Department'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 
 
 const Home = () => {
@@ -15,6 +16,10 @@ const Home = () => {
 
   return (
     <section className='bg-gradient-to-b from-white to-blue-gradient'>
+      <Helmet>
+        <title>Home - Routine Management System</title>
+        <meta name="description" content="Routine Management System Home page" />
+      </Helmet>
       <section className='wrapper w-full h-full'>
         <Navbar />
         <main>
