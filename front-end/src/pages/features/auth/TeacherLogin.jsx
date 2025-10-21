@@ -9,6 +9,7 @@ import { LoginInitialValues } from '../../../validations/LoginValidationSchema';
 import { useAuth } from '../../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 const TeacherLogin = () => {
 
@@ -42,6 +43,10 @@ const TeacherLogin = () => {
   return (
     <section
       className="bg-primary6-blue">
+      <Helmet>
+        <title>Teacher Login - Routine Management System</title>
+        <meta name="description" content="Teacher Login page for Routine Management System" />
+      </Helmet>
       <section className="wrapper min-h-screen flex flex-col items-center justify-center font-general-sans">
 
         {/* Login Container */}
