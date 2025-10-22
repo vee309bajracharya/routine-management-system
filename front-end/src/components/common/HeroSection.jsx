@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { Link } from 'react-router-dom';
 import lightning from '../../assets/svg/lightning.svg';
 import { motion } from "framer-motion";
 
@@ -35,19 +36,20 @@ const HeroSection = () => {
 
           {/* Buttons */}
           <div
-            className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
+            className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="bg-main-blue cursor-pointer text-white px-8 py-3 rounded-md hover:bg-primary-blue transition-colors duration-200 text-lg font-semibold">
               Check Routines
             </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="border-1 border-main-blue cursor-pointer text-primary-text px-8 py-3 rounded-md hover:bg-primary5-blue transition-colors duration-200 text-lg font-semibold">
-              How it works
-            </motion.button>
+            <div>
+              <Link
+                to='#'
+                className='border-1 border-main-blue cursor-pointer text-primary-text px-8 py-3 rounded-md hover:bg-primary5-blue transition-colors duration-200 text-lg font-semibold'>
+                How it works
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -61,23 +63,23 @@ const HeroSection = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 text-center">
               <div className="flex-1 md:divide-x-1">
-                <h3 className="heroStateBar-num">10,000+</h3>
+                <h2 className="heroStateBar-num">10,000+</h2>
                 <p className="heroStateBar-title">Students</p>
               </div>
               <div className="flex-1 md:divide-x-1">
-                <h3 className="heroStateBar-num">6</h3>
+                <h2 className="heroStateBar-num">6</h2>
                 <p className="heroStateBar-title">Labs</p>
               </div>
               <div className="flex-1 md:divide-x-1">
-                <h3 className="heroStateBar-num">10,000+</h3>
+                <h2 className="heroStateBar-num">10,000+</h2>
                 <p className="heroStateBar-title">Rooms</p>
               </div>
               <div className="flex-1 md:divide-x-1">
-                <h3 className="heroStateBar-num">10</h3>
+                <h2 className="heroStateBar-num">10</h2>
                 <p className="heroStateBar-title">Departments</p>
               </div>
               <div className="flex-1">
-                <h3 className="heroStateBar-num">500+</h3>
+                <h2 className="heroStateBar-num">500+</h2>
                 <p className="heroStateBar-title">Teachers</p>
               </div>
             </div>
