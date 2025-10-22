@@ -4,6 +4,29 @@ import { Linkedin, Instagram, Facebook } from "lucide-react";
 
 
 const Footer = () => {
+
+  const socialMedias = [
+    {
+      id: 1,
+      socialName: "LinkedIn",
+      socialIcon: Linkedin,
+      socialUrl: '#',
+    },
+    {
+      id: 2,
+      socialName: "Instagram",
+      socialIcon: Instagram,
+      socialUrl: '#',
+    },
+    {
+      id: 3,
+      socialName: "Facebook",
+      socialIcon: Facebook,
+      socialUrl: '#',
+    },
+  ];
+
+
   return (
     <footer className="bg-white text-primary-text font-general-sans">
       {/* Main Content */}
@@ -74,17 +97,16 @@ const Footer = () => {
             <h3 className="font-semibold text-gray-900 mb-4 tracking-wide">
               Get in Touch
             </h3>
-            <p className="text-sm text-gray-600 mb-3">hallo@mentora.com</p>
             <div className="flex space-x-3">
-              {[Linkedin, Instagram, Facebook].map((Icon, i) => (
+              {socialMedias.map((socialMedia) => (
                 <a
-                  key={i}
-                  href="#"
-                  aria-label={Icon.name}
-                  alt={Icon.name}
+                  key={socialMedia.id}
+                  href={socialMedia.socialUrl}
+                  aria-label={socialMedia.socialName}
+                  alt={socialMedia.socialName}
                   className="bg-primary5-blue p-2.5 rounded-md hover:bg-blue-600 hover:text-white transition-colors duration-200"
                 >
-                  <Icon size={18} />
+                  <socialMedia.socialIcon size={18} />
                 </a>
               ))}
             </div>

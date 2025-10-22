@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import mainLogo from "../../assets/svg/default_logo.svg";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,13 +38,10 @@ const Navbar = () => {
         </div>
         {/* Right side button */}
         <div>
-          <motion.button
-            className="hidden md:flex bg-main-blue text-white cursor-pointer px-4 py-2 rounded-lg hover:bg-primary-blue transition-colors duration-200"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Link to="/teacher-login">Sign in</Link>
-          </motion.button>
+            <Link 
+              to="/teacher-login" 
+              className="hidden md:flex bg-main-blue text-white cursor-pointer px-4 py-2 rounded-lg hover:bg-primary-blue transition-colors duration-200">Sign in
+            </Link>
         </div>
         {/* Mobile menu button */}
         <button
@@ -95,14 +91,11 @@ const Navbar = () => {
             Contact
           </Link>
           <div className="text-center">
-            <motion.button
-              className="bg-main-blue text-white px-4 py-2 rounded-lg hover:bg-primary-blue transition-colors duration-200"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}>
               <Link
                 to="/teacher-login" 
-                onClick={() => setIsOpen(false)}>Sign in</Link>
-            </motion.button>
+                className="bg-main-blue text-white px-4 py-2 rounded-lg hover:bg-primary-blue transition-colors duration-200"
+                onClick={() => setIsOpen(false)}>Sign in
+              </Link>
           </div>
         </section>
       )}

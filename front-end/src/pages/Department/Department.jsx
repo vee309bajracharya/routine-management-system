@@ -66,9 +66,9 @@ const Department = () => {
           className="text-center mb-8"
           data-aos="fade-down"
           data-aos-duration="4000">
-          <h2
+          <h3
             className="xs:text-2xl md:text-4xl font-bold text-primary-text my-4"
-          >Choose a department</h2>
+          >Choose a department</h3>
           <p
             className="text-primary-text text-sm  text-center mx-auto">
             Select a department to view schedules and stay organized with all
