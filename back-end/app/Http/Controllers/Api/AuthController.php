@@ -3,211 +3,194 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    // get relationships to load based on user role
-    private function getUserRelationships(string $role): array
-    {
-        return match ($role) {
-            'teacher' => ['teacher.institution', 'teacher.department'],
-            'admin', 'super_admin' => [],
-            default => [],
-        };
-    }
-
-    // login user and create a token
+    /**
+     * Login user and create token
+     */
     public function login(Request $request)
     {
         try {
-            // validate the request
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'email' => 'required|email',
                 'password' => 'required|min:8',
             ]);
 
-            // find user by email
-            $user = User::where('email', $request->email)->first();
-
-            // check if user exists
-            if (!$user) {
+            if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid credentials. User not found',
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            // Check credentials
+            if (!Auth::attempt($request->only('email', 'password'))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid credentials',
                 ], 401);
             }
 
-            // check if user is active
-            if ($user->status !== 'active') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Your account has been deactivated. Please contact admin',
-                ], 403);
-            }
+            $user = Auth::user();
 
-            // verify user's password
-            if (!Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'success' => 'false',
-                    'message' => 'Invalid credentials. Incorrect Password',
-                ], 401);
-            }
+            // Generate token
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-            // role-based user sanctum-token
-            $token = $user->createToken(
-                'auth_token',
-                [$user->role]
-            )->plainTextToken;
-
-            // load relationship based on role
-            $userData = $user->load($this->getUserRelationships($user->role));
+            // Cache user data with roles
+            $userData = CacheService::remember(
+                CacheService::userKey($user->id),
+                fn() => $this->getUserData($user),
+                3600
+            );
 
             return response()->json([
                 'success' => true,
                 'message' => 'Login successful',
-                'token' => $token,
-                'user' => [
-                    'id' => $userData->id,
-                    'name' => $userData->name,
-                    'email' => $userData->email,
-                    'role' => $userData->role,
-                    'phone' => $userData->phone,
-                    'status' => $userData->status,
-                    'teacher' => $user->role === 'teacher' ? $userData->teacher : null,
-                ],
+                'data' => [
+                    'user' => $userData,
+                    'access_token' => $token,
+                    'token_type' => 'Bearer',
+                ]
             ], 200);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors(),
-            ], 422);
+
         } catch (\Exception $e) {
+            Log::error('Login error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred during login',
-                'error' => $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
 
-    // authenticated user details
+    /**
+     * Get authenticated user details
+     */
     public function user(Request $request)
     {
         try {
             $user = $request->user();
 
-            if (!$user) {
-                return response()->json([
-                    'success' => 'false',
-                    'message' => 'Unauthorized',
-                ], 401);
-            }
-
-            // load relationships
-            $user->load($this->getUserRelationships($user->role));
+            // Try to get from cache first
+            $userData = CacheService::remember(
+                CacheService::userKey($user->id),
+                fn() => $this->getUserData($user),
+                3600
+            );
 
             return response()->json([
                 'success' => true,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                    'phone' => $user->phone,
-                    'status' => $user->status,
-                    'teacher' => $user->role === 'teacher' ? $user->teacher : null,
-                ]
+                'data' => $userData,
             ], 200);
+
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => 'false',
-                'message' => 'Failed to fetch user details',
+            Log::error('Get user error', [
+                'user_id' => $request->user()?->id,
                 'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve user data',
             ], 500);
         }
     }
 
-    // logout user
+    /**
+     * Logout user (revoke token)
+     */
     public function logout(Request $request)
     {
         try {
-            // delete current access token
-            $request->user()->currentAccessToken()->delete();
+            $user = $request->user();
+
+            // Clear user cache
+            CacheService::forget(CacheService::userKey($user->id));
+
+            // Revoke all tokens
+            $request->user()->tokens()->delete();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Logged out successfully',
             ], 200);
+
         } catch (\Exception $e) {
+            Log::error('Logout error', [
+                'user_id' => $request->user()?->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Logout failed',
-                'error' => $e->getMessage(),
+                'message' => 'Failed to logout',
             ], 500);
         }
     }
 
-    // logout from all devices
-    public function logoutAll(Request $request)
+    /**
+     * Get user data with relationships
+     */
+    private function getUserData(User $user): array
     {
-        try {
-            //revoke all tokens
-            $request->user()->tokens()->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Logged out from all devices successfully',
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Logout failed',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role'=> $user->role,
+            'status'=> $user->status,
+            'teacher' => $user->teacher()->first(['id', 'institution_id', 'department_id',]),
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+            'deleted_at' => $user->deleted_at,
+        ];
     }
 
-    // refresh token
-    public function refresh(Request $request)
+    /**
+     * Refresh user cache
+     */
+    public function refreshCache(Request $request)
     {
         try {
             $user = $request->user();
-            if(!$user){
-                return response()->json([
-                    'success'=> false,
-                    'message'=> 'User not authenticated',
-                ],401);
-            }
 
-            $currentToken = $request->user()->currentAccessToken();
-            if($currentToken){
-                $currentToken->delete();
-            }
+            // Clear existing cache
+            CacheService::forget(CacheService::userKey($user->id));
 
-            // create new token
-            $token = $user->createToken(
-                'auth_token',
-                [$user->role]
-            )->plainTextToken;
+            // Rebuild cache
+            $userData = CacheService::remember(
+                CacheService::userKey($user->id),
+                fn() => $this->getUserData($user),
+                3600
+            );
 
             return response()->json([
                 'success' => true,
-                'message' => 'Token refreshed successfully',
-                'token' => $token,
+                'message' => 'Cache refreshed successfully',
+                'data' => $userData,
             ], 200);
 
         } catch (\Exception $e) {
+            Log::error('Cache refresh error', [
+                'user_id' => $request->user()?->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Token refresh failed',
-                'error' => $e->getMessage(),
+                'message' => 'Failed to refresh cache',
             ], 500);
         }
     }

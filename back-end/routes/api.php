@@ -17,8 +17,7 @@ Route::middleware(['auth:sanctum','prevent.back.history'])->group(function(){
     Route::prefix('auth')->group(function(){
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/logout', [AuthController::class, 'logout']);
-        Route::post('/logout-all', [AuthController::class, 'logoutAll']);
-        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::post('/refresh', [AuthController::class, 'refreshCache']);
     });
 
     // admin routes
