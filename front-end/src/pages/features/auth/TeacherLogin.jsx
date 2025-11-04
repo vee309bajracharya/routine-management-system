@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, ChevronLeft, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LoginValidationSchema } from '../../../validations/LoginValidationSchema';
 import { useFormik } from 'formik';
 import { LoginInitialValues } from '../../../validations/LoginValidationSchema';
@@ -14,9 +14,14 @@ import { Helmet } from 'react-helmet';
 const TeacherLogin = () => {
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(()=>{
+    if (isAuthenticated) navigate('/teacher/dashboard', {replace:true});
+  },[isAuthenticated, navigate]);
 
   const formik = useFormik({
     initialValues: LoginInitialValues,
@@ -24,14 +29,13 @@ const TeacherLogin = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const response = await login(values.email, values.password, "teacher");
+        const response = await login(values.email, values.password, "teacher", rememberMe);
 
         if (response.success) {
           toast.success('Login successful');
-          navigate('/teacher/dashboard');
         }
       } catch (error) {
-        toast.error(error.message || "Login failed. Please try again");
+        toast.error(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -39,6 +43,8 @@ const TeacherLogin = () => {
   });
 
   const { values, errors, handleBlur, handleSubmit, handleChange, touched } = formik;
+
+  if (isAuthenticated) return <Loader/>;
 
   return (
     <section
@@ -121,8 +127,15 @@ const TeacherLogin = () => {
               <input
                 type="checkbox"
                 className="w-4 h-4 bg-main-blue"
+                id='remember'
+                checked={rememberMe}
+                onChange={(e)=> setRememberMe(e.target.checked)}
+                disabled={isLoading}
               />
-              <label className="ml-2 text-gray-700 text-sm">Remember Me</label>
+              <label
+                htmlFor='remember'
+                className="ml-2 text-gray-700 text-sm">Remember Me
+              </label>
             </div>
 
             {/* Submit Button */}
