@@ -1,0 +1,107 @@
+version: "3.8"
+
+services:
+  # laravel with octane
+  laravel:
+    build:
+      context: .
+      dockerfile: ./docker/laravel.Dockerfile
+    container_name: routine_laravel
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./back-end:/var/www/html
+    working_dir: /var/www/html
+    environment:
+      # Database config
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      # Redis Config
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+
+      # Octane
+      OCTANE_SERVER: swoole
+
+    command: >
+      sh -c "
+        if [ ! -d vendor ]; then composer install --optimize-autoloader; fi &&
+        if [ ! -d node_modules ]; then npm install; fi &&
+        npm install chokidar &&
+        php artisan config:cache &&
+        php artisan route:cache &&
+        php artisan migrate --force &&
+        php artisan octane:start --server=swoole --host=0.0.0.0 --port=8000 --workers=4 --task-workers=6 --watch
+      "
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - routine_network
+    restart: unless-stopped
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: routine_mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - routine_network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  #Redis
+  redis:
+    image: redis:alpine
+    container_name: routine_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - routine_network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  #phpMyAdmin (DB mgmt)
+  phpMyAdmin:
+    image: phpmyadmin:latest
+    container_name: routine_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USERNAME}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      - routine_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  routine_network:
+    driver: bridge

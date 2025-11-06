@@ -1,0 +1,6 @@
+.env
+*.log
+mysql_data/
+redis_data/
+vendor/
+node_modules/

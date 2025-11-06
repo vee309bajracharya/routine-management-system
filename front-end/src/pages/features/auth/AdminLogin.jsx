@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { Link } from "react-router-dom";
+import { Link, replace } from "react-router-dom";
 import { Eye, EyeOff, ChevronLeft, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoginValidationSchema } from '../../../validations/LoginValidationSchema';
 import { useFormik } from 'formik';
 import { LoginInitialValues } from '../../../validations/LoginValidationSchema';
@@ -15,9 +15,14 @@ import { Helmet } from "react-helmet";
 const AdminLogin = () => {
 
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(()=>{
+    if (isAuthenticated) navigate('/admin/dashboard', {replace:true});
+  },[isAuthenticated,navigate]);
 
   const formik = useFormik({
     initialValues: LoginInitialValues,
@@ -25,14 +30,13 @@ const AdminLogin = () => {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const response = await login(values.email, values.password, "admin");
+        const response = await login(values.email, values.password, "admin", rememberMe);
 
         if (response.success) {
           toast.success('Login successful');
-          navigate('/admin/dashboard');
         }
       } catch (error) {
-        toast.error(error.message || "Login failed. Please try again");
+        toast.error(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -41,14 +45,16 @@ const AdminLogin = () => {
 
   const { values, errors, handleBlur, handleSubmit, handleChange, touched } = formik;
 
+  if (isAuthenticated) return <Loader/>;
 
   return (
-    <section
-      className="bg-primary6-blue">
+    <section className="bg-primary6-blue">
+
         <Helmet>
         <title>Admin Login - Routine Management System</title>
         <meta name="description" content="Admin Login page for Routine Management System" />
         </Helmet>
+
       <section className="wrapper min-h-screen flex flex-col items-center justify-center font-general-sans">
         <div
           data-aos="zoom-in"
@@ -67,6 +73,7 @@ const AdminLogin = () => {
             className="space-y-4"
             onSubmit={handleSubmit}>
             <div>
+              {/* email */}
               <label
                 className="block text-primary-text mb-1 font-medium"
                 htmlFor="email">
@@ -87,6 +94,7 @@ const AdminLogin = () => {
               )}
             </div>
 
+              {/* password */}
             <div className="relative mb-3">
               <label
                 htmlFor="password"
@@ -116,12 +124,18 @@ const AdminLogin = () => {
             </div>
 
             {/* Remember Me */}
-            <div className="flex items-center">
+            <div
+              className="flex items-center">
               <input
                 type="checkbox"
                 className="w-4 h-4 bg-main-blue"
+                id='remember'
+                checked={rememberMe}
+                onChange={(e)=> setRememberMe(e.target.checked)}
               />
-              <label className="ml-2 text-gray-700 text-sm">Remember Me</label>
+              <label
+                htmlFor='remember'
+                className="ml-2 text-gray-700 text-sm">Remember Me</label>
             </div>
 
             {/* Submit Button */}

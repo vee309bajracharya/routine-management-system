@@ -7,13 +7,14 @@ const axiosClient = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  withCredentials: true,
 });
 
 // request interceptor
 axiosClient.interceptors.request.use(
   (config) => {
-    // get the token from sessionStorage
-    const token = sessionStorage.getItem("auth_token");
+    // get the token from sessionStorage or localStorage
+    const token = sessionStorage.getItem("auth_token") || localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,42 +31,65 @@ axiosClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    const { response } = error;
-    if (response) {
-      switch (response.status) {
-        case 401:
-          console.error("Authentication failed. Token expired or invalid");
-          sessionStorage.removeItem("auth_token");
-          sessionStorage.removeItem("user_data");
 
-          if (!window.location.pathname.includes("/teacher-login")) {
-            window.location.href = "/teacher-login";
-          }
-          break;
-
-        case 403:
-          console.error("Access forbidden. No Permission");
-          break;
-
-        case 404:
-          console.error("Resource Not Found");
-          break;
-
-        case 422:
-          console.error("Validation failed : ", response.data.errors);
-          break;
-        
-        case 500:
-            console.error("Server error");
-            break;
-        
-        default:
-            console.error('Error : ', response.status);
-      }
-    }else{
-        console.error('Please check your connection');
-      }
+    // Network Error
+    if(!error.response){
+      console.error("Network Error", error.message);
+      error.userMessage = "Network Error. Please check your connection.";
       return Promise.reject(error);
+    }
+
+    // server respond with error
+    const { response } = error;
+    const status = response.status;
+
+    switch (status){
+
+      case 400:
+        error.userMessage = "Invalid request. Please check your inout";
+        break;
+      
+      case 401:
+        { sessionStorage.clear();
+        localStorage.clear();
+        error.userMessage = "Unauthorized access. Please login again.";
+
+        // redirect to login page
+        const currentPath = window.location.pathname;
+        if(!currentPath.includes('login')){
+          const loginRoute = currentPath.includes('admin') ? '/admin-login' : '/teacher-login';
+
+          setTimeout(()=>{
+            window.location.href = loginRoute;
+          },1000);
+        }
+        break; }
+
+      case 403:
+        error.userMessage = "Forbidden - No Permission";
+        break;
+
+      case 404:
+        error.userMessage = 'Resource not found';
+        break;
+      
+      case 422:
+        error.userMessage = 'Validation error. Please check your input.';
+        break;
+
+      case 429:
+        error.userMessage = 'Too many requests. Please try again later.';
+        break;
+      
+      case 500:
+        error.userMessage = 'Server error. Please try again later.';
+        break;
+      
+      default:
+        error.userMessage = response.data.message || 'An error occurred. Please try again.';  
+    }
+    return Promise.reject(error);
+
   }
 );
 
