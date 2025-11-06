@@ -57,7 +57,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_USERNAME: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
@@ -88,7 +88,7 @@ services:
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
-      PMA_USER: ${DB_USERNAME}
+      PMA_USERNAME: ${DB_USERNAME}
       PMA_PASSWORD: ${DB_PASSWORD}
     depends_on:
       - mysql
