@@ -6,6 +6,7 @@
 /* for dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 
+
 @theme {
   /* colors */
   --color-primary-blue: oklch(0.3112 0.1345 262.74);
@@ -17,12 +18,14 @@
   --color-box-outline: oklch(0.8765 0.0056 274.96);
   --color-primary-text: oklch(0.2492 0.0363 265.49);
   --color-sub-text: oklch(0.4841 0.0227 262.91);
-  --color-sub-text: oklch(0.4841 0.0227 262.91);
   --color-error-red: oklch(0.5683 0.2157 27.65);
   --color-success-green: oklch(0.7471 0.2315 144.6);
   --color-information-purple: oklch(0.446 0.2505 277.18);
   --color-warning-orange: oklch(0.6872 0.1468 62.72);
   --color-blue-gradient: oklch(0.8665 0.0651 265.84);
+  --color-warning-faidorange:oklch(0.9246 0.0845 86.39);
+
+  /*Dark*/
 
   /* font */
   --font-general-sans: "General Sans", sans-serif;
@@ -65,4 +68,32 @@
 }
 .mobile-nav-link{
   @apply block text-primary-text hover:text-main-blue transition text-left py-2 px-4 hover:bg-primary6-blue rounded;
+}
+.side-nav-title{
+  @apply text-sm font-semibold text-sub-text py-1 mb-1
+}
+.side-nav-link{
+  @apply flex gap-2 items-center px-3 py-3 rounded-md mb-1 transition;
+  
+}
+.overview-btn{
+  @apply border border-box-outline px-2 py-1 rounded-md cursor-pointer hover:border-red-500 hover:text-red-500
+}
+.createSchedule-label{
+  @apply block text-sm font-medium text-primary-text mb-1
+}
+.createSchedule-option{
+  @apply w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-main-blue text-sub-text
+}
+.scheduleClose-btn{
+  @apply absolute top-4 right-4 text-sub-text bg-box-outline rounded-md hover:text-primary-text transition
+}
+.schedulebtn-popup{
+  @apply fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4
+}
+.schedulepopup-title{
+  @apply text-xl font-semibold text-primary-text
+}
+.schedulesession-checkbox{
+  @apply  h-4 w-4 text-primary-blue
 }
