@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Batch;
 use App\Models\Semester;
 use App\Models\Institution;
 use App\Models\RoutineEntry;
+use App\Models\SavedRoutine;
 use App\Models\RoutineNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Carbon\Carbon;
 
 class Routine extends Model
 {
@@ -28,12 +29,16 @@ class Routine extends Model
         'published_at',
         'effective_from',
         'effective_to',
+        'expiration_notified',
+        'expiration_notified_at',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
         'effective_from' => 'date',
         'effective_to' => 'date',
+        'expiration_notified' => 'boolean',
+        'expiration_notified_at' => 'datetime',
     ];
 
     // get the institution that owns this routine
@@ -60,16 +65,22 @@ class Routine extends Model
         return $this->belongsTo(User::class, 'generated_by');
     }
 
-    // get the routine_entries for this routine
+    // one routine has many entries
     public function routineEntries()
     {
-        return $this->belongsTo(RoutineEntry::class);
+        return $this->hasMany(RoutineEntry::class);
     }
 
-    // get the routine notifications for this routine
+    // one routine has many notifications
     public function notifications()
     {
-        return $this->belongsTo(RoutineNotification::class);
+        return $this->hasMany(RoutineNotification::class);
+    }
+
+    // Routine Versions
+    public function savedVersions()
+    {
+        return $this->hasMany(SavedRoutine::class);
     }
 
     // === scopes ===
@@ -133,18 +144,18 @@ class Routine extends Model
             $today <= $effectiveTo;
     }
 
-    // load routine with all entries and relationships
-    public function scopeWithFullDetails($query){
-        return $query->with([
-            'institution',
-            'semester.academicYear',
-            'batch.department',
-            'generatedBy',
-            'routineEntries.courseAssignment.course',
-            'routineEntries.courseAssignment.teacher.user',
-            'routineEntries.room',
-            'routineEntries.timeSlot',
-            
-        ]);
+    // routine expiringSoon and active scopes
+    public function scopeExpiringSoon($query, $days = 10)
+    {
+        return $query->where('effective_to', '<=', now()->addDays($days))
+            ->where('effective_to', '>=', now())
+            ->where('expiration_notified', false);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'published')
+            ->where('effective_from', '<=', now())
+            ->where('effective_to', '>=', now());
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\RoutineController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,7 @@ Route::middleware(['auth:sanctum','prevent.back.history'])->group(function(){
         Route::post('/refresh', [AuthController::class, 'refreshCache']);
     });
 
-    // admin routes
+    // Admin routes
     Route::middleware(['check.role:admin'])->prefix('admin')->group(function(){
 
         // dashboard route
@@ -30,6 +31,26 @@ Route::middleware(['auth:sanctum','prevent.back.history'])->group(function(){
                 'message'=> 'Admin dashboard data',
                 'user'=> $request->user(),
             ]);
+        });
+
+        // Routine Management Routes
+        Route::prefix('routines')->group(function(){
+            // list all routines with filters as ?status=draft&semester_id=A&batch_id=B
+            Route::get('/all-routines', [RoutineController::class, 'index']);
+            // create new routine
+            Route::post('/new-routine',[RoutineController::class, 'store']);
+            //show specific routine details
+            Route::get('/{id}', [RoutineController::class, 'show']);
+            // update routine data
+            Route::put('/{id}', [RoutineController::class, 'update']);
+            // delete routine
+            Route::delete('/{id}',[RoutineController::class, 'destroy']);
+        });
+
+        // Routine Grid Entry
+        Route::prefix('routine-entries')->group(function(){
+            //new routine entry to grid
+            Route::post('/new', [RoutineController::class, 'addEntry']);
         });
     });
 

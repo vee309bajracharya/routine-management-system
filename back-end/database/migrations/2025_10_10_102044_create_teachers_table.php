@@ -15,17 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('institution_id')->constrained()->onDelete('cascade');
-            $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
-            $table->enum('employment_type', ['full_time','part_time','guest'])->default('full_time');
-            $table->string('employee_code',50)->unique();
-            $table->date('joining_date')->nullable();
+            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            $table->enum('employment_type', ['Full Time','Part Time','Guest'])->default('Full Time');
             $table->timestamps();
             $table->softDeletes();
 
             // indexes
             $table->index('user_id');
             $table->index('institution_id');
-            $table->index('employee_code');
         });
     }
 

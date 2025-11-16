@@ -17,7 +17,7 @@ class InstitutionSeeder extends Seeder
         DB::table('institutions')->insert([
             [
                 'institution_name' => 'Demo Institution',
-                'type' => 'college',
+                'type' => 'College',
                 'address' => 'Dhulikhel',
                 'contact_email' => 'info@demo.edu.np',
                 'contact_phone' => '01-6699887',

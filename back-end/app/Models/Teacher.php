@@ -19,12 +19,6 @@ class Teacher extends Model
         'user_id',
         'institution_id',
         'department_id',
-        'employment_type',
-        'employment_code',
-    ];
-
-    protected $casts = [
-        'joining_date' => 'date',
     ];
 
     // get the institution that owns the teacher
@@ -35,11 +29,6 @@ class Teacher extends Model
     // get the user that owns the teacher
     public function user(){
         return $this->belongsTo(User::class);
-    }
-
-    // get the department that owns the teacher
-    public function department(){
-        return $this->belongsTo(Department::class);
     }
 
     // get the course assignment for the teacher
@@ -62,11 +51,6 @@ class Teacher extends Model
     // to filter teachers by institutions
     public function scopeByInstitution($query, $institutionId){
         return $query->where('institution_id', $institutionId);
-    }
-
-    // to filter teachers by department
-    public function scopeByDepartment($query, $departmentId){
-        return $query->where('department_id', $departmentId);
     }
 
     // to filter full_time teachers

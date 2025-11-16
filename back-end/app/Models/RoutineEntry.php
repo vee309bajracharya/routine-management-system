@@ -81,17 +81,20 @@ class RoutineEntry extends Model
     }
 
     // filter by entry type
-    public function scopeType($query, string $type){
+    public function scopeType($query, string $type)
+    {
         return $query->where('entry_type', $type);
     }
 
     // get day name from day_of_week
-    public function getDayNameAttribute(): string{
+    public function getDayNameAttribute(): string
+    {
         return $this->day_of_week;
     }
 
     // load entry with all relationships
-    public function scopeWithFullDetails($query){
+    public function scopeWithFullDetails($query)
+    {
         return $query->with([
             'courseAssignment.course',
             'courseAssignment.teacher.user',
@@ -102,18 +105,41 @@ class RoutineEntry extends Model
     }
 
     // to cancel this routine entry
-    public function cancel(?string $reason=null): bool{
+    public function cancel(?string $reason = null): bool
+    {
         $this->is_cancelled = true;
         $this->cancellation_reason = $reason;
         return $this->save();
     }
 
     // to restore cancelled entry
-    public function restore():bool{
+    public function restore(): bool
+    {
         $this->is_cancelled = false;
         $this->cancellation_reason = null;
         return $this->save();
 
     }
+
+    // Check if teacher is already teaching at this time
+    public static function teacherHasConflict($teacherId, $timeSlotId, $day)
+    {
+        return self::where('day_of_week', $day)
+            ->where('time_slot_id', $timeSlotId)
+            ->whereHas('courseAssignment', function ($q) use ($teacherId) {
+                $q->where('teacher_id', $teacherId);
+            })
+            ->exists();
+    }
+
+    // Check if room is already used at this time
+    public static function roomHasConflict($roomId, $timeSlotId, $day)
+    {
+        return self::where('day_of_week', $day)
+            ->where('time_slot_id', $timeSlotId)
+            ->where('room_id', $roomId)
+            ->exists();
+    }
+
 
 }

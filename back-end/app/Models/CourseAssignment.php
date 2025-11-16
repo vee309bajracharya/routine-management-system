@@ -4,8 +4,10 @@ namespace App\Models;
 
 use App\Models\Batch;
 use App\Models\Course;
+use App\Models\Routine;
 use App\Models\Teacher;
 use App\Models\Semester;
+use App\Models\TimeSlot;
 use App\Models\RoutineEntry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,15 +22,10 @@ class CourseAssignment extends Model
         'teacher_id',
         'batch_id',
         'semester_id',
-        'weekly_hours',
+        'department_id',
         'assignment_type',
-        'assigned_date',
         'status',
         'notes',
-    ];
-
-    protected $casts = [
-        'assigned_date' => 'date',
     ];
 
     // get the course assigned
@@ -61,6 +58,12 @@ class CourseAssignment extends Model
         return $this->hasMany(RoutineEntry::class);
     }
 
+    public function routines()
+    {
+        return $this->hasMany(Routine::class);
+    }
+
+
     // ===scopes====
 
     // filter course assignments by teacher
@@ -82,17 +85,20 @@ class CourseAssignment extends Model
     }
 
     // filter active assignments
-    public function scopeActive($query){
-        return $query->where('status','active');
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 
     // filter by assignment type
-    public function scopeType($query, string $type){
+    public function scopeType($query, string $type)
+    {
         return $query->where('assignment_type', $type);
     }
 
     // load all relationships details
-    public function scopeWithFullDetails($query){
+    public function scopeWithFullDetails($query)
+    {
         return $query->with([
             'course',
             'teacher.user',

@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->foreignId('generated_by')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['draft', 'published', 'archieved'])->default('draft');
-            $table->timestamp('published_at');
+            $table->timestamp('published_at')->nullable();
             $table->date('effective_from')->nullable();
             $table->date('effective_to')->nullable();
             $table->timestamps();
@@ -30,7 +30,7 @@ return new class extends Migration {
             $table->index('semester_id');
             $table->index('batch_id');
             $table->index('status');
-            $table->index(['semester_id','batch_id','status']);
+            $table->index(['semester_id', 'batch_id', 'status']);
         });
     }
 

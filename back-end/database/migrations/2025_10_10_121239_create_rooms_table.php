@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->string('name')->unique();
             $table->string('room_number')->unique();
             $table->string('building')->unique()->nullable(); // 'Block A'
-            $table->integer('capacity');
-            $table->enum('room_type',['lecture_hall','lab','classroom','seminar_hall','auditorium'])->default('classroom');
+            $table->enum('room_type',['Lecture Hall','Lab','Classroom','Seminar Hall','Auditorium'])->default('Classroom');
             $table->boolean('is_available')->default(true);
             $table->enum('status',['active','inactive','maintenance'])->default('active');
             $table->timestamps();
