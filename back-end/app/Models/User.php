@@ -23,6 +23,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'institution_id',
         'name',
         'email',
         'password',
@@ -53,6 +54,12 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // user belongs to institution
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
     }
 
     // teacher associated with the user

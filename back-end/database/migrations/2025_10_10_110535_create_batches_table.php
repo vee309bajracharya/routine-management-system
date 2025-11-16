@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('batch_name', 100); // 'Batch A', 'Section 1', Class 10-A'
             $table->string('code', 50)->unique()->nullable(); // 'BIT-2022-A'
             $table->integer('year_level');
-            $table->enum('shift', ['morning', 'day', 'evening'])->default('morning');
+            $table->enum('shift', ['Morning', 'Day', 'Evening'])->default('Morning');
             $table->enum('status', ['active', 'inactive', 'completed'])->default('active');
             $table->timestamps();
             $table->softDeletes();

@@ -39,7 +39,7 @@ class Batch extends Model
     }
 
     // get the sem of this batch
-    public function batch()
+    public function semester()
     {
         return $this->belongsTo(Semester::class);
     }

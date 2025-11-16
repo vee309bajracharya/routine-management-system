@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('institutions', function (Blueprint $table) {
             $table->id();
             $table->string('institution_name');
-            $table->enum('type', ['university','college','school','institute'])->default('college');
+            $table->enum('type', ['University','College','School','Institute'])->default('College');
             $table->string('address')->nullable();
             $table->string('contact_email')->nullable();
             $table->string('contact_phone',10)->nullable();

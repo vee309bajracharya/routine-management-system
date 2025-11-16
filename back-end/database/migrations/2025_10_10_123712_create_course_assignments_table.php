@@ -17,9 +17,8 @@ return new class extends Migration
             $table->foreignId('teacher_id')->constrained()->onDelete('cascade');
             $table->foreignId('batch_id')->constrained()->onDelete('cascade');
             $table->foreignId('semester_id')->constrained()->onDelete('cascade');
-            $table->integer('weekly_hours')->nullable()->default(3); //total hrs per week for this assignment
-            $table->enum('assignment_type', ['theory','practical','theory and practical'])->default('theory');
-            $table->date('assigned_date')->nullable();
+            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            $table->enum('assignment_type', ['Theory','Practical','Theory and Practical'])->default('Theory');
             $table->enum('status', ['active','completed','cancelled'])->default('active');
             $table->string('notes')->nullable();
             $table->timestamps();

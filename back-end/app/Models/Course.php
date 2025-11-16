@@ -23,15 +23,7 @@ class Course extends Model
         'course_type',
         'status',
         'semester_number',
-        'credit_hours',
-        'theory_hours',
-        'practical_hours',
     ];
-
-    protected $casts = [
-        'credit_hours' => 'decimal:3',
-    ];
-
     // get the institution that owns the course
     public function institution()
     {
@@ -54,7 +46,7 @@ class Course extends Model
     public function assignedTeachers()
     {
         return $this->belongsToMany(Teacher::class, 'course_assignments')
-            ->withPivot('batch_id', 'semester_id', 'weekly_hours', 'assignment_type', 'status')
+            ->withPivot('batch_id', 'semester_id', 'assignment_type', 'status')
             ->withTimestamps();
     }
 
@@ -85,10 +77,5 @@ class Course extends Model
     // filter by semester number
     public function scopeBySemesterNumber($query, int $semesterNumber){
         return $query->where('semester_number', $semesterNumber);
-    }
-
-    // get total hours per week
-    public function getTotalHoursAttribute(): int{
-        return $this->theory_hours + $this->practical_hours;
     }
 }
