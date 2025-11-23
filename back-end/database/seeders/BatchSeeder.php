@@ -18,7 +18,7 @@ class BatchSeeder extends Seeder
             [
                 'institution_id' => 1,
                 'department_id' => 1, // BCA
-                'semester_id' => 1, // Eighth sem
+                'semester_id' => 1, // Seventh sem
                 'batch_name' => '2022 BCA Batch',
                 'code' => 'BCA-2022',
                 'year_level' => 4, //4th year BCA

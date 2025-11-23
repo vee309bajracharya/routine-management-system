@@ -19,6 +19,7 @@ class Teacher extends Model
         'user_id',
         'institution_id',
         'department_id',
+        'employment_type',
     ];
 
     // get the institution that owns the teacher

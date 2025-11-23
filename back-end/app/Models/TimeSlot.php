@@ -33,6 +33,8 @@ class TimeSlot extends Model
     protected $casts = [
         'applicable_days' => 'array',
         'is_active' => 'boolean',
+        'start_time' => 'datetime:H:i',
+        'end_time' => 'datetime:H:i',
     ];
 
     // get the institution that owns this time_slot

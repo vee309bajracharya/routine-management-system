@@ -20,7 +20,7 @@ class TimeSlotSeeder extends Seeder
                 'institution_id' => 1,
                 'department_id' => 1, //BCA
                 'batch_id' => 1, // 2022 Batch
-                'semester_id' => 1, // 8th
+                'semester_id' => 1, // 7th
                 'name' => 'Cyber Law and Prof. Ethics',
                 'start_time' => '06:35',
                 'end_time' => '07:50',
@@ -36,7 +36,7 @@ class TimeSlotSeeder extends Seeder
                 'institution_id' => 1,
                 'department_id' => 1,
                 'batch_id' => 1, // 2022 Batch
-                'semester_id' => 1, // 8th
+                'semester_id' => 1, // 7th
                 'name' => 'Break',
                 'start_time' => '07:50',
                 'end_time' => '08:20',
@@ -52,7 +52,7 @@ class TimeSlotSeeder extends Seeder
                 'institution_id' => 1,
                 'department_id' => 1,
                 'batch_id' => 1, // 2022 Batch
-                'semester_id' => 1, // 8th
+                'semester_id' => 1, // 7th
                 'name' => 'Software Project Management',
                 'start_time' => '08:20',
                 'end_time' => '09:30',
@@ -68,7 +68,7 @@ class TimeSlotSeeder extends Seeder
                 'institution_id' => 1,
                 'department_id' => 1,
                 'batch_id' => 1, // 2022 Batch
-                'semester_id' => 1, // 8th
+                'semester_id' => 1, // 7th
                 'name' => 'Cloud Computing',
                 'start_time' => '06:35',
                 'end_time' => '07:50',
@@ -85,7 +85,7 @@ class TimeSlotSeeder extends Seeder
                 'institution_id' => 1,
                 'department_id' => 1,
                 'batch_id' => 1, // 2022 Batch
-                'semester_id' => 1, // 8th
+                'semester_id' => 1, // 7th
                 'name' => 'E-Governance',
                 'start_time' => '08:20',
                 'end_time' => '09:30',
