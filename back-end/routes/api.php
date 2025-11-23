@@ -1,9 +1,12 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\RoutineController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Teacher\TeacherDashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Routines\RoutineCRUDController;
+use App\Http\Controllers\Routines\RoutineEntryController;
 
 // No Auth required (Public Routes)
 Route::prefix('auth')->group(function(){
@@ -24,46 +27,33 @@ Route::middleware(['auth:sanctum','prevent.back.history'])->group(function(){
     // Admin routes
     Route::middleware(['check.role:admin'])->prefix('admin')->group(function(){
 
-        // dashboard route
-        Route::get('/dashboard', function (Request $request){
-            return response()->json([
-                'success'=> true,
-                'message'=> 'Admin dashboard data',
-                'user'=> $request->user(),
-            ]);
-        });
+        // Admin dashboard route
+        Route::get('/dashboard', [AdminDashboardController::class, 'index']);
 
-        // Routine Management Routes
+        // Routines
         Route::prefix('routines')->group(function(){
-            // list all routines with filters as ?status=draft&semester_id=A&batch_id=B
-            Route::get('/all-routines', [RoutineController::class, 'index']);
-            // create new routine
-            Route::post('/new-routine',[RoutineController::class, 'store']);
-            //show specific routine details
-            Route::get('/{id}', [RoutineController::class, 'show']);
-            // update routine data
-            Route::put('/{id}', [RoutineController::class, 'update']);
-            // delete routine
-            Route::delete('/{id}',[RoutineController::class, 'destroy']);
+            // CRUD Routes
+            Route::get('/', [RoutineCRUDController::class, 'index']);
+            Route::post('/',[RoutineCRUDController::class, 'store']);
+            Route::get('/{id}', [RoutineCRUDController::class, 'show']);
+            Route::put('/{id}', [RoutineCRUDController::class, 'update']);
+            Route::delete('/{id}',[RoutineCRUDController::class, 'destroy']);
         });
 
-        // Routine Grid Entry
+        // Routine entries - Grid Operation
         Route::prefix('routine-entries')->group(function(){
-            //new routine entry to grid
-            Route::post('/new', [RoutineController::class, 'addEntry']);
+            Route::post('/', [RoutineEntryController::class, 'addEntry']);
+            Route::put('/{entryId}', [RoutineEntryController::class, 'updateEntry']);
+            Route::delete('/{entryId}', [RoutineEntryController::class, 'deleteEntry']);
+            Route::delete('/clear/{routineId}', [RoutineEntryController::class, 'clearRoutine']);
+            Route::get('/grid/{routineId}', [RoutineEntryController::class, 'getRoutineGrid']);
         });
     });
 
-    // teacher routes
-        Route::middleware(['check.role:teacher'])->prefix('teacher')->group(function(){
+    // Teacher routes
+    Route::middleware(['check.role:teacher'])->prefix('teacher')->group(function(){
 
-        // dashboard route
-        Route::get('/dashboard', function (Request $request){
-            return response()->json([
-                'success'=> true,
-                'message'=> 'Teacher dashboard data',
-                'user'=> $request->user(),
-            ]);
-        });
+        // Teacher dashboard route
+        Route::get('/dashboard', [TeacherDashboardController::class, 'index']);
     });
 });

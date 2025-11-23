@@ -4,8 +4,5 @@ mysql_data/
 redis_data/
 vendor/
 node_modules/
-back-end/app/Http/Controllers/Api/DropdownController.php
-back-end/app/Http/Controllers/Api/RoutineController.php
-back-end/app/Http/Resources/Routines/RoutineDetailResource.php
-back-end/app/Http/Resources/Routines/RoutineListResource.php
-back-end/routes/api.php
+back-end/app/Http/Controllers/Routines/RoutineTimeSlotController.php
+back-end/app/Http/Controllers/Routines/RoutineVersionController.php

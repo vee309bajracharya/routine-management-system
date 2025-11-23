@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId('room_id')->constrained()->onDelete('cascade');
             $table->foreignId('time_slot_id')->constrained()->onDelete('cascade');
             $table->string('day_of_week'); //Sunday, Monday
-            $table->enum('entry_type', ['lecture', 'practical'])->default('lecture');
+            $table->enum('entry_type', ['Lecture', 'Practical', 'Break'])->default('Lecture');
             $table->boolean('is_cancelled')->default(false);
             $table->text('cancellation_reason')->nullable();
             $table->text('notes')->nullable();

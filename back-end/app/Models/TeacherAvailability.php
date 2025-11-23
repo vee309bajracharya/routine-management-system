@@ -11,6 +11,8 @@ class TeacherAvailability extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'teacher_availability'; // default: 'teacher_availabilities' but used 'teacher_availability' as migration 
+
     protected $fillable = [
         'teacher_id',
         'day_of_week',

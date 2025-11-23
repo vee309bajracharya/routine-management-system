@@ -12,11 +12,10 @@ return new class extends Migration {
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institution_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['Super Admin', 'Admin', 'Teacher'])->default('Teacher');
+            $table->enum('role', ['super_admin', 'admin', 'teacher'])->default('teacher');
             $table->string('phone', 10)->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamp('email_verified_at')->nullable();

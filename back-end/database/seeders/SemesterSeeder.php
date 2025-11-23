@@ -17,7 +17,7 @@ class SemesterSeeder extends Seeder
         DB::table('semesters')->insert([
             [
                 'academic_year_id' => 1,
-                'semester_name' => 'Eighth Semester',
+                'semester_name' => 'Seventh Semester',
                 'semester_number' => 8,
                 'start_date' => '2024-07-30',
                 'end_date' => '2024-12-30',
