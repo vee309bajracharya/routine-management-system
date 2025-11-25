@@ -14,6 +14,8 @@ class TeacherAvailabilitySeeder extends Seeder
      */
     public function run(): void
     {
+        DB::table('teacher_availability')->truncate();
+        
         DB::table('teacher_availability')->insert([
             //Teacher 1 as teacher_id : 1 referring to user_id:2
             [
@@ -96,7 +98,7 @@ class TeacherAvailabilitySeeder extends Seeder
             ],
             // ================================
             [
-                'teacher_id' => 10,
+                'teacher_id' => 4,
                 'day_of_week' => 'Wednesday',
                 'available_from' => '08:00',
                 'available_to' => '10:00',
@@ -104,7 +106,7 @@ class TeacherAvailabilitySeeder extends Seeder
                 'notes' => 'Morning Schedule'
             ],
             [
-                'teacher_id' => 10,
+                'teacher_id' => 4,
                 'day_of_week' => 'Thursday',
                 'available_from' => '08:00',
                 'available_to' => '10:00',
@@ -112,7 +114,7 @@ class TeacherAvailabilitySeeder extends Seeder
                 'notes' => 'Morning Schedule'
             ],
             [
-                'teacher_id' => 10,
+                'teacher_id' => 4,
                 'day_of_week' => 'Friday',
                 'available_from' => '08:00',
                 'available_to' => '10:00',
