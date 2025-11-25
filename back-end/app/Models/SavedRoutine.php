@@ -23,7 +23,7 @@ class SavedRoutine extends Model
     ];
 
     protected $casts = [
-        'routine_data' => 'array',
+        'routine_snapshot' => 'array',
         'saved_date' => 'date',
     ];
 

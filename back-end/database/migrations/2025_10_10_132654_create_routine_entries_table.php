@@ -21,7 +21,6 @@ return new class extends Migration {
             $table->boolean('is_cancelled')->default(false);
             $table->text('cancellation_reason')->nullable();
             $table->text('notes')->nullable();
-            $table->enum('day', ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'])->nullable();
             $table->timestamps();
             $table->softDeletes();
 
