@@ -28,8 +28,14 @@ services:
       SESSION_DRIVER: redis
       QUEUE_CONNECTION: redis
 
-      # Octane
+      # Octane Configuration
       OCTANE_SERVER: swoole
+      OCTANE_WORKERS: 4
+      OCTANE_TASK_WORKERS: 6
+      OCTANE_MAX_EXECUTION_TIME: 30
+      OCTANE_GARBAGE: 50
+      OCTANE_CACHE_ROWS: 1000
+      OCTANE_CACHE_BYTES: 10000
 
     command: >
       sh -c "
