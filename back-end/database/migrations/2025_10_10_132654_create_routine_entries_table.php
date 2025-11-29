@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->foreignId('room_id')->constrained()->onDelete('cascade');
             $table->foreignId('time_slot_id')->constrained()->onDelete('cascade');
             $table->string('day_of_week'); //Sunday, Monday
+            $table->enum('shift', ['Morning', 'Day']);
             $table->enum('entry_type', ['Lecture', 'Practical', 'Break'])->default('Lecture');
             $table->boolean('is_cancelled')->default(false);
             $table->text('cancellation_reason')->nullable();
@@ -31,11 +32,11 @@ return new class extends Migration {
             $table->index('time_slot_id');
             $table->index(['routine_id', 'day_of_week']);
 
-            /* 
-                unique constraint as to prevent double booking
-                conflict case = same time_slot, same room ,same day
-            */
-            $table->unique(['routine_id','room_id','time_slot_id','day_of_week'],'unique_room_time_day');
+            //allows same room + time + day if different shift
+            $table->unique(
+                ['routine_id', 'room_id', 'time_slot_id', 'day_of_week', 'shift'],
+                'unique_routine_room_time_day_shift'
+            );
         });
     }
 

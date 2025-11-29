@@ -18,7 +18,7 @@ class SemesterSeeder extends Seeder
             [
                 'academic_year_id' => 1,
                 'semester_name' => 'Seventh Semester',
-                'semester_number' => 8,
+                'semester_number' => 7,
                 'start_date' => '2024-07-30',
                 'end_date' => '2024-12-30',
                 'is_active' => true, // Current semester

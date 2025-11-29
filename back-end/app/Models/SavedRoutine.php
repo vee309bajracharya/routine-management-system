@@ -31,7 +31,7 @@ class SavedRoutine extends Model
         return $this->belongsTo(Routine::class);
     }
 
-    public function creator(): BelongsTo{
+    public function createdBy(): BelongsTo{
         return $this->belongsTo(User::class, 'created_by');
     }
 }
