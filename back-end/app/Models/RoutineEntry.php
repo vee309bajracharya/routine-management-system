@@ -20,6 +20,7 @@ class RoutineEntry extends Model
         'room_id',
         'time_slot_id',
         'day_of_week',
+        'shift',
         'entry_type',
         'is_cancelled',
         'cancellation_reason',
@@ -66,6 +67,11 @@ class RoutineEntry extends Model
     public function scopeByDay($query, string $day)
     {
         return $query->where('day_of_week', $day);
+    }
+
+    // by shift
+    public function scopeByShift($query, string $shift){
+        return $query->where('shift', $shift);
     }
 
     // filter non-cancelled entries
@@ -122,10 +128,11 @@ class RoutineEntry extends Model
     }
 
     // Check if teacher is already teaching at this time
-    public static function teacherHasConflict($teacherId, $timeSlotId, $day)
+    public static function teacherHasConflict($teacherId, $timeSlotId, $day, $shift)
     {
         return self::where('day_of_week', $day)
             ->where('time_slot_id', $timeSlotId)
+            ->where('shift', $shift)
             ->whereHas('courseAssignment', function ($q) use ($teacherId) {
                 $q->where('teacher_id', $teacherId);
             })
@@ -133,13 +140,12 @@ class RoutineEntry extends Model
     }
 
     // Check if room is already used at this time
-    public static function roomHasConflict($roomId, $timeSlotId, $day)
+    public static function roomHasConflict($roomId, $timeSlotId, $day, $shift)
     {
         return self::where('day_of_week', $day)
             ->where('time_slot_id', $timeSlotId)
             ->where('room_id', $roomId)
+            ->where('shift', $shift)
             ->exists();
     }
-
-
 }

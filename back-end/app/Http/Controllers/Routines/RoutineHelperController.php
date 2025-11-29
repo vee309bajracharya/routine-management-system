@@ -14,8 +14,11 @@ class RoutineHelperController extends Controller
         // Clear specific routine cache
         CacheService::forget(CacheService::routineKey($routine->id));
 
-        // Clear routine grid cache
-        CacheService::forget(CacheService::routineGridKey($routine->id));
+        // Clear shift-specific grid caches
+        $baseGridKey = CacheService::routineGridKey($routine->id, '');
+        CacheService::forget($baseGridKey);
+        CacheService::forget($baseGridKey . ':Morning'); // Morning shift cache
+        CacheService::forget($baseGridKey . ':Day');     // Day shift cache
 
         // Clear saved versions list
         CacheService::forget(CacheService::routineSavedVersionsKey($routine->id));
@@ -28,10 +31,23 @@ class RoutineHelperController extends Controller
         // Clear all teacher schedules (routine affects teacher schedules)
         CacheService::forgetPattern("teacher:*:schedule*");
 
-        // Clear routines list caches
+        // Clear routines list caches (affects listing pages)
         CacheService::forgetPattern("routines:list:*");
 
         // Clear room availability caches
         CacheService::forgetPattern("room:*:availability");
+    }
+
+    /**
+     * Clear grid cache only (useful for bulk operations)
+     * @param int $routineId
+     */
+    public function clearGridCache($routineId)
+    {
+        $baseGridKey = CacheService::routineGridKey($routineId, '');
+        CacheService::forget($baseGridKey);
+        CacheService::forget($baseGridKey . ':Morning');
+        CacheService::forget($baseGridKey . ':Day');
+        CacheService::forget($baseGridKey . ':all');
     }
 }

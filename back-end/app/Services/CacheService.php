@@ -225,12 +225,14 @@ class CacheService
 
     /**
      * Generate cache key for routine grid view
-     * Example: "routine:5:grid"
+     * Example: "routine:5:grid" or "routine:5:grid:morning"
      * This is separate because grid is frequently accessed
      */
-    public static function routineGridKey(int $routineId): string
+    public static function routineGridKey(int $routineId, ?string $shift = null): string
     {
-        return "routine:{$routineId}:grid";
+        return $shift
+            ? "routine:{$routineId}:grid:{$shift}"
+            : "routine:{$routineId}:grid";
     }
 
     /**

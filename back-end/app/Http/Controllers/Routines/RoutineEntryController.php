@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Routines;
 use App\Models\Routine;
 use App\Models\TimeSlot;
 use App\Models\RoutineEntry;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\CacheService;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ class RoutineEntryController extends Controller
             'room_id' => 'required|exists:rooms,id',
             'time_slot_id' => 'required|exists:time_slots,id',
             'day_of_week' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            'shift' => 'required|in:Morning,Day',
             'entry_type' => 'required|in:Lecture,Practical,Break',
             'notes' => 'nullable|string',
         ]);
@@ -47,6 +49,7 @@ class RoutineEntryController extends Controller
                 $request->room_id,
                 $request->time_slot_id,
                 $request->day_of_week,
+                $request->shift,
             );
 
             if ($conflictResult !== true) {
@@ -61,6 +64,7 @@ class RoutineEntryController extends Controller
                 'room_id' => $request->room_id,
                 'time_slot_id' => $request->time_slot_id,
                 'day_of_week' => $request->day_of_week,
+                'shift' => $request->shift,
                 'entry_type' => $request->entry_type,
                 'is_cancelled' => false,
                 'notes' => $request->notes,
@@ -90,6 +94,7 @@ class RoutineEntryController extends Controller
             'room_id' => 'sometimes|exists:rooms,id',
             'time_slot_id' => 'sometimes|exists:time_slots,id',
             'day_of_week' => 'sometimes|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
+            'shift' => 'sometimes|in:Morning,Day',
             'entry_type' => 'sometimes|in:Lecture,Practical,Break',
             'notes' => 'nullable|string',
         ]);
@@ -109,6 +114,7 @@ class RoutineEntryController extends Controller
                 'room_id',
                 'time_slot_id',
                 'day_of_week',
+                'shift',
                 'entry_type',
                 'notes'
             ]);
@@ -120,6 +126,7 @@ class RoutineEntryController extends Controller
                 $request->input('room_id', $entry->room_id),
                 $request->input('time_slot_id', $entry->time_slot_id),
                 $request->input('day_of_week', $entry->day_of_week),
+                $request->input('shift', $entry->shift),
                 $entryId // exclude itself
             );
             if ($conflictResult !== true) {
@@ -221,69 +228,131 @@ class RoutineEntryController extends Controller
     }
 
     // get the grid format routine details
-    private const GRID_CACHE_TTL = 7200; // 2hrs
+    private const GRID_CACHE_TTL = 300; // 5mins
 
-    public function getRoutineGrid($routineId)
+    public function getRoutineGrid($routineId, Request $request)
     {
         try {
-            // check if routine exists
+            // validate and load routine
             $routine = Routine::findOrFail($routineId);
 
-            // Cache key
-            $cacheKey = CacheService::routineGridKey($routineId);
+            // shift param (default Morning)
+            $shift = $request->query('shift', 'Morning');
+            if (!in_array($shift, ['Morning', 'Day'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid shift. Allowed: Morning, Day.'
+                ], 422);
+            }
 
-            // Return cached data if available, otherwise build fresh
-            $grid = CacheService::remember($cacheKey, function () use ($routineId) {
+            // cache key per routine + shift
+            $cacheKey = CacheService::routineGridKey($routineId, $shift);
 
-                // Load entries with needed relations
+            // if `refresh=true` in query, clear cache and rebuild 
+            if ($request->query('refresh') === 'true') {
+                CacheService::forget($cacheKey);
+            }
+
+            $gridPayload = CacheService::remember($cacheKey, function () use ($routine, $shift) {
+                // Load entries only for this routine + shift (only active ones)
                 $entries = RoutineEntry::with([
                     'courseAssignment.course',
                     'courseAssignment.teacher.user',
                     'room',
                     'timeSlot'
                 ])
-                    ->where('routine_id', $routineId)
-                    ->orderBy('day_of_week')
+                    ->where('routine_id', $routine->id)
+                    ->where('shift', $shift)
+                    ->where('is_cancelled', false)
                     ->get();
 
-                // Load time slots (sorted)
-                $timeSlots = TimeSlot::orderBy('start_time')->get();
+                // Choose timeslots relevant for this routine (prefer batch/semester if present)
+                $timeSlotsQuery = TimeSlot::query()->where('is_active', true);
 
+                if (!empty($routine->batch_id)) {
+                    $timeSlotsQuery->where('batch_id', $routine->batch_id);
+                }
+                if (!empty($routine->semester_id)) {
+                    $timeSlotsQuery->where('semester_id', $routine->semester_id);
+                }
+
+                // fallback: if none found for batch/semester, get all active timeslots for institution
+                $timeSlots = $timeSlotsQuery->orderBy('slot_order')->get();
+                if ($timeSlots->isEmpty()) {
+                    $timeSlots = TimeSlot::where('is_active', true)->orderBy('slot_order')->get();
+                }
+
+                // build canonical slot keys (use H:i format)
+                $slotKeys = $timeSlots->mapWithKeys(function ($slot) {
+                    $start = Carbon::parse($slot->start_time)->format('H:i:s');
+                    $end = Carbon::parse($slot->end_time)->format('H:i:s');
+                    $key = "{$start} - {$end}";
+                    return [
+                        $slot->id => [
+                            'key' => $key,
+                            'slot' => $slot
+                        ]
+                    ];
+                })->toArray();
+
+                $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+                // initialize grid: day => slotKey => null
                 $grid = [];
-
-                // Initialize the grid with nulls first
-                foreach (['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as $day) {
+                foreach ($days as $day) {
                     $grid[$day] = [];
-
-                    foreach ($timeSlots as $slot) {
-                        $grid[$day][$slot->start_time . ' - ' . $slot->end_time] = null;
+                    foreach ($slotKeys as $slotMeta) {
+                        $grid[$day][$slotMeta['key']] = null;
                     }
                 }
 
-                // Fill the grid
+                // fill grid: for every entry map to the correct day + slot key
                 foreach ($entries as $entry) {
-                    $slotKey = $entry->timeSlot->start_time . ' - ' . $entry->timeSlot->end_time;
+                    if (!$entry->timeSlot)
+                        continue; // skip if no timeslot relation
+
+                    $start = Carbon::parse($entry->timeSlot->start_time)->format('H:i:s');
+                    $end = Carbon::parse($entry->timeSlot->end_time)->format('H:i:s');
+                    $slotKey = "{$start} - {$end}";
+
+                    // guard: ensure day exists in grid
+                    if (!isset($grid[$entry->day_of_week]))
+                        continue;
+
+                    // set entry resource
                     $grid[$entry->day_of_week][$slotKey] = new RoutineEntryResource($entry);
                 }
 
-                return $grid;
+                return [
+                    'grid' => $grid,
+                    'shift' => $shift,
+                    'total_entries' => $entries->count(),
+                    'time_slots_count' => count($slotKeys),
+                ];
             }, self::GRID_CACHE_TTL);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Routine grid generated successfully',
-                'data' => $grid,
+                'shift' => $gridPayload['shift'],
+                'data' => $gridPayload['grid'],
+                'meta' => [
+                    'total_entries' => $gridPayload['total_entries'],
+                    'time_slots' => $gridPayload['time_slots_count']
+                ]
             ], 200);
 
-
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Routine not found'
+            ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate routine grid',
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage()
             ], 500);
         }
     }
-
-
 }
