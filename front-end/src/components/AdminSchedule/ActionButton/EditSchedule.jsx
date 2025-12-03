@@ -8,7 +8,6 @@ const EditSchedule = ({ isOpen, onClose }) => {
     <AnimatePresence>
       {isOpen && (
         <section className="schedulebtn-popup">
-          {/* Motion container for smooth fade/scale animation */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 30 }}   // before animation
             animate={{ opacity: 1, scale: 1, y: 0 }}      // animate in

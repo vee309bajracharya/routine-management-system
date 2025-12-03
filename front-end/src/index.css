@@ -76,8 +76,11 @@
   @apply flex gap-2 items-center px-3 py-3 rounded-md mb-1 transition;
   
 }
+.export-btn{
+  @apply flex justify-between items-center gap-1 border border-main-blue px-3 py-1 text-main-blue rounded;
+}
 .overview-btn{
-  @apply border border-box-outline px-2 py-1 rounded-md cursor-pointer hover:border-red-500 hover:text-red-500
+  @apply border border-box-outline px-3 py-1 rounded-md cursor-pointer hover:border-red-500 hover:text-red-500
 }
 .createSchedule-label{
   @apply block text-sm font-medium text-primary-text mb-1
@@ -96,4 +99,10 @@
 }
 .schedulesession-checkbox{
   @apply  h-4 w-4 text-primary-blue
+}
+.overview-btn{
+  @apply flex items-center gap-2 border border-box-outline px-3 py-1 rounded-md bg-white text-sm
+}
+.overview-status-btn{
+ @apply px-3 py-1 border border-gray-300 rounded-md bg-gray-100 text-sm
 }
