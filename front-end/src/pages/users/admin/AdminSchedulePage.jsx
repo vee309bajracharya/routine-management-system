@@ -1,11 +1,21 @@
 import React from "react";
-import { NavLink, Routes, Route, Navigate } from "react-router-dom";
+import { NavLink, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Overview from "../../../components/AdminSchedule/Overview";
 import RoutinePlanning from "../../../components/AdminSchedule/RoutinePlanning";
 import Reschedule from "../../../components/AdminSchedule/Reschedule";
 import Saved from "../../../components/AdminSchedule/Saved";
 
 const AdminSchedulePage = () => {
+  const location = useLocation();
+
+  const getHeading = () => {
+    if (location.pathname.includes("overview")) return "Overview";
+    if (location.pathname.includes("routine")) return "Routine Planning";
+    if (location.pathname.includes("reschedule")) return "Reschedule";
+    if (location.pathname.includes("saved")) return "Saved";
+    return "Schedule";
+  };
+
   const tabs = [
     { name: "Overview", path: "/admin/schedule/overview" },
     { name: "Routine Planning", path: "/admin/schedule/routine" },
@@ -17,7 +27,7 @@ const AdminSchedulePage = () => {
     <section className="flex-1 bg-white rounded-md p-2 font-general-sans">
       {/* Header */}
       <div className="border-b border-box-outline mb-4">
-        <h1 className="text-3xl font-semibold mb-4">Schedule</h1>
+        <h1 className="text-3xl font-semibold mb-4">{getHeading()}</h1>
 
         {/* Tabs */}
         <div className="flex space-x-6 text-sm">
@@ -40,9 +50,8 @@ const AdminSchedulePage = () => {
       </div>
 
       {/* Tab content */}
-      <div className="mt-6">
+      <div>
         <Routes>
-          {/* Default route → redirect to overview */}
           <Route index element={<Navigate to="overview" replace />} />
           <Route path="overview" element={<Overview />} />
           <Route path="routine" element={<RoutinePlanning />} />

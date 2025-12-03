@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { RotateCw, Download, Clock3, CalendarDays } from "lucide-react";
-import CreateSchedule from "./ActionButton/CreateSchedule";
+import RoutineCreation from "./ActionButton/RoutineCreation";
+import RoutineEntry from "./ActionButton/RoutineEntry";
 import EditSchedule from "./ActionButton/EditSchedule";
 import SaveSchedule from "./ActionButton/SaveSchedule";
 import LoadSchedule from "./ActionButton/LoadSchedule";
@@ -8,7 +9,8 @@ import TimeSlotSchedule from "./ActionButton/TimeSlotSchedule";
 import DateDurationSchedule from "./ActionButton/DateDurationSchedule";
 
 const RoutinePlanning = () => {
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateEntryModal, setShowCreateEntryModal] = useState(false);
+  const [showCreateRoutineModal, setshowCreateRoutineModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
@@ -42,51 +44,58 @@ const RoutinePlanning = () => {
       <div className="flex justify-between items-center gap-4 text-xs">
         <div className="flex justify-center gap-3">
           <button
-            onClick={() => setShowCreateModal(true)}
-            className="overview-btn px-3 py-1"
+            onClick={() => setshowCreateRoutineModal(true)}
+            className="overview-btn"
           >
-            Create
+            Create Routine
           </button>
           <button
+            onClick={() => setShowCreateEntryModal(true)}
+            className="overview-btn"
+          >
+            Create Routine Entry
+          </button>
+          
+          <button
             onClick={() => setShowEditModal(true)}
-            className="overview-btn px-3 py-1"
+            className="overview-btn"
           >
             Edit
           </button>
-          <button className="overview-btn  px-3 py-1">Clear</button>
+          <button className="overview-btn ">Clear</button>
           <button
             onClick={() => setShowTimeSlotModal(true)}
-            className="overview-btn flex justify-between gap-1 px-3 py-1"
+            className="overview-btn flex justify-between gap-1"
           >
             <Clock3 size={16} />
             Add Time slot
           </button>
           <button
             onClick={() => setShowDateDurationModal(true)}
-            className="overview-btn flex justify-between gap-1 px-3 py-1"
+            className="overview-btn flex justify-between gap-1"
           >
             <CalendarDays size={16} />
             Add Date Duration
           </button>
         </div>
         <div className="flex justify-center items-center gap-4">
-          <button className="flex items-center gap-1 bg-warning-faidorange px-3 py-1 rounded">
+          <button className="flex items-center gap-1 bg-warning-faidorange px-3 py-2 rounded">
             <RotateCw size={16} />
             Check for Overlaps
           </button>
           <button
             onClick={() => setShowSaveModal(true)}
-            className="overview-btn px-3 py-1"
+            className="overview-btn"
           >
             Save
           </button>
           <button
             onClick={() => setShowLoadModal(true)}
-            className="overview-btn px-3 py-1"
+            className="overview-btn"
           >
             Load
           </button>
-          <button className="flex justify-between gap-1 border border-main-blue px-3 py-1 text-main-blue rounded">
+          <button className="export-btn">
             <Download size={16} />
             Export
           </button>
@@ -111,7 +120,7 @@ const RoutinePlanning = () => {
                 <div className="font-semibold">
                   {idx % 2 === 0 ? "I" : "II"}
                 </div>
-                <div className="text-[10px]">10:15–11:55</div>
+                <div className="text-[10px]">10:15-11:55</div>
               </div>
             ))}
         </div>
@@ -152,9 +161,13 @@ const RoutinePlanning = () => {
         ))}
       </div>
       {/*Modal */}
-      <CreateSchedule
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+      <RoutineEntry
+        isOpen={showCreateEntryModal}
+        onClose={() => setShowCreateEntryModal(false)}
+      />
+      <RoutineCreation
+        isOpen={showCreateRoutineModal}
+        onClose={() => setshowCreateRoutineModal(false)}
       />
       <EditSchedule
         isOpen={showEditModal}

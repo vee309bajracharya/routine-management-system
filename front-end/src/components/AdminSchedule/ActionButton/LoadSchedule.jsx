@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 import { X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion"; // 👈 added this
+import { motion, AnimatePresence } from "framer-motion";
 
 const LoadSchedule = ({ isOpen, onClose }) => {
   const routines = [
@@ -39,7 +39,7 @@ const LoadSchedule = ({ isOpen, onClose }) => {
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            {/* Header (Flex with title + close button) */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="schedulepopup-title">Load Routine</h2>
               <button onClick={onClose} className="scheduleClose-btn">
@@ -60,9 +60,9 @@ const LoadSchedule = ({ isOpen, onClose }) => {
                 <tbody>
                   {routines.map((item, index) => (
                     <tr key={index} className="border-b border-box-outline last:border-0">
-                      <td className="px-3 py-2 text-gray-800">{item.date}</td>
-                      <td className="px-3 py-2 text-gray-800 whitespace-nowrap">{item.label}</td>
-                      <td className="px-3 py-2 text-gray-600">{item.description}</td>
+                      <td className="px-3 py-2 text-primary-text">{item.date}</td>
+                      <td className="px-3 py-2 text-primary-text whitespace-nowrap">{item.label}</td>
+                      <td className="px-3 py-2 text-sub-text">{item.description}</td>
                     </tr>
                   ))}
                 </tbody>
