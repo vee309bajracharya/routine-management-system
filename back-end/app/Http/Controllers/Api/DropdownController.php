@@ -41,7 +41,7 @@ class DropdownController extends Controller
                             'department_name' => $dept->department_name,
                             'code' => $dept->code,
                             'description' => $dept->description,
-                            'display_label' => $dept->department_name, //display in front-end as BCA, BBM
+                            'display_label' => $dept->code, //display in front-end as BCA, BBM
                         ];
                     });
             }, self::DROPDOWN_CACHE_TTL);
@@ -179,7 +179,7 @@ class DropdownController extends Controller
                 if ($semesterId)
                     $query->where('semester_id', $semesterId);
 
-                return $query->with('department:id, department_name')
+                return $query->with('department:id,department_name')
                     ->select('id', 'batch_name', 'code', 'year_level', 'shift', 'department_id')
                     ->orderBy('year_level', 'desc')
                     ->orderBy('shift', 'asc')
@@ -190,15 +190,16 @@ class DropdownController extends Controller
                             'batch_name' => $batch->batch_name,
                             'code' => $batch->code,
                             'year_level' => $batch->year_level,
-                            'shift' => $batch->shift, // auto-fill
+                            'shift' => $batch->shift,
                             'department' => $batch->department ? [
                                 'id' => $batch->department->id,
-                                'department_name' => $batch->department->department_name
+                                'name' => $batch->department->department_name
                             ] : null,
                             'display_label' => "{$batch->batch_name} ({$batch->shift} Shift)"
                         ];
                     });
             }, self::DROPDOWN_CACHE_TTL);
+
             return $this->successResponse($batches, 'Batches fetched successfully');
         } catch (\Exception $e) {
             return response()->json([
@@ -235,9 +236,9 @@ class DropdownController extends Controller
                     ->where('batch_id', $batchId)
                     ->where('status', 'active')
                     ->with([
-                        'course:id,course_name,course_code,course_type',
+                        'course:id,course_name,code',
                         'teacher.user:id,name',
-                        'teacher.department:id,department_name',
+                        'teacher.department:id,code',
                         'batch:id,batch_name,code,shift',
                     ]);
                 if ($departmentId) {
@@ -252,20 +253,18 @@ class DropdownController extends Controller
                             'id' => $assignment->course->id,
                             'course_name' => $assignment->course->course_name,
                             'code' => $assignment->course->code,
-                            'type' => $assignment->course->course_type
                         ],
                         'teacher' => [
                             'id' => $assignment->teacher->id,
                             'name' => $assignment->teacher->user->name,
-                            'department' => $assignment->teacher->department->department_name ?? 'N/A',
+                            'department_code' => $assignment->teacher->department->code ?? 'N/A',
                         ],
                         'batch' => [
                             'id' => $assignment->batch->id,
                             'name' => $assignment->batch->batch_name,
                             'shift' => $assignment->batch->shift,
                         ],
-                        'assignment_type' => $assignment->assignment_type,
-                        'display_label' => "{$assignment->course->course_name} - {$assignment->teacher->user->name} ({$assignment->batch->batch_name} - {$assignment->batch->shift})",
+                        'display_label' => "{$assignment->course->course_name} - {$assignment->teacher->user->name}",
                     ];
                 });
             }, self::DROPDOWN_CACHE_TTL);
@@ -351,11 +350,12 @@ class DropdownController extends Controller
             $teachers = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId) {
                 $query = Teacher::where('institution_id', $institutionId)
                     ->with([
-                        'user:id, name',
-                        'department:id, department_name',
+                        'user:id,name',
+                        'department:id,department_name,code',
                     ]);
+
                 if ($departmentId)
-                    $query->where('department_id', $departmentId); //only selected department teachers
+                    $query->where('department_id', $departmentId);
 
                 return $query->get()->map(function ($teacher) {
                     return [
@@ -364,13 +364,15 @@ class DropdownController extends Controller
                         'name' => $teacher->user->name,
                         'department' => $teacher->department ? [
                             'id' => $teacher->department->id,
-                            'name' => $teacher->department->department_name
+                            'name' => $teacher->department->department_name,
+                            'code' => $teacher->department->code,
                         ] : null,
                         'employment_type' => $teacher->employment_type,
-                        'display_label' => "{$teacher->user->name} ({$teacher->department->department_name})"
+                        'display_label' => $teacher->user->name . ' (' . ($teacher->department ? $teacher->department->code : 'N/A') . ')'
                     ];
                 });
             }, self::DROPDOWN_CACHE_TTL);
+
             return $this->successResponse($teachers, 'Teachers fetched successfully');
         } catch (\Exception $e) {
             return response()->json([
@@ -390,30 +392,42 @@ class DropdownController extends Controller
         try {
             $institutionId = auth()->user()->institution_id;
             $departmentId = $request->query('department_id');
+            $semesterId = $request->query('semester_id');
 
             $validator = Validator::make($request->all(), [
                 'department_id' => 'required|exists:departments,id',
+                'semester_id' => 'required|exists:semesters,id',
             ]);
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
+
             $cacheKey = "institution:{$institutionId}:courses";
             if ($departmentId)
                 $cacheKey .= ":dept:{$departmentId}";
-            $courses = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId) {
+            if ($semesterId)
+                $cacheKey .= ".sem:{$semesterId}";
+
+            $courses = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId, $semesterId) {
                 $query = Course::where('institution_id', $institutionId)
                     ->where('status', 'active');
                 if ($departmentId)
                     $query->where('department_id', $departmentId);
-                return $query->select('id', 'course_name', 'course_code')
+                if ($semesterId) {
+                    $semester = Semester::find($semesterId);
+                    if ($semester)
+                        $query->where('semester_number', $semester->semester_number);
+                }
+                return $query->select('id', 'course_name', 'code', 'semester_number')
                     ->orderBy('course_name', 'asc')
                     ->get()
                     ->map(function ($course) {
                         return [
                             'id' => $course->id,
                             'course_name' => $course->course_name,
-                            'course_code' => $course->course_code,
-                            'display_label' => "{$course->course_name} ({$course->course_code})"
+                            'course_code' => $course->code,
+                            'semester_number' => $course->semester_number,
+                            'display_label' => "{$course->course_name} ({$course->code})"
                         ];
                     });
             }, self::DROPDOWN_CACHE_TTL);

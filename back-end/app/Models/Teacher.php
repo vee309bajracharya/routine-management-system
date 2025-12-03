@@ -23,44 +23,58 @@ class Teacher extends Model
     ];
 
     // get the institution that owns the teacher
-    public function institution(){
+    public function institution()
+    {
         return $this->belongsTo(Institution::class);
     }
 
     // get the user that owns the teacher
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
     // get the course assignment for the teacher
-    public function courseAssignments(){
+    public function courseAssignments()
+    {
         return $this->hasMany(CourseAssignment::class);
     }
 
     // get the teacher availability
-    public function availability(){
+    public function availability()
+    {
         return $this->hasMany(TeacherAvailability::class);
     }
 
     // get the routine notifications
-    public function routineNotifications(){
+    public function routineNotifications()
+    {
         return $this->hasMany(RoutineNotification::class);
+    }
+
+    //teacher's department
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
     // ===== Scopes ======
 
     // to filter teachers by institutions
-    public function scopeByInstitution($query, $institutionId){
+    public function scopeByInstitution($query, $institutionId)
+    {
         return $query->where('institution_id', $institutionId);
     }
 
     // to filter full_time teachers
-    public function scopeFullTime($query){
+    public function scopeFullTime($query)
+    {
         return $query->where('employment_type', 'full_time');
     }
 
     // to filter part_time teachers
-    public function scopePartTime($query){
-        return $query->where('employment_type','part_time');
+    public function scopePartTime($query)
+    {
+        return $query->where('employment_type', 'part_time');
     }
 }
