@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Api\DropdownController;
 use App\Http\Controllers\Routines\RoutineVersionController;
 use App\Http\Controllers\Teacher\TeacherDashboardController;
 use Illuminate\Http\Request;
@@ -30,6 +31,19 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
 
         // Admin dashboard route
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+
+        // Dropdown routes
+        Route::prefix('dropdowns')->group(function () {
+            Route::get('/departments/{institutionId}', [DropdownController::class, 'getDepartments']);
+            Route::get('/academic-years', [DropdownController::class, 'getAcademicYears']);
+            Route::get('/semesters', [DropdownController::class, 'getSemesters']);
+            Route::get('/batches', [DropdownController::class, 'getBatches']);
+            Route::get('/course-assignments', [DropdownController::class, 'getCourseAssignments']);
+            Route::get('/teachers', [DropdownController::class, 'getTeachers']);
+            Route::get('/courses', [DropdownController::class, 'getCourses']);
+            Route::get('/rooms', [DropdownController::class, 'getRooms']);
+            Route::get('/time-slots', [DropdownController::class, 'getTimeSlots']);
+        });
 
         // Routines
         Route::prefix('routines')->group(function () {
