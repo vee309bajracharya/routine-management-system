@@ -179,7 +179,7 @@ const RoutineEntry = ({ isOpen, onClose }) => {
 
                 {/* Course */}
                 <div>
-                  <label className="createSchedule-label">Course Assign</label>
+                  <label className="createSchedule-label">Course Assignment</label>
                   <select
                     className="createSchedule-option"
                     value={course}

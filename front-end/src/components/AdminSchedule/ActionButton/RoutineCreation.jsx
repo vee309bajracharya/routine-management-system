@@ -26,7 +26,7 @@ const CreateRoutineFormModal = ({ isOpen, onClose }) => {
           transition={{ duration: 0.25 }}
         >
           <motion.div
-            className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl relative"
+            className="bg-white rounded-xl w-full max-w-xl p-6 shadow-xl relative"
             initial={{ scale: 0.9, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}

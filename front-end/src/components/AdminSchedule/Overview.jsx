@@ -46,6 +46,10 @@ const Overview = () => {
             </button>
 
             <button className="overview-status-btn">
+              Draft <span className="text-sub-text">13</span>
+            </button>
+
+            <button className="overview-status-btn">
               Approved <span className="text-sub-text">1</span>
             </button>
 
@@ -58,45 +62,43 @@ const Overview = () => {
         {/* Right Search and Export */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Search Input */}
-          <div className="flex items-center gap-2 border border-box-outline rounded-md px-3 py-1 bg-white">
+          <div className="flex items-center gap-2 border border-box-outline rounded-md px-3 py-1 bg-white dark:bg-dark-overlay">
             <Search size={16} className="text-sub-text" />
             <input
               type="text"
-              placeholder="Search by Name / ID / Email"
-              className="outline-none text-sm"
+              placeholder="Search Routine"
+              className="outline-none text-sm text-primary-text dark:text-white"
             />
           </div>
 
           {/* Export */}
-          <button className="export-btn">
+          <button className="export-btn cursor-pointer">
             <Download size={16} />
-            Export
+            Download
           </button>
         </div>
       </div>
 
       {/* TABLE */}
-      <div className="overflow-x-auto-auto bg-white mt-4">
+      <div className="overflow-x-auto-auto bg-white dark:bg-dark-overlay mt-4 text-primary-text dark:text-white">
         <table className="w-full text-sm align-middle">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 dark:bg-dark-hover">
             <tr>
-              <th className="p-3 ">Routine ID</th>
-              <th className="p-3">Routine Name</th>
+              <th className="p-3">Routine ID</th>
+              <th className="p-3">Routine Title</th>
               <th className="p-3">Description</th>
               <th className="p-3">Creation Date</th>
-              <th className="p-3">Valid From</th>
-              <th className="p-3">Valid To</th>
-              <th className="p-3">Department</th>
+              <th className="p-3">Effective From</th>
+              <th className="p-3">Effective To</th>
               <th className="p-3">Semester</th>
               <th className="p-3">Batch</th>
-              <th className="p-3">Section</th>
               <th className="p-3">Status</th>
-              <th className="p-3">Action</th>
+              <th className="p-3">Actions</th>
             </tr>
           </thead>
 
           <tbody>
-            {Array(10)
+            {Array(2)
               .fill(0)
               .map((_, i) => (
                 <tr key={i} className="">
@@ -113,44 +115,40 @@ const Overview = () => {
                   <td className="p-3">2024/12/15</td>
                   <td className="p-3">2024/12/15</td>
                   <td className="p-3">2024/12/15</td>
-
-                  <td className="p-3">Architecture</td>
                   <td className="p-3">2nd</td>
                   <td className="p-3">2024</td>
-                  <td className="p-3">A,B</td>
 
                   {/* Status Colors */}
                   <td className="p-3 ">
                     <span
-                      className={`px-3 text-xs font-medium ${
-                        i % 3 === 0
+                      className={`px-3 text-xs font-medium ${i % 3 === 0
                           ? "bg-green-100 text-success-green"
                           : i % 3 === 1
-                          ? "bg-yellow-100 text-warning-orange"
-                          : "bg-red-100 text-error-red"
-                      }`}
+                            ? "bg-yellow-100 text-warning-orange"
+                            : "bg-red-100 text-error-red"
+                        }`}
                     >
                       {i % 3 === 0
                         ? "Approved"
                         : i % 3 === 1
-                        ? "Pending"
-                        : "Expired"}
+                          ? "Pending"
+                          : "Expired"}
                     </span>
                   </td>
 
                   {/* Action Buttons */}
                   <td className="p-3">
                     <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-full hover:bg-blue-100 cursor-pointer transition">
+                      <div className="p-2 rounded-full hover:bg-blue-200 dark:hover:bg-blue-500 cursor-pointer transition">
                         <Eye size={18} />
                       </div>
-                      <div className="p-2 rounded-full hover:bg-green-100 cursor-pointer transition">
+                      <div className="p-2 rounded-full hover:bg-green-200 dark:hover:bg-green-500 cursor-pointer transition">
                         <Edit size={18} />
                       </div>
-                      <div className="p-2 rounded-full hover:bg-red-100 cursor-pointer transition">
+                      <div className="p-2 rounded-full hover:bg-red-200 dark:hover:bg-red-500 cursor-pointer transition">
                         <Trash2 size={18} />
                       </div>
-                      <div className="p-2 rounded-full hover:bg-gray-200 cursor-pointer transition">
+                      <div className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-500 cursor-pointer transition">
                         <MoreVertical size={18} />
                       </div>
                     </div>
