@@ -1,36 +1,60 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
 import MainLogo from "../../assets/svg/default_logo.svg";
-import downArrow from "../../assets/svg/Downarrow.svg";
-import University from "../../assets/svg/university.svg";
-import dash from "../../assets/svg/dashboard.svg";
+// import downArrow from "../../assets/svg/Downarrow.svg";
+// import University from "../../assets/svg/University.svg";
+import dash from "../../assets/svg/Dashboard.svg";
 import schedule from "../../assets/svg/schedule.svg";
 import faculty from "../../assets/svg/faculty.svg";
 import department from "../../assets/svg/department.svg";
 import room from "../../assets/svg/rooms.svg";
 import labs from "../../assets/svg/labs.svg";
-import activitylog from "../../assets/svg/activitylogsvg.svg";
+import activitylog from "../../assets/svg/activityLog.svg";
 import settings from "../../assets/svg/setting.svg";
-import logout from "../../assets/svg/logout.svg";
-import CollapsedLogo from "../../assets/svg/Collapsedlogo.svg";
-import { Link, NavLink } from "react-router-dom";
+import logOut from "../../assets/svg/logout.svg";
+import CollapsedLogo from "../../assets/svg/collapsedLogo.svg";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "react-toastify";
 
 const sidebarItems = [
   {
     section: "Main",
     items: [
-      { to: "/admin/dashboard", icon: dash, label: "Dashboard" },
-      { to: "/admin/schedule", icon: schedule, label: "Schedule" },
+      {
+        to: "/admin/dashboard",
+        icon: dash, label: "Dashboard"
+      },
+      {
+        to: "/admin/schedule",
+        icon: schedule,
+        label: "Schedule"
+      },
     ],
   },
   {
     section: "Resources",
     items: [
-      { to: "/admin/faculty", icon: faculty, label: "Faculty" },
-      { to: "/admin/department", icon: department, label: "Department" },
-      { to: "/admin/rooms", icon: room, label: "Rooms" },
-      { to: "/admin/labs", icon: labs, label: "Labs" },
+      {
+        to: "/admin/faculty",
+        icon: faculty,
+        label: "Faculty"
+      },
+      {
+        to: "/admin/department",
+        icon: department,
+        label: "Department"
+      },
+      {
+        to: "/admin/rooms",
+        icon: room,
+        label: "Rooms"
+      },
+      {
+        to: "/admin/labs",
+        icon: labs,
+        label: "Labs"
+      },
     ],
   },
   {
@@ -43,31 +67,49 @@ const sidebarItems = [
 ];
 
 const AdminSidebar = ({ collapsed }) => {
+
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      navigate("/admin-login", { replace: true });
+    } catch (error) {
+      console.error("Logout failed: ", error);
+      toast.error('Logout failed. Please try again');
+
+    }
+  };
+
   return (
     <motion.aside
       animate={{ width: collapsed ? 80 : 240 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="h-screen flex flex-col text-primary-text border-r border-box-outline font-general-sans bg-white overflow-hidden overflow-x-hidden"
+      className="h-screen flex flex-col text-primary-text border-r border-box-outline font-general-sans bg-white overflow-hidden overflow-x-hidden dark:bg-dark-overlay"
     >
-      <div className="p-4 flex flex-col border-b border-box-outline h-full overflow-y-auto overflow-x-hidden">
+      <section className="p-4 flex flex-col border-b border-box-outline h-full overflow-y-auto overflow-x-hidden dark:text-white">
         {/* Sidebar Logo */}
         <motion.div
           animate={{ scale: collapsed ? 0.8 : 1 }}
           transition={{ duration: 0.3 }}
           className="mb-4"
         >
-          <img
-            src={collapsed ? CollapsedLogo : MainLogo}
-            alt="Logo"
-            className="h-10 object-contain"
-          />
+          <Link to='/admin/dashboard'>
+            <img
+              src={collapsed ? CollapsedLogo : MainLogo}
+              alt="Logo"
+              className="h-10 object-contain dark:invert-25"
+            />
+
+          </Link>
         </motion.div>
 
         {/* University Section */}
-        <div
-          className={`flex items-center ${
-            collapsed ? "justify-center" : "justify-start gap-3"
-          } mb-4 border border-box-outline rounded-md px-2 py-3 font-semibold transition-all duration-300`}
+        {/* <div
+          className={`flex items-center ${collapsed ? "justify-center" : "justify-start gap-3"
+            } mb-4 border border-box-outline rounded-md px-2 py-3 font-semibold transition-all duration-300`}
         >
           <motion.img
             layout="position"
@@ -99,18 +141,17 @@ const AdminSidebar = ({ collapsed }) => {
               </Link>
             </>
           )}
-        </div>
+        </div> */}
 
         {/* Sidebar Sections */}
         {sidebarItems.map((section) => (
-          <div key={section.section}>
+          <div key={section.section} className="mt-3">
             {/* Section Title */}
             <motion.h3
-              className={`transition-all duration-300 ${
-                collapsed
-                  ? "text-xs text-center text-sub-text py-1 mb-1"
-                  : "side-nav-title text-left"
-              }`}
+              className={`transition-all duration-300 ${collapsed
+                ? "text-xs text-center text-sub-text py-1 mb-1"
+                : "side-nav-title text-left"
+                }`}
               animate={{ opacity: 1 }}
             >
               {section.section}
@@ -122,13 +163,11 @@ const AdminSidebar = ({ collapsed }) => {
                 <NavLink
                   to={item.to}
                   className={({ isActive }) =>
-                    `side-nav-link flex items-center ${
-                      collapsed ? "justify-center" : "justify-start"
+                    `side-nav-link flex items-center ${collapsed ? "justify-center" : "justify-start"
                     } leading-none transition-all duration-300
-                    ${
-                      isActive
-                        ? "bg-main-blue text-white"
-                        : "text-primary-text hover:bg-primary6-blue"
+                    ${isActive
+                      ? "bg-main-blue text-white"
+                      : "text-primary-text dark:text-white hover:bg-primary6-blue dark:hover:bg-dark-hover"
                     }`
                   }
                 >
@@ -138,7 +177,7 @@ const AdminSidebar = ({ collapsed }) => {
                         layout="position"
                         src={item.icon}
                         alt={item.label}
-                        className={`w-5 h-5 ${isActive ? "filter invert" : ""}`}
+                        className={`w-5 h-5 dark:invert ${isActive ? "filter invert" : ""}`}
                         animate={{ scale: collapsed ? 0.9 : 1, opacity: 1 }}
                         transition={{ duration: 0.2 }}
                       />
@@ -163,18 +202,16 @@ const AdminSidebar = ({ collapsed }) => {
 
         {/* Logout Button */}
         <div className="mt-auto">
-          <Link
-            to="/"
-            className={`flex items-center w-full px-3 py-3 ${
-              collapsed ? "justify-center" : "justify-start gap-4"
-            } border-2 border-main-blue rounded-md hover:bg-primary6-blue text-main-blue transition-all duration-300`}
+          <button
+            onClick={handleLogout}
+            className={`flex items-center w-full px-3 py-3 cursor-pointer ${collapsed ? "justify-center" : "justify-start gap-4"
+              } border-1 border-main-blue rounded-md hover:bg-hover-blue hover:outline-0 hover:border-0 hover:text-white dark:hover:bg-hover-blue dark:text-white text-main-blue transition-ease duration-300`}
           >
             <motion.img
               layout="position"
-              src={logout}
+              src={logOut}
               className="w-5 h-5"
               alt="logout"
-              animate={{ scale: collapsed ? 0.9 : 1 }}
             />
             {!collapsed && (
               <motion.span
@@ -187,9 +224,9 @@ const AdminSidebar = ({ collapsed }) => {
                 Logout
               </motion.span>
             )}
-          </Link>
+          </button>
         </div>
-      </div>
+      </section>
     </motion.aside>
   );
 };

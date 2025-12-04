@@ -2,7 +2,8 @@ import React from 'react'
 
 const AdminDashboard = () => {
   return (
-    <div>AdminDashboard</div>
+    <section className='dark:bg-dark-overlay dark:text-white'>
+      AdminDashboard</section>
   )
 }
 

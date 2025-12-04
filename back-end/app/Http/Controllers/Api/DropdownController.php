@@ -66,6 +66,13 @@ class DropdownController extends Controller
             $institutionId = auth()->user()->institution_id;
             $departmentId = $request->query('department_id'); //filter
 
+            $validator = Validator::make($request->all(), [
+                'department_id' => 'nullable|exists:departments,id'
+            ]);
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+
             $cacheKey = "institution:{$institutionId}:academic_years";
             if ($departmentId)
                 $cacheKey .= ":dept:{$departmentId}";
@@ -164,6 +171,14 @@ class DropdownController extends Controller
             $departmentId = $request->query('department_id');
             $semesterId = $request->query('semester_id');
             $status = $request->query('status', 'active');
+
+            $validator = Validator::make($request->all(), [
+                'department_id' => 'required|exists:departments,id',
+                'semester_id' => 'required|exists:semesters,id',
+            ]);
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
 
             $cacheKey = CacheService::batchesKey($institutionId, $departmentId);
             if ($semesterId)
