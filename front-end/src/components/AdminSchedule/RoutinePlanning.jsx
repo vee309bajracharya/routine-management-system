@@ -25,12 +25,12 @@ const RoutinePlanning = () => {
     "Thursday",
     "Friday",
   ];
-  const periods = Array(4).fill(""); // 4 periods
+  const periods = Array(4).fill(""); // 4 periods for now , periods are dynamic
 
   return (
     <section className="font-general-sans mt-4">
       {/* Top Controls */}
-      <div className="flex justify-between mb-4">
+      {/* <div className="flex justify-between mb-4">
         <h1 className="text-md font-medium">
           Select multiple block to get started
         </h1>
@@ -38,10 +38,10 @@ const RoutinePlanning = () => {
           <span>Department:</span>
           <span>Batch:</span>
         </div>
-      </div>
+      </div> */}
 
       {/* Action Buttons */}
-      <div className="flex justify-between items-center gap-4 text-xs">
+      <section className="flex justify-between items-center gap-4 text-xs">
         <div className="flex justify-center gap-3">
           <button
             onClick={() => setshowCreateRoutineModal(true)}
@@ -55,7 +55,7 @@ const RoutinePlanning = () => {
           >
             Create Routine Entry
           </button>
-          
+
           <button
             onClick={() => setShowEditModal(true)}
             className="overview-btn"
@@ -100,22 +100,31 @@ const RoutinePlanning = () => {
             Export
           </button>
         </div>
-      </div>
+      </section>
 
-      {/* Table */}
-      <div className="border border-gray-300 rounded-md overflow-hidden bg-white mt-4">
+      {/* Routine Table */}
+      <section className="border border-gray-300 rounded-md overflow-hidden bg-white dark:bg-dark-overlay mt-4">
+        {/* Routine title and description - dynamic values from Create Routine*/}
+        <div className="flex flex-col justify-center items-center text-primary-text dark:text-white font-general-sans my-5 leading-5">
+          <h3 className="font-semibold text-2xl">BCA 7th Semester Routine 2025 </h3>
+          <p className="text-xl">This is the official routine for BCA 7th semester 2022 Batch - Morning Shift</p>
+          <div className="flex justify-between gap-5">
+            <p>Effective From : 2024-11-15</p>
+            <p>Effective To : 2025-05-15</p>
+          </div>
+        </div>
         {/* Header Row */}
-        <div className="grid grid-cols-10 border-b border-gray-300">
-          <div className="border-r border-gray-300 p-2 font-semibold text-sm text-center bg-gray-50 flex items-center justify-center">
+        <div className="grid grid-cols-10 border border-gray-300 dark:bg-dark-overlay">
+          <div className="border-r border-gray-300 p-2 font-semibold text-sm text-center text-primary-text dark:text-white bg-gray-50 dark:bg-dark-overlay flex items-center justify-center">
             Day/Period
           </div>
 
-          {Array(8)
+          {Array(9)
             .fill("")
             .map((_, idx) => (
               <div
                 key={idx}
-                className="border-r border-gray-300 p-2 text-xs text-center bg-white flex flex-col justify-center h-[70px]"
+                className="border-r border-gray-300 p-2 text-xs text-center bg-white dark:bg-dark-overlay text-primary-text dark:text-white flex flex-col justify-center h-[70px]"
               >
                 <div className="font-semibold">
                   {idx % 2 === 0 ? "I" : "II"}
@@ -132,7 +141,7 @@ const RoutinePlanning = () => {
             className="grid grid-cols-10 border-b border-gray-300 last:border-b-0"
           >
             {/* Day Name */}
-            <div className="border-r border-gray-300 p-2 text-sm font-medium bg-gray-50 flex items-center justify-center">
+            <div className="border-r border-gray-300 p-2 text-sm font-medium bg-gray-50 dark:bg-dark-overlay text-primary-text dark:text-white  flex items-center justify-center">
               {day}
             </div>
 
@@ -140,15 +149,15 @@ const RoutinePlanning = () => {
             {periods.map((_, cIdx) => (
               <div
                 key={cIdx}
-                className="border-r col-span-2 border-gray-300 flex items-center p-4 h-auto pl-2"
+                className="border-r col-span-2 border-gray-300 dark:bg-dark-overlay text-primary-text dark:text-white flex items-center p-4 h-auto pl-2"
               >
-                <div className="flex items-center justify-center w-5 h-5">
+                {/* <div className="flex items-center justify-center w-5 h-5">
                   <input
                     type="checkbox"
                     className="w-4 h-4 accent-blue-600 cursor-pointer"
                   />
-                </div>
-                <div className="flex flex-col justify-center items-start ml-2 h-full text-[10px]">
+                </div> */}
+                <div className="flex flex-col justify-center items-center px-4 h-full text-[10px]">
                   <span className="font-semibold">
                     Design of RCC Structure 1
                   </span>
@@ -159,7 +168,7 @@ const RoutinePlanning = () => {
             ))}
           </div>
         ))}
-      </div>
+      </section>
       {/*Modal */}
       <RoutineEntry
         isOpen={showCreateEntryModal}

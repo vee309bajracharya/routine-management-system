@@ -51,6 +51,13 @@ class RoutineCRUDController extends Controller
                 if ($request->has('search')) {
                     $query->where('title', 'like', '%' . $request->search . '%');
                 }
+
+                // date range filter
+                if ($request->has('date_from'))
+                    $query->whereDate('effective_from', '>=', $request->date_from);
+                if ($request->has('date_to'))
+                    $query->whereDate('effective_to', '<=', $request->date_to);
+                
                 return $query->paginate(15);
             }, 1800);
 
