@@ -40,69 +40,91 @@
 * {
   @apply transition-colors duration-200;
 }
+
 .inputbox {
   @apply w-full border border-box-outline rounded-lg px-3 py-2 focus:outline-none;
 }
+
 .wrapper {
   @apply max-w-7xl mx-auto my-0 px-8 py-3;
 }
+
 .auth-btn {
   @apply w-full bg-main-blue text-white py-2 rounded-lg hover:bg-mouse-pressed-blue transition-colors duration-200 cursor-pointer;
 }
+
 .auth-role-link {
   @apply block text-center mt-5 text-main-blue cursor-pointer;
 }
+
 .showError {
   @apply text-error-red my-2 text-sm font-general-sans;
 }
+
 .back-page-link {
   @apply flex items-center text-gray-400 hover:text-main-blue transition-colors duration-200 text-sm font-medium cursor-pointer;
 }
+
 .heroStateBar-num {
   @apply xs:text-2xl md:text-3xl font-bold text-primary-text;
 }
+
 .heroStateBar-title {
   @apply text-sub-text text-sm mt-1;
 }
+
 .navbar-center-link {
   @apply text-primary-text hover:text-hover-blue;
 }
+
 .mobile-nav-link {
   @apply block text-primary-text hover:text-main-blue transition text-left py-2 px-4 hover:bg-primary6-blue rounded;
 }
+
 .side-nav-title {
   @apply text-sm font-semibold text-sub-text py-1 mb-1;
 }
+
 .side-nav-link {
   @apply flex gap-2 items-center px-3 py-3 rounded-md mb-1 transition;
 }
+
 .export-btn {
-  @apply flex justify-between items-center gap-1 border border-main-blue px-3 py-1 text-main-blue rounded;
+  @apply flex justify-between items-center gap-1 border border-main-blue px-3 py-1 text-main-blue rounded hover:bg-main-blue hover:text-white;
 }
+
 .overview-btn {
-  @apply border border-box-outline px-3 py-1 rounded-md cursor-pointer hover:border-red-500 hover:text-red-500;
+  @apply flex items-center gap-2 border border-box-outline px-3 py-1 text-sm rounded-md cursor-pointer dark:text-white dark:hover:text-white;
 }
+
 .createSchedule-label {
-  @apply block text-sm font-medium text-primary-text mb-1;
+  @apply block text-sm font-medium text-primary-text dark:text-white mb-1;
 }
+
 .createSchedule-option {
-  @apply w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-main-blue text-sub-text;
+  @apply w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none text-sub-text dark:text-white;
 }
+
 .scheduleClose-btn {
-  @apply absolute top-4 right-4 text-sub-text bg-box-outline rounded-md hover:text-primary-text transition;
+  @apply absolute top-4 right-4 text-sub-text bg-box-outline rounded-md hover:text-primary-text transition cursor-pointer;
 }
+
 .schedulebtn-popup {
   @apply fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4;
 }
+
 .schedulepopup-title {
-  @apply text-xl font-semibold text-primary-text;
+  @apply text-xl font-semibold text-primary-text dark:text-white;
 }
+
 .schedulesession-checkbox {
   @apply h-4 w-4 text-primary-blue;
 }
-.overview-btn {
-  @apply flex items-center gap-2 border border-box-outline px-3 py-1 rounded-md bg-white text-sm;
-}
+
 .overview-status-btn {
   @apply px-3 py-1 border border-gray-300 rounded-md bg-gray-100 text-sm cursor-pointer;
+}
+
+.routine-list-head{
+  @apply p-3 text-left;
 }

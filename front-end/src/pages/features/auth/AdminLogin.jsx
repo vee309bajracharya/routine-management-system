@@ -132,6 +132,7 @@ const AdminLogin = () => {
                 id='remember'
                 checked={rememberMe}
                 onChange={(e)=> setRememberMe(e.target.checked)}
+                disabled={isLoading}
               />
               <label
                 htmlFor='remember'
