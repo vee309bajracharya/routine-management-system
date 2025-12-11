@@ -11,7 +11,7 @@ import labs from "../../assets/svg/labs.svg";
 import activitylog from "../../assets/svg/activityLog.svg";
 import settings from "../../assets/svg/setting.svg";
 import logOut from "../../assets/svg/logout.svg";
-import CollapsedLogo from "../../assets/svg/collapsedLogo.svg";
+import CollapsedLogo from "../../assets/svg/CollapsedLogo.svg";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
@@ -89,7 +89,7 @@ const AdminSidebar = ({ collapsed }) => {
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="h-screen flex flex-col text-primary-text border-r border-box-outline font-general-sans bg-white overflow-hidden overflow-x-hidden dark:bg-dark-overlay"
     >
-      <section className="p-4 flex flex-col border-b border-box-outline h-full overflow-y-auto overflow-x-hidden dark:text-white">
+      <section className="p-4 flex flex-col border-box-outline h-full overflow-y-auto overflow-x-hidden dark:text-white">
         {/* Sidebar Logo */}
         <motion.div
           animate={{ scale: collapsed ? 0.8 : 1 }}

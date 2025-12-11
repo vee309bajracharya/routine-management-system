@@ -16,14 +16,14 @@ const OverviewPagination = ({ pagination, loadPage }) => {
         <button
           onClick={() => loadPage(Math.max(1, current_page - 1))}
           disabled={current_page === 1}
-          className="p-2 border rounded"><ChevronLeft size={18} /></button>
+          className="px-2 py-1 border-primary-text border rounded-md dark:invert cursor-pointer"><ChevronLeft size={18} /></button>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 text-primary-text dark:text-white">
           {pages.map(page => {
             if (page === 1 || page === last_page || Math.abs(page - current_page) <= 1) {
-              return <button key={page} onClick={() => loadPage(page)} className={`px-3 py-1 rounded text-sm ${page === current_page ? 'bg-hover-blue text-white' : 'border'}`}>{page}</button>;
+              return <button key={page} onClick={() => loadPage(page)} className={`px-3 py-1 rounded-md text-sm ${page === current_page ? 'bg-hover-blue text-white cursor-pointer' : 'border'}`}>{page}</button>;
             }
-            if (page === current_page - 2 || page === current_page + 2) return <span key={page} className="px-2">...</span>;
+            if (page === current_page - 2 || page === current_page + 2) return <span key={page} className="px-2 cursor-pointer">...</span>;
             return null;
           })}
         </div>
@@ -31,7 +31,7 @@ const OverviewPagination = ({ pagination, loadPage }) => {
         <button
           onClick={() => loadPage(Math.min(last_page, current_page + 1))}
           disabled={current_page === last_page}
-          className="p-2 border rounded">
+          className="px-2 py-1 border-primary-text border rounded-md dark:invert cursor-pointer">
           <ChevronRight size={18} />
         </button>
       </div>

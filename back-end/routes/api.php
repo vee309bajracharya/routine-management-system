@@ -53,6 +53,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::get('/{id}', [RoutineCRUDController::class, 'show']);
             Route::put('/{id}', [RoutineCRUDController::class, 'update']);
             Route::delete('/{id}', [RoutineCRUDController::class, 'destroy']);
+            Route::put('/archive/{id}', [RoutineCRUDController::class, 'archive']);
 
             // Routine versions
             Route::post('/save', [RoutineVersionController::class, 'saveRoutine']);

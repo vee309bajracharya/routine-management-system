@@ -62,7 +62,7 @@ const OverviewFilters = ({
 
         {/* Status */}
         <div className="flex items-center gap-1 overflow-x-auto">
-          {['all', 'draft', 'published', 'archived'].map(s => (
+          {['all', 'draft', 'published', 'archieved'].map(s => (
             <button key={s} onClick={() => setStatusFilter(s)} className={`overview-status-btn ${statusFilter === s ? 'bg-hover-blue text-primary-text' : ''}`}>
               {s.charAt(0).toUpperCase() + s.slice(1)} <span className={statusFilter === s ? 'text-primary-text' : 'text-sub-text'}>{statusCounts?.[s] ?? 0}</span>
             </button>
