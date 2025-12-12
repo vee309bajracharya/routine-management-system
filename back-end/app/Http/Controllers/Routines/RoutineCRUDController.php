@@ -57,7 +57,7 @@ class RoutineCRUDController extends Controller
                     $query->whereDate('effective_from', '>=', $request->date_from);
                 if ($request->has('date_to'))
                     $query->whereDate('effective_to', '<=', $request->date_to);
-                
+
                 return $query->paginate(15);
             }, 1800);
 
@@ -250,6 +250,41 @@ class RoutineCRUDController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete routine',
+            ], 500);
+        }
+    }
+
+    // archive the routine
+    public function archive($id)
+    {
+        try {
+            $routine = Routine::findOrFail($id);
+
+            if ($routine->status !== 'published') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only published routines can be archived',
+                ], 422);
+            }
+
+            $routine->status = 'archieved';
+            $routine->save();
+
+            (new RoutineHelperController())->clearRoutineCaches($routine);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Routine archived successfully',
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Routine not found',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to archive routine',
             ], 500);
         }
     }

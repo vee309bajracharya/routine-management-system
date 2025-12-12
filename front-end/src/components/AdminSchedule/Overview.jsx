@@ -3,6 +3,8 @@ import OverviewFilters from "./OverviewFunctionalities/OverviewFilters";
 import OverviewPagination from "./OverviewFunctionalities/OverviewPagination";
 import OverviewTable from "./OverviewFunctionalities/OverviewTable";
 import { useRoutineOverview } from "../../hooks/useRoutineOverview";
+import { useCallback } from "react";
+import { toast } from "react-toastify";
 
 const Overview = () => {
     const {
@@ -21,12 +23,14 @@ const Overview = () => {
         // actions
         loadPage,
         handleView,
-        showDeleteConfirm,
         openEdit,
         closeEdit,
         editingRoutine,
         isEditOpen,
         handleUpdate,
+        handleArchive,
+        doDelete,
+        handleStatusChange,
 
     } = useRoutineOverview();
 
@@ -43,6 +47,80 @@ const Overview = () => {
     const onToggleLast7 = () => {
         setDateFilter(prev => prev === 'last7' ? 'all' : 'last7');
     };
+
+    // Add archive confirmation function
+    const showArchiveConfirm = useCallback((routine) => {
+        toast(
+            ({ closeToast }) => (
+                <section className="p-2 font-general-sans">
+                    <div className="font-semibold mb-1 text-purple-950">Archive "{routine.title}"?</div>
+                    <p className="text-sm mb-2 text-sub-text">
+                        This will change the status from Published to Archived.
+                        Archived routines can be deleted later.
+                    </p>
+                    <div className="flex gap-2 mt-1">
+                        <button
+                            onClick={closeToast}
+                            className="px-3 py-1 bg-box-outline text-primary-text cursor-pointer rounded-md"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={async () => {
+                                try {
+                                    await handleArchive(routine.id);
+                                    closeToast();
+                                } catch (error) {
+                                    console.error("Failed to archive routine: ", error);
+                                }
+                            }}
+                            className="px-3 py-1 bg-purple-600 text-white cursor-pointer rounded-md"
+                        >
+                            Archive
+                        </button>
+                    </div>
+                </section>
+            ),
+            { autoClose: false }
+        );
+    }, [handleArchive]);
+
+    // Update the delete confirmation to show archive option
+    const showDeleteConfirm = useCallback((routine) => {
+        // Original delete confirmation for non-published routines
+        toast(
+            ({ closeToast }) => (
+                <section className="p-2 font-general-sans">
+                    <div className="font-semibold mb-1">Delete "{routine.title}" ?</div>
+                    <div className="flex gap-2 mt-1">
+                        <button
+                            onClick={closeToast}
+                            className="px-3 py-1 bg-box-outline text-primary-text cursor-pointer rounded-md"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={async () => {
+                                try {
+                                    await doDelete(routine.id);
+                                    closeToast();
+                                } catch (error) {
+                                    console.error("Failed to delete routine : ", error);
+                                }
+                            }}
+                            className="px-3 py-1 bg-error-red text-white cursor-pointer rounded-md"
+                        >
+                            Confirm Delete
+                        </button>
+                    </div>
+                </section>
+            ),
+            { autoClose: false }
+        );
+    }, [doDelete]);
+
+
+
     return (
         <section className="mt-4">
             <OverviewFilters
@@ -60,6 +138,9 @@ const Overview = () => {
                 onView={handleView}
                 onEdit={(routineValue) => openEdit(routineValue)}
                 onDeleteConfirm={(routineValue) => showDeleteConfirm(routineValue)}
+                onArchiveConfirm={showArchiveConfirm}
+                onStatusChange={handleStatusChange}
+
             />
 
             <OverviewPagination

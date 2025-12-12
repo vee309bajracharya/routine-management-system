@@ -16,6 +16,7 @@ const RoutineContext = createContext({
   createRoutine: () => { },
   updateRoutine: () => { },
   deleteRoutine: () => { },
+  archiveRoutine: () => { },
   fetchRoutineGrid: () => { },
   addRoutineEntry: () => { },
   updateRoutineEntry: () => { },
@@ -198,6 +199,36 @@ export const RoutineProvider = ({ children }) => {
     }
   }, [currentRoutine, fetchRoutines]);
 
+  // Archive routine
+  const archiveRoutine = useCallback(async (id) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.put(`/admin/routines/archive/${id}`);
+      if (response.data.success) {
+        toast.success('Routine archived successfully');
+        startTransition(() => {
+          //update current routine if it's being archived
+          if (currentRoutine?.id === id) {
+            setCurrentRoutine(prev => prev ? { ...prev, status: 'archieved' } : null);
+          }
+        });
+        await fetchRoutines();
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("Failed to archive routine:", error);
+
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.userMessage || "Failed to archive routine");
+      }
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentRoutine, fetchRoutines]);
+
 
 
   const contextValue = {
@@ -214,6 +245,7 @@ export const RoutineProvider = ({ children }) => {
     createRoutine,
     updateRoutine,
     deleteRoutine,
+    archiveRoutine,
     // fetchRoutineGrid,
     // addRoutineEntry,
     // updateRoutineEntry,

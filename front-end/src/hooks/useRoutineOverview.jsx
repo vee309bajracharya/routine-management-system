@@ -24,6 +24,7 @@ export const useRoutineOverview = () => {
         fetchRoutineById,
         updateRoutine,
         deleteRoutine,
+        archiveRoutine,
         setCurrentRoutine,
         isLoading,
     } = useRoutine();
@@ -138,7 +139,7 @@ export const useRoutineOverview = () => {
             all: pagination.total || items.length,
             draft: items.filter((r) => r.status === "draft").length,
             published: items.filter((r) => r.status === "published").length,
-            archived: items.filter((r) => r.status === "archived").length,
+            archieved: items.filter((r) => r.status === "archieved").length,
         }),
         [items, pagination.total]
     );
@@ -177,6 +178,15 @@ export const useRoutineOverview = () => {
     const doDelete = useCallback(
         async (routineId) => {
             try {
+
+                // find routine to check its status
+                const routineToDelete = items.find(r => r.id === routineId);
+                // if routine is published
+                if (routineToDelete?.status === 'published') {
+                    toast.error('Cannot delete published routine. Archive it first');
+                    throw new Error('Cannot delete published routine');
+                }
+
                 await deleteRoutine(routineId);
                 // adjust page if last item removed
                 const isLastItemOnPage =
@@ -187,7 +197,10 @@ export const useRoutineOverview = () => {
                 await loadPage(Math.max(pageToLoad, 1));
                 return true;
             } catch (error) {
-                console.error("Delete failed : ", error);
+                if (error.message !== 'Cannot delete published routine') {
+                    console.error("Delete failed : ", error);
+                    toast.error('Failed to delete routine');
+                }
                 throw error;
             }
         },
@@ -197,6 +210,8 @@ export const useRoutineOverview = () => {
     // show toast confirm with action buttons
     const showDeleteConfirm = useCallback(
         (routine) => {
+
+            // for delete confirmation
             toast(
                 ({ closeToast }) => (
                     <section className="p-2 font-general-sans">
@@ -245,6 +260,51 @@ export const useRoutineOverview = () => {
         [updateRoutine, loadPage, pagination.current_page]
     );
 
+    // archive routine
+    const handleArchive = useCallback(
+        async (routineId) => {
+            try {
+                await archiveRoutine(routineId);
+                await loadPage(pagination.current_page);
+                return true;
+            } catch (error) {
+                console.error("Routine Archive failed: ", error);
+                throw error;
+            }
+        },
+        [archiveRoutine, loadPage, pagination.current_page]
+    );
+
+    // Add status change handler
+    const handleStatusChange = useCallback(async (routineId, newStatus) => {
+        try {
+            const routine = items.find(r => r.id === routineId);
+
+            // Special handling for archive
+            if (newStatus === 'archieved') {
+                if (routine.status === 'published') {
+                    // Use the archive function
+                    await handleArchive(routineId);
+                    return true;
+                } else {
+                    toast.error('Only published routines can be archived');
+                    return false;
+                }
+            }
+
+            // For other status changes (draft/published)
+            await updateRoutine(routineId, { status: newStatus });
+            await loadPage(pagination.current_page);
+            toast.success(`Routine ${newStatus} successfully`);
+            return true;
+        } catch (error) {
+            console.error("Status change failed: ", error);
+            toast.error("Failed to update routine status");
+            return false;
+        }
+    }, [updateRoutine, handleArchive, loadPage, pagination.current_page, items]);
+
+
     return {
         //data
         items, pagination, isLoading, statusCounts,
@@ -259,6 +319,6 @@ export const useRoutineOverview = () => {
         editingRoutine, isEditOpen, openEdit, closeEdit, handleUpdate,
 
         // actions
-        handleView, showDeleteConfirm,
+        handleView, showDeleteConfirm, handleArchive, handleStatusChange, doDelete,
     };
 };

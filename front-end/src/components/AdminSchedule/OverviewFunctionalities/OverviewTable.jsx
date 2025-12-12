@@ -2,7 +2,7 @@ import React from 'react'
 import { Loader2 } from 'lucide-react'
 import OverviewTableRow from './OverviewTableRow'
 
-const OverviewTable = ({ routines, isLoading, onView, onEdit, onDeleteConfirm }) => {
+const OverviewTable = ({ routines, isLoading, onView, onEdit, onDeleteConfirm, onStatusChange, onArchiveConfirm }) => {
   if (isLoading) {
     return <div className='flex justify-center items-center py-10'><Loader2 className='animate-spin dark:invert my-5' size={40} /></div>;
   }
@@ -33,7 +33,10 @@ const OverviewTable = ({ routines, isLoading, onView, onEdit, onDeleteConfirm })
               routine={routineValue}
               onView={onView}
               onEdit={onEdit}
-              onDeleteConfirm={onDeleteConfirm} />
+              onDeleteConfirm={onDeleteConfirm}
+              onArchiveConfirm={onArchiveConfirm}
+              onStatusChange={onStatusChange}
+              />
           ))}
         </tbody>
       </table>
