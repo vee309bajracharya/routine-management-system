@@ -528,6 +528,105 @@ class DropdownController extends Controller
         }
     }
 
+    // Dropdowns needed for Routine Creation Process
+
+    /**
+     * getAllSemesters based on 'is_active'
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAllSemesters(Request $request)
+    {
+        try {
+            $institutionId = auth()->user()->institution_id;
+
+            $cacheKey = "institution:{$institutionId}:all_semesters";
+
+            $semesters = CacheService::remember($cacheKey, function () use ($institutionId) {
+                return Semester::whereHas('academicYear', function ($q) use ($institutionId) {
+                    $q->where('institution_id', $institutionId)
+                        ->where('is_active', true);
+                })
+                    ->where('is_active', true)
+                    ->with('academicYear:id,year_name')
+                    ->select('id','academic_year_id','semester_name','semester_number','start_date','end_date')
+                    ->orderBy('start_date', 'desc')
+                    ->get()
+                    ->map(function ($semester) {
+                        return [
+                            'id' => $semester->id,
+                            'semester_name' => $semester->semester_name,
+                            'semester_number' => $semester->semester_number,
+                            'academic_year' => $semester->academicYear->year_name ?? 'N/A',
+                            'display_label' => "{$semester->semester_name} - {$semester->academicYear->year_name}" // "Seventh Semester - BCA-2022"
+                        ];
+                    });
+            }, self::DROPDOWN_CACHE_TTL);
+
+            return $this->successResponse($semesters, "Semesters fetched successfully");
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch semesters',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * getBatchesBySemester - batches filtered only by semester
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBatchesBySemester(Request $request)
+    {
+        try {
+            $institutionId = auth()->user()->institution_id;
+            $semesterId = $request->query('semester_id');
+
+            $validator = Validator::make($request->all(), [
+                'semester_id' => 'required|exists:semesters,id',
+            ]);
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+
+            $cacheKey = "institution:{$institutionId}:batches:semester:{$semesterId}";
+
+            $batches = CacheService::remember($cacheKey, function () use ($institutionId, $semesterId) {
+                return Batch::where('institution_id', $institutionId)
+                    ->where('semester_id', $semesterId)
+                    ->where('status', 'active')
+                    ->with('department:id,department_name,code')
+                    ->select('id','batch_name','year_level','shift','department_id')
+                    ->orderBy('year_level', 'desc')
+                    ->orderBy('shift', 'asc')
+                    ->get()
+                    ->map(function ($batch) {
+                        return [
+                            'id' => $batch->id,
+                            'batch_name' => $batch->batch_name,
+                            'year_level' => $batch->year_level,
+                            'shift' => $batch->shift,
+                            'department' => $batch->department ? [
+                                'id' => $batch->department->id,
+                                'name' => $batch->department->department_name,
+                                'code' => $batch->department->code
+                            ] : null,
+                            'display_label' => "{$batch->batch_name} - {$batch->department->code} ({$batch->shift} Shift)" // "2022 BCA Batch - BCA (Morning Shift)"
+                        ];
+                    });
+            }, self::DROPDOWN_CACHE_TTL);
+            return $this->successResponse($batches, 'Batches fetched successfully');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch batches',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     // ===========================================================================================
 
     // Response Helper Methods
