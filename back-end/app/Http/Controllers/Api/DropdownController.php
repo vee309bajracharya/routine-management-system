@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DropdownController extends Controller
 {
-    private const DROPDOWN_CACHE_TTL = 1800; //30mins
+    private const DROPDOWN_CACHE_TTL = 600; //10mins
 
     /** Part 1 - Departments (independent)
      * get all departments based on an institution
@@ -293,10 +293,10 @@ class DropdownController extends Controller
         }
     }
 
-    /** Part 6 - Timeslots (filtered by batch + semester)
-     * as diff. batches have diff. schedules
+    /** Part 6 - Timeslots (filtered by batch + semester + shift)
+     * as diff. batches have diff. schedules based on shift
      * 1st year vs 4th year have diff. time_slots
-     * dropdowns/time-slots?batch_id=1&semester_id=1
+     * dropdowns/time-slots?batch_id=1&semester_id=1&shift=Morning
      */
     public function getTimeSlots(Request $request)
     {
@@ -304,10 +304,12 @@ class DropdownController extends Controller
             $institutionId = auth()->user()->institution_id;
             $batchId = $request->query('batch_id');
             $semesterId = $request->query('semester_id');
+            $shift = $request->query('shift');
 
             $validator = Validator::make($request->all(), [
                 'batch_id' => 'required|exists:batches,id',
-                'semester_id' => 'required|exists:semesters,id'
+                'semester_id' => 'required|exists:semesters,id',
+                'shift' => 'nullable|in:Morning,Day',
             ]);
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
@@ -318,24 +320,54 @@ class DropdownController extends Controller
                 $cacheKey .= ":batch:{$batchId}";
             if ($semesterId)
                 $cacheKey .= ":semester:{$semesterId}";
+            if ($shift)
+                $cacheKey .= ":shift:{$shift}";
 
-            $timeSlots = CacheService::remember($cacheKey, function () use ($institutionId, $batchId, $semesterId) {
+            $timeSlots = CacheService::remember($cacheKey, function () use ($institutionId, $batchId, $semesterId, $shift) {
                 $query = TimeSlot::where('institution_id', $institutionId)
                     ->where('is_active', true);
                 if ($batchId)
                     $query->where('batch_id', $batchId);
                 if ($semesterId)
                     $query->where('semester_id', $semesterId);
-                return $query->select('id', 'name', 'start_time', 'end_time')
+                if ($shift)
+                    $query->where('shift', $shift);
+
+                return $query->select('id', 'name', 'start_time', 'end_time', 'shift', 'applicable_days')
                     ->orderBy('start_time', 'asc')
                     ->get()
                     ->map(function ($slot) {
+
+                        // format applicable days
+                        $applicableDays = $slot->applicable_days ?? [];
+
+                        // working days
+                        $allDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+                        //check if applicable_days contains all working days
+                        $isAllDays = false;
+                        if (count($applicableDays) === 6) {
+                            // Check if all days from Sunday to Friday are present
+                            $isAllDays = count(array_intersect($applicableDays, $allDays)) === 6;
+                        }
+
+                        // format days display
+                        if ($isAllDays) {
+                            $daysDisplay = '[All]';
+                        } else if (empty($applicableDays)) {
+                            $daysDisplay = '';
+                        } else {
+                            $daysDisplay = '[' . implode(', ', $applicableDays) . ']';
+                        }
+
                         return [
                             'id' => $slot->id,
                             'name' => $slot->name,
                             'start_time' => $slot->start_time->format('H:i'),
                             'end_time' => $slot->end_time->format('H:i'),
-                            'display_label' => "{$slot->start_time->format('H:i')} - {$slot->end_time->format('H:i')} ({$slot->name})"
+                            'shift' => $slot->shift,
+                            'applicable_days' => $slot->applicable_days, // Days array
+                            'display_label' => "{$slot->start_time->format('H:i')} - {$slot->end_time->format('H:i')} {$daysDisplay}"
                         ];
                     });
             }, self::DROPDOWN_CACHE_TTL);

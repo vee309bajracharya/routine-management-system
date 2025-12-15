@@ -25,6 +25,7 @@ class TimeSlot extends Model
         'end_time',
         'duration_minutes',
         'slot_type',
+        'shift',
         'slot_order',
         'applicable_days',
         'is_active',
@@ -107,5 +108,11 @@ class TimeSlot extends Model
     public function scopeOrdered($query)
     {
         return $query->where('slot_order', 'asc');
+    }
+
+    // to check if time_slot is break
+    public function isBreak(): bool
+    {
+        return $this->slot_type === 'Break';
     }
 }
