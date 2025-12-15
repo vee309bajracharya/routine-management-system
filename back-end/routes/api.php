@@ -34,6 +34,8 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
 
         // Dropdown routes
         Route::prefix('dropdowns')->group(function () {
+
+            //mainly for RoutineEntry
             Route::get('/departments/{institutionId}', [DropdownController::class, 'getDepartments']);
             Route::get('/academic-years', [DropdownController::class, 'getAcademicYears']);
             Route::get('/semesters', [DropdownController::class, 'getSemesters']);
@@ -43,6 +45,10 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::get('/courses', [DropdownController::class, 'getCourses']);
             Route::get('/rooms', [DropdownController::class, 'getRooms']);
             Route::get('/time-slots', [DropdownController::class, 'getTimeSlots']);
+
+            // RoutineCreation dropdowns
+            Route::get('/all-semesters', [DropdownController::class, 'getAllSemesters']);
+            Route::get('/batches-by-semester', [DropdownController::class, 'getBatchesBySemester']);
         });
 
         // Routines
