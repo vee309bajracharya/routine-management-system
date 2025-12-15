@@ -41,6 +41,15 @@ class RoutineEntryController extends Controller
         try {
             DB::beginTransaction();
 
+            // force delete previous soft-deleted entries to prevent unique constraint violation
+            RoutineEntry::withTrashed()
+                ->where('routine_id', $request->routine_id)
+                ->where('room_id', $request->room_id)
+                ->where('time_slot_id', $request->time_slot_id)
+                ->where('day_of_week', $request->day_of_week)
+                ->where('shift', $request->shift)
+                ->forceDelete();
+
             // before routine entry conflicts are to be checked
             $conflictChecker = app()->make(RoutineConflictController::class);
             $conflictResult = $conflictChecker->checkAllConflicts(
@@ -165,7 +174,7 @@ class RoutineEntryController extends Controller
             DB::beginTransaction();
             $entry = RoutineEntry::findOrFail($entryId);
             $routineId = $entry->routine_id;
-            $entry->delete();
+            $entry->delete(); //stores deleted_at timestamp
 
             $routine = Routine::find($routineId);
             (new RoutineHelperController())->clearRoutineCaches($routine);
@@ -199,7 +208,12 @@ class RoutineEntryController extends Controller
             DB::beginTransaction();
 
             $routine = Routine::findOrFail($routineId);
-            $deletedCount = RoutineEntry::where('routine_id', $routineId)->delete();
+
+            //force delete the stored deleted_at timestamp
+            RoutineEntry::withTrashed()
+                ->where('routine_id', $routineId)
+                ->forceDelete();
+
             (new RoutineHelperController())->clearRoutineCaches($routine);
             DB::commit();
 
@@ -208,7 +222,6 @@ class RoutineEntryController extends Controller
                 'message' => 'All routine entries cleared successfully',
                 'data' => [
                     'routine_id' => $routineId,
-                    'entries_deleted' => $deletedCount
                 ]
             ], 200);
         } catch (ModelNotFoundException $e) {
@@ -266,8 +279,10 @@ class RoutineEntryController extends Controller
                     ->where('is_cancelled', false)
                     ->get();
 
-                // Choose timeslots relevant for this routine (prefer batch/semester if present)
-                $timeSlotsQuery = TimeSlot::query()->where('is_active', true);
+                // fetch timeslots for this shift, semester and batch
+                $timeSlotsQuery = TimeSlot::query()
+                    ->where('is_active', true)
+                    ->where('shift', $shift);
 
                 if (!empty($routine->batch_id)) {
                     $timeSlotsQuery->where('batch_id', $routine->batch_id);
@@ -279,13 +294,16 @@ class RoutineEntryController extends Controller
                 // fallback: if none found for batch/semester, get all active timeslots for institution
                 $timeSlots = $timeSlotsQuery->orderBy('slot_order')->get();
                 if ($timeSlots->isEmpty()) {
-                    $timeSlots = TimeSlot::where('is_active', true)->orderBy('slot_order')->get();
+                    $timeSlots = TimeSlot::where('is_active', true)
+                        ->where('shift', $shift)
+                        ->orderBy('slot_order')
+                        ->get();
                 }
 
                 // build canonical slot keys (use H:i format)
                 $slotKeys = $timeSlots->mapWithKeys(function ($slot) {
-                    $start = Carbon::parse($slot->start_time)->format('H:i:s');
-                    $end = Carbon::parse($slot->end_time)->format('H:i:s');
+                    $start = Carbon::parse($slot->start_time)->format('H:i');
+                    $end = Carbon::parse($slot->end_time)->format('H:i');
                     $key = "{$start} - {$end}";
                     return [
                         $slot->id => [
@@ -311,8 +329,8 @@ class RoutineEntryController extends Controller
                     if (!$entry->timeSlot)
                         continue; // skip if no timeslot relation
 
-                    $start = Carbon::parse($entry->timeSlot->start_time)->format('H:i:s');
-                    $end = Carbon::parse($entry->timeSlot->end_time)->format('H:i:s');
+                    $start = Carbon::parse($entry->timeSlot->start_time)->format('H:i');
+                    $end = Carbon::parse($entry->timeSlot->end_time)->format('H:i');
                     $slotKey = "{$start} - {$end}";
 
                     // guard: ensure day exists in grid
