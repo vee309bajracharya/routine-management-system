@@ -1,100 +1,117 @@
-import React, { useState } from "react";
-import { RotateCw, Download, Clock3, CalendarDays } from "lucide-react";
+import { useState } from "react";
+import { Download } from "lucide-react";
+import { useRoutineEntry } from "../../hooks/useRoutineEntry";
 import RoutineCreation from "./ActionButton/RoutineCreation";
-import RoutineEntry from "./ActionButton/RoutineEntry";
-import EditSchedule from "./ActionButton/EditSchedule";
 import SaveSchedule from "./ActionButton/SaveSchedule";
-import LoadSchedule from "./ActionButton/LoadSchedule";
-import TimeSlotSchedule from "./ActionButton/TimeSlotSchedule";
-import DateDurationSchedule from "./ActionButton/DateDurationSchedule";
+import RoutineGrid from "./RoutinePlanningFunctions/RoutineGrid";
+import RoutineStatusManager from "./RoutinePlanningFunctions/RoutineStatusManager";
 
+/**
+ * Purpose:
+ * Main container for routine planning interface
+ * 
+ * Responsibilities:
+ * - Display routine information
+ * - Show routine status (Draft/Published/Archived)
+ * - Display routine grid with entries
+ * - Provide action buttons for routine operations (Create, Clear, StatusChange, Save, Export)
+ * 
+ */
 const RoutinePlanning = () => {
-  const [showCreateEntryModal, setShowCreateEntryModal] = useState(false);
-  const [showCreateRoutineModal, setshowCreateRoutineModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false);
+
+  const {
+    // Routine state
+    currentRoutine,
+    routineGrid,
+    isLoading,
+    slotMetadata,
+
+    // CRUD actions
+    handleClearRoutine,
+    handleUpdateRoutineStatus,
+
+    // Grid utilities
+    getTimeSlots,
+    getDays,
+    formatDate,
+  } = useRoutineEntry();
+
+  const [showCreateRoutineModal, setShowCreateRoutineModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [showLoadModal, setShowLoadModal] = useState(false);
-  const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
-  const [showDateDuraitonModal, setShowDateDurationModal] = useState(false);
 
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-  ];
-  const periods = Array(4).fill(""); // 4 periods for now , periods are dynamic
+  // Empty Routine state
+  if (!currentRoutine) {
+    return (
+      <section className="font-general-sans mt-4">
+        <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-dark-overlay rounded-md">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-semibold text-primary-text dark:text-white">
+              No Routine Selected
+            </h2>
+            <p className="text-sub-text dark:text-white">
+              Create a new routine or select an existing one from Overview to get started
+            </p>
+            <button
+              onClick={() => setShowCreateRoutineModal(true)}
+              className="auth-btn mt-4"
+            >
+              Create New Routine
+            </button>
+          </div>
+        </div>
 
+        {/* Routine Creation Modal */}
+        <RoutineCreation
+          isOpen={showCreateRoutineModal}
+          onClose={() => setShowCreateRoutineModal(false)}
+        />
+      </section>
+    );
+  }
+
+  // Main Container
   return (
     <section className="font-general-sans mt-4">
-      {/* Top Controls */}
-      {/* <div className="flex justify-between mb-4">
-        <h1 className="text-md font-medium">
-          Select multiple block to get started
-        </h1>
-        <div className="flex justify-center gap-3 text-sm font-medium">
-          <span>Department:</span>
-          <span>Batch:</span>
-        </div>
-      </div> */}
 
-      {/* Action Buttons */}
       <section className="flex justify-between items-center gap-4 text-xs">
-        <div className="flex justify-center gap-3">
+
+        {/* Left actions */}
+        <div className="flex gap-3">
           <button
-            onClick={() => setshowCreateRoutineModal(true)}
+            onClick={() => setShowCreateRoutineModal(true)}
             className="overview-btn"
           >
             Create Routine
           </button>
-          <button
-            onClick={() => setShowCreateEntryModal(true)}
-            className="overview-btn"
-          >
-            Create Routine Entry
-          </button>
 
           <button
-            onClick={() => setShowEditModal(true)}
+            onClick={handleClearRoutine}
             className="overview-btn"
           >
-            Edit
-          </button>
-          <button className="overview-btn ">Clear</button>
-          <button
-            onClick={() => setShowTimeSlotModal(true)}
-            className="overview-btn flex justify-between gap-1"
-          >
-            <Clock3 size={16} />
-            Add Time slot
-          </button>
-          <button
-            onClick={() => setShowDateDurationModal(true)}
-            className="overview-btn flex justify-between gap-1"
-          >
-            <CalendarDays size={16} />
-            Add Date Duration
+            Clear All
           </button>
         </div>
-        <div className="flex justify-center items-center gap-4">
-          <button className="flex items-center gap-1 bg-warning-faidorange px-3 py-2 rounded">
-            <RotateCw size={16} />
-            Check for Overlaps
-          </button>
+
+        {/* Right status and actions */}
+        <div className="flex items-center gap-4">
+
+          {/* status bar */}
+          <section className="bg-white dark:bg-dark-overlay rounded-md float-end">
+            <RoutineStatusManager
+              routine={currentRoutine}
+              onStatusUpdate={handleUpdateRoutineStatus}
+            />
+          </section>
+
+          {/* Save */}
           <button
             onClick={() => setShowSaveModal(true)}
             className="overview-btn"
           >
             Save
           </button>
-          <button
-            onClick={() => setShowLoadModal(true)}
-            className="overview-btn"
-          >
-            Load
-          </button>
+
+          {/* Export */}
           <button className="export-btn">
             <Download size={16} />
             Export
@@ -102,101 +119,27 @@ const RoutinePlanning = () => {
         </div>
       </section>
 
-      {/* Routine Table */}
-      <section className="border border-gray-300 rounded-md overflow-hidden bg-white dark:bg-dark-overlay mt-4">
-        {/* Routine title and description - dynamic values from Create Routine*/}
-        <div className="flex flex-col justify-center items-center text-primary-text dark:text-white font-general-sans my-5 leading-5">
-          <h3 className="font-semibold text-2xl">BCA 7th Semester Routine 2025 </h3>
-          <p className="text-xl">This is the official routine for BCA 7th semester 2022 Batch - Morning Shift</p>
-          <div className="flex justify-between gap-5">
-            <p>Effective From : 2024-11-15</p>
-            <p>Effective To : 2025-05-15</p>
-          </div>
-        </div>
-        {/* Header Row */}
-        <div className="grid grid-cols-10 border border-gray-300 dark:bg-dark-overlay">
-          <div className="border-r border-gray-300 p-2 font-semibold text-sm text-center text-primary-text dark:text-white bg-gray-50 dark:bg-dark-overlay flex items-center justify-center">
-            Day/Period
-          </div>
-
-          {Array(9)
-            .fill("")
-            .map((_, idx) => (
-              <div
-                key={idx}
-                className="border-r border-gray-300 p-2 text-xs text-center bg-white dark:bg-dark-overlay text-primary-text dark:text-white flex flex-col justify-center h-[70px]"
-              >
-                <div className="font-semibold">
-                  {idx % 2 === 0 ? "I" : "II"}
-                </div>
-                <div className="text-[10px]">10:15-11:55</div>
-              </div>
-            ))}
-        </div>
-
-        {/* Days Rows */}
-        {days.map((day, idx) => (
-          <div
-            key={idx}
-            className="grid grid-cols-10 border-b border-gray-300 last:border-b-0"
-          >
-            {/* Day Name */}
-            <div className="border-r border-gray-300 p-2 text-sm font-medium bg-gray-50 dark:bg-dark-overlay text-primary-text dark:text-white  flex items-center justify-center">
-              {day}
-            </div>
-
-            {/* Checkboxes */}
-            {periods.map((_, cIdx) => (
-              <div
-                key={cIdx}
-                className="border-r col-span-2 border-gray-300 dark:bg-dark-overlay text-primary-text dark:text-white flex items-center p-4 h-auto pl-2"
-              >
-                {/* <div className="flex items-center justify-center w-5 h-5">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 accent-blue-600 cursor-pointer"
-                  />
-                </div> */}
-                <div className="flex flex-col justify-center items-center px-4 h-full text-[10px]">
-                  <span className="font-semibold">
-                    Design of RCC Structure 1
-                  </span>
-                  <span>Lecture Room [B-407]</span>
-                  <span>PP, SKT, KLM</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-      </section>
-      {/*Modal */}
-      <RoutineEntry
-        isOpen={showCreateEntryModal}
-        onClose={() => setShowCreateEntryModal(false)}
+      {/* Routine Grid */}
+      <RoutineGrid
+        routine={currentRoutine}
+        grid={routineGrid}
+        isLoading={isLoading}
+        timeSlots={getTimeSlots()}
+        days={getDays()}
+        slotMetadata={slotMetadata}
+        formatDate={formatDate}
       />
+
+      {/* Routine Creation Modal */}
       <RoutineCreation
         isOpen={showCreateRoutineModal}
-        onClose={() => setshowCreateRoutineModal(false)}
+        onClose={() => setShowCreateRoutineModal(false)}
       />
-      <EditSchedule
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-      />
+
+      {/* Save Modal */}
       <SaveSchedule
         isOpen={showSaveModal}
         onClose={() => setShowSaveModal(false)}
-      />
-      <LoadSchedule
-        isOpen={showLoadModal}
-        onClose={() => setShowLoadModal(false)}
-      />
-      <TimeSlotSchedule
-        isOpen={showTimeSlotModal}
-        onClose={() => setShowTimeSlotModal(false)}
-      />
-      <DateDurationSchedule
-        isOpen={showDateDuraitonModal}
-        onClose={() => setShowDateDurationModal(false)}
       />
     </section>
   );

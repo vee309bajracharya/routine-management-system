@@ -3,6 +3,8 @@ import axiosClient from "../services/api/axiosClient";
 import { toast } from "react-toastify";
 
 const RoutineContext = createContext({
+
+  // Routine states
   routines: [],
   currentRoutine: null,
   routineGrid: null,
@@ -10,6 +12,9 @@ const RoutineContext = createContext({
   isLoading: false,
   isPending: false,
   currentShift: "Morning",
+  slotMetadata: {},
+
+  // Routine functions
   setCurrentShift: () => { },
   fetchRoutines: () => { },
   fetchRoutineById: () => { },
@@ -17,28 +22,34 @@ const RoutineContext = createContext({
   updateRoutine: () => { },
   deleteRoutine: () => { },
   archiveRoutine: () => { },
+  setCurrentRoutine: () => { },
+
+  // Routine entry functions
   fetchRoutineGrid: () => { },
   addRoutineEntry: () => { },
   updateRoutineEntry: () => { },
   deleteRoutineEntry: () => { },
   clearRoutine: () => { },
+
+  // Routine saved versions functions
   saveRoutineVersion: () => { },
   fetchSavedVersions: () => { },
   loadSavedVersion: () => { },
-  setCurrentRoutine: () => { },
 });
 
 export const RoutineProvider = ({ children }) => {
   const [routines, setRoutines] = useState([]);
   const [currentRoutine, setCurrentRoutine] = useState(null);
   const [routineGrid, setRoutineGrid] = useState(null);
-  const [savedVersions, setSavedVersions] = useState([]);
+  const [slotMetadata, setSlotMetadata] = useState({});
+  // const [savedVersions, setSavedVersions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState("Morning");
   const [isPending, startTransition] = useTransition();
 
 
   //  ========= Routine creation functions ===========
+
   // fetch routines
   const fetchRoutines = useCallback(async (filters = {}) => {
     setIsLoading(true);
@@ -230,15 +241,147 @@ export const RoutineProvider = ({ children }) => {
   }, [currentRoutine, fetchRoutines]);
 
 
+  //  ========= Routine entry functions ===========
+
+  // fetch routine grid
+  const fetchRoutineGrid = useCallback(async (routineId, shift = "Morning", refresh = false) => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({ shift, refresh: refresh.toString() }).toString();
+      const response = await axiosClient.get(`/admin/routine-entries/grid/${routineId}?${params}`);
+
+      if (response.data.success && response.data.data) {
+        startTransition(() => {
+          setRoutineGrid(response.data.data);
+          setCurrentShift(shift);
+
+          if (response.data.meta?.time_slots) {
+            const metadata = {};
+            response.data.meta.time_slots.forEach(slot => {
+              metadata[slot.key] = {
+                id: slot.id,
+                name: slot.name,
+                slot_type: slot.slot_type,
+                slot_order: slot.slot_order,
+                start_time: slot.start_time,
+                end_time: slot.end_time,
+              };
+            });
+            setSlotMetadata(metadata);
+          }
+        });
+        return response.data;
+      }
+    } catch (error) {
+      console.error('Failed to fetch routine grid : ', error);
+      toast.error(error.userMessage || 'Failed to fetch routine grid');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // add routine entry
+  const addRoutineEntry = useCallback(async (entryData) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.post('/admin/routine-entries', entryData);
+
+      if (response.data.success || response.data.data) {
+        toast.success('Entry added successfully');
+      }
+      //grid refresh after new entry
+      if (entryData.routine_id) {
+        await fetchRoutineGrid(entryData.routine_id, entryData.shift, true);
+      }
+      return response.data;
+    } catch (error) {
+      console.log('Failed to add routine entry : ', error);
+      const errorMsg = error.response?.data?.message || error.userMessage || 'Failed to add routine entry';
+      toast.error(errorMsg);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchRoutineGrid]);
+
+  // update routine entry
+  const updateRoutineEntry = useCallback(async (entryId, entryData) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.put(`/admin/routine-entries/${entryId}`, entryData);
+
+      if (response.data.success || response.data.data) {
+        toast.success('Entry updated successfully');
+        // refresh grid if routine's available
+        if (currentRoutine?.id) {
+          await fetchRoutineGrid(currentRoutine.id, entryData.shift || currentShift, true);
+        }
+        return response.data;
+      }
+    } catch (error) {
+      console.error('Failed to update routine entry : ', error);
+      const errorMsg = error.response?.data?.message || error.userMessage || "Failed to update routine entry";
+      toast.error(errorMsg);
+    }
+  }, [fetchRoutineGrid, currentRoutine, currentShift]);
+
+  // delete routine entry
+  const deleteRoutineEntry = useCallback(async (entryId, routineId, shift = "Morning") => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.delete(`/admin/routine-entries/${entryId}`);
+      if (response.data.success) {
+        toast.success('Entry deleted successfully');
+        // routine grid refresh
+        if (routineId) {
+          await fetchRoutineGrid(routineId, shift, true);
+        }
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to delete routine entry : ', error);
+      toast.error(error.userMessage || 'Failed to delete routine entry');
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchRoutineGrid]);
+
+  // clear routine
+  const clearRoutine = useCallback(async (routineId, shift = "Morning") => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.delete(`/admin/routine-entries/clear/${routineId}`);
+
+      if (response.data.success) {
+        toast.success("All entries cleared successfully");
+        await fetchRoutineGrid(routineId, shift, true);
+        return true;
+      }
+    } catch (error) {
+      console.error("Failed to clear routine:", error);
+      toast.error(error.userMessage || "Failed to clear routine");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchRoutineGrid]);
+
 
   const contextValue = {
+
+    // routine states
     routines,
     currentRoutine,
     routineGrid,
-    savedVersions,
+    // savedVersions,
     isLoading,
     isPending,
     currentShift,
+    slotMetadata,
+
+    // routine functions
     setCurrentShift,
     fetchRoutines,
     fetchRoutineById,
@@ -246,15 +389,19 @@ export const RoutineProvider = ({ children }) => {
     updateRoutine,
     deleteRoutine,
     archiveRoutine,
-    // fetchRoutineGrid,
-    // addRoutineEntry,
-    // updateRoutineEntry,
-    // deleteRoutineEntry,
-    // clearRoutine,
+    setCurrentRoutine,
+
+    // routine entry functions
+    fetchRoutineGrid,
+    addRoutineEntry,
+    updateRoutineEntry,
+    deleteRoutineEntry,
+    clearRoutine,
+
+    // routine saved versions
     // saveRoutineVersion,
     // fetchSavedVersions,
     // loadSavedVersion,
-    // setCurrentRoutine,
   };
 
   return (

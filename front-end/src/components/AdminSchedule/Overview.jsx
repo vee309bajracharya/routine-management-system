@@ -91,8 +91,8 @@ const Overview = () => {
         toast(
             ({ closeToast }) => (
                 <section className="p-2 font-general-sans">
-                    <div className="font-semibold mb-1">Delete "{routine.title}" ?</div>
-                    <div className="flex gap-2 mt-1">
+                    <h3 className="font-semibold mb-2 text-error-red">Delete "{routine.title}" ?</h3>
+                    <div className="flex gap-2 mt-4">
                         <button
                             onClick={closeToast}
                             className="px-3 py-1 bg-box-outline text-primary-text cursor-pointer rounded-md"
