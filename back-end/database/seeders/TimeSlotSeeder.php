@@ -21,7 +21,7 @@ class TimeSlotSeeder extends Seeder
                 'department_id' => 1, //BCA
                 'batch_id' => 1, // 2022 Batch
                 'semester_id' => 1, // 7th
-                'name' => 'Cyber Law and Prof. Ethics',
+                'name' => 'Morning Period 1',
                 'start_time' => '06:35',
                 'end_time' => '07:50',
                 'duration_minutes' => 60,
@@ -55,7 +55,7 @@ class TimeSlotSeeder extends Seeder
                 'department_id' => 1,
                 'batch_id' => 1, // 2022 Batch
                 'semester_id' => 1, // 7th
-                'name' => 'Software Project Management',
+                'name' => 'Morning Period 2',
                 'start_time' => '08:20',
                 'end_time' => '09:30',
                 'duration_minutes' => 60,
@@ -72,7 +72,7 @@ class TimeSlotSeeder extends Seeder
                 'department_id' => 1,
                 'batch_id' => 1, // 2022 Batch
                 'semester_id' => 1, // 7th
-                'name' => 'Cloud Computing',
+                'name' => 'Morning Period 1',
                 'start_time' => '06:35',
                 'end_time' => '07:50',
                 'duration_minutes' => 60,
@@ -90,7 +90,7 @@ class TimeSlotSeeder extends Seeder
                 'department_id' => 1,
                 'batch_id' => 1, // 2022 Batch
                 'semester_id' => 1, // 7th
-                'name' => 'E-Governance',
+                'name' => 'Morning Period 2',
                 'start_time' => '08:20',
                 'end_time' => '09:30',
                 'duration_minutes' => 60,

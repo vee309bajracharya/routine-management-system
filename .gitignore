@@ -5,11 +5,3 @@ redis_data/
 vendor/
 node_modules/
 back-end/app/Http/Controllers/Routines/RoutineTimeSlotController.php
-front-end/src/components/AdminSchedule/RoutinePlanning.jsx
-front-end/src/components/AdminSchedule/RoutinePlanningFunctions/RoutineCell.jsx
-front-end/src/components/AdminSchedule/RoutinePlanningFunctions/RoutineEntryModal.jsx
-front-end/src/components/AdminSchedule/RoutinePlanningFunctions/RoutineGrid.jsx
-front-end/src/components/AdminSchedule/RoutinePlanningFunctions/ShiftToggle.jsx
-front-end/src/contexts/RoutineContext.jsx
-front-end/src/hooks/useRoutineEntry.jsx
-front-end/src/contexts/RoutineContext.jsx
