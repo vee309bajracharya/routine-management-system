@@ -346,8 +346,25 @@ class RoutineEntryController extends Controller
                     'shift' => $shift,
                     'total_entries' => $entries->count(),
                     'time_slots_count' => count($slotKeys),
+                    'time_slots' => $timeSlots,
                 ];
             }, self::GRID_CACHE_TTL);
+
+            $timeSlotsMetadata = $gridPayload['time_slots']->map(function ($slot) {
+                $start = Carbon::parse($slot->start_time)->format('H:i');
+                $end = Carbon::parse($slot->end_time)->format('H:i');
+                $key = "{$start} - {$end}";
+
+                return [
+                    'key' => $key,
+                    'id' => $slot->id,
+                    'name' => $slot->name,
+                    'slot_type' => $slot->slot_type,
+                    'slot_order' => $slot->slot_order ?? 0,
+                    'start_time' => $start,
+                    'end_time' => $end,
+                ];
+            })->values();
 
             return response()->json([
                 'success' => true,
@@ -356,7 +373,8 @@ class RoutineEntryController extends Controller
                 'data' => $gridPayload['grid'],
                 'meta' => [
                     'total_entries' => $gridPayload['total_entries'],
-                    'time_slots' => $gridPayload['time_slots_count']
+                    'time_slots' => $timeSlotsMetadata,
+                    'time_slots_count' => $gridPayload['time_slots_count'],
                 ]
             ], 200);
 

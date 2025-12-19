@@ -201,6 +201,7 @@ class RoutineCRUDController extends Controller
                 'description',
                 'effective_from',
                 'effective_to',
+                'status'
             ])); //only provided fields update
 
             // after update, clear cache

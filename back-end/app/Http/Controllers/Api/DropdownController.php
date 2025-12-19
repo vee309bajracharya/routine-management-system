@@ -333,7 +333,8 @@ class DropdownController extends Controller
                 if ($shift)
                     $query->where('shift', $shift);
 
-                return $query->select('id', 'name', 'start_time', 'end_time', 'shift', 'applicable_days')
+                return $query->select('id', 'name', 'start_time', 'end_time', 'shift', 'slot_type', 'applicable_days', 'slot_order')
+                    ->orderBy('slot_order', 'asc')
                     ->orderBy('start_time', 'asc')
                     ->get()
                     ->map(function ($slot) {
@@ -366,6 +367,8 @@ class DropdownController extends Controller
                             'start_time' => $slot->start_time->format('H:i'),
                             'end_time' => $slot->end_time->format('H:i'),
                             'shift' => $slot->shift,
+                            'slot_type'=> $slot->slot_type,
+                            'slot_order'=> $slot->slot_order ?? 0,
                             'applicable_days' => $slot->applicable_days, // Days array
                             'display_label' => "{$slot->start_time->format('H:i')} - {$slot->end_time->format('H:i')} {$daysDisplay}"
                         ];
@@ -549,7 +552,7 @@ class DropdownController extends Controller
                 })
                     ->where('is_active', true)
                     ->with('academicYear:id,year_name')
-                    ->select('id','academic_year_id','semester_name','semester_number','start_date','end_date')
+                    ->select('id', 'academic_year_id', 'semester_name', 'semester_number', 'start_date', 'end_date')
                     ->orderBy('start_date', 'desc')
                     ->get()
                     ->map(function ($semester) {
@@ -598,7 +601,7 @@ class DropdownController extends Controller
                     ->where('semester_id', $semesterId)
                     ->where('status', 'active')
                     ->with('department:id,department_name,code')
-                    ->select('id','batch_name','year_level','shift','department_id')
+                    ->select('id', 'batch_name', 'year_level', 'shift', 'department_id')
                     ->orderBy('year_level', 'desc')
                     ->orderBy('shift', 'asc')
                     ->get()
