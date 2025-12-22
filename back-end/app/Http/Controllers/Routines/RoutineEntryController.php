@@ -391,4 +391,147 @@ class RoutineEntryController extends Controller
             ], 500);
         }
     }
+
+    // copy entries from source day to multiple target days
+    public function copyEntries(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'routine_id' => 'required|exists:routines,id',
+            'source_day' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
+            'target_days' => 'required|array|min:1',
+            'target_days.*' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+            $routineId = $request->routine_id;
+            $sourceDay = $request->source_day;
+            $targetDays = $request->target_days;
+
+            // ======= fetch all entries from source day =======
+            $sourceEntries = RoutineEntry::where('routine_id', $routineId)
+                ->where('day_of_week', $sourceDay)
+                ->where('is_cancelled', false)
+                ->get();
+            if ($sourceEntries->isEmpty()) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "No entries found on {$sourceDay} to copy",
+                ], 404);
+            }
+            $results = [
+                'total_copied' => 0,
+                'days_completed' => [],
+                'conflict_day' => null,
+                'conflict_message' => null,
+                'aborted' => false,
+            ];
+            // ================================
+
+            $conflictChecker = app()->make(RoutineConflictController::class);
+
+            /**
+             * copy to each target day
+             *  - conflict and abort copy case
+             *  - entries copied success case
+             */
+            foreach ($targetDays as $targetDay) {
+                $dayCopied = 0;
+
+                foreach ($sourceEntries as $entry) {
+                    // force delete any existing soft-deleted entry
+                    RoutineEntry::withTrashed()
+                        ->where('routine_id', $routineId)
+                        ->where('room_id', $entry->room_id)
+                        ->where('time_slot_id', $entry->time_slot_id)
+                        ->where('day_of_week', $targetDay)
+                        ->where('shift', $entry->shift)
+                        ->forceDelete();
+
+                    // Check for conflicts
+                    $conflictResult = $conflictChecker->checkAllConflicts(
+                        $routineId,
+                        $entry->course_assignment_id,
+                        $entry->room_id,
+                        $entry->time_slot_id,
+                        $targetDay,
+                        $entry->shift
+                    );
+
+                    if ($conflictResult !== true) {
+                        // Conflict detected - abort entire operation
+                        DB::rollBack();
+
+                        $errorResponse = $conflictResult->getData();
+
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Operation aborted due to conflict',
+                            'data' => [
+                                'total_copied' => $results['total_copied'],
+                                'days_completed' => $results['days_completed'],
+                                'conflict_day' => $targetDay,
+                                'conflict_message' => $errorResponse->message ?? 'Conflict detected',
+                                'aborted' => true,
+                            ]
+                        ], 422);
+                    }
+
+                    // Create new entry
+                    RoutineEntry::create([
+                        'routine_id' => $routineId,
+                        'course_assignment_id' => $entry->course_assignment_id,
+                        'room_id' => $entry->room_id,
+                        'time_slot_id' => $entry->time_slot_id,
+                        'day_of_week' => $targetDay,
+                        'shift' => $entry->shift,
+                        'entry_type' => $entry->entry_type,
+                        'is_cancelled' => false,
+                        'notes' => $entry->notes,
+                    ]);
+
+                    $dayCopied++;
+                    $results['total_copied']++;
+                }
+
+                $results['days_completed'][] = [
+                    'day' => $targetDay,
+                    'entries_copied' => $dayCopied
+                ];
+            }
+
+            // clear routine cache
+            $routine = Routine::find($routineId);
+            (new RoutineHelperController())->clearRoutineCaches($routine);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Entries copied successfully',
+                'data' => [
+                    'total_copied' => $results['total_copied'],
+                    'days_completed' => $results['days_completed'],
+                    'conflict_day' => null,
+                    'conflict_message' => null,
+                    'aborted' => false,
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to copy entries',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
