@@ -74,6 +74,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::delete('/{entryId}', [RoutineEntryController::class, 'deleteEntry']);
             Route::delete('/clear/{routineId}', [RoutineEntryController::class, 'clearRoutine']);
             Route::get('/grid/{routineId}', [RoutineEntryController::class, 'getRoutineGrid']);
+            Route::post('/copy', [RoutineEntryController::class, 'copyEntries']);
         });
 
 
