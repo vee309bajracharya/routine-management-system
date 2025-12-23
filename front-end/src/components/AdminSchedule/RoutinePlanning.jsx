@@ -5,6 +5,7 @@ import RoutineCreation from "./ActionButton/RoutineCreation";
 import SaveSchedule from "./ActionButton/SaveSchedule";
 import RoutineGrid from "./RoutinePlanningFunctions/RoutineGrid";
 import RoutineStatusManager from "./RoutinePlanningFunctions/RoutineStatusManager";
+import CopyEntries from "./ActionButton/CopyEntries";
 
 /**
  * Purpose:
@@ -14,7 +15,7 @@ import RoutineStatusManager from "./RoutinePlanningFunctions/RoutineStatusManage
  * - Display routine information
  * - Show routine status (Draft/Published/Archived)
  * - Display routine grid with entries
- * - Provide action buttons for routine operations (Create, Clear, StatusChange, Save, Export)
+ * - Provide action buttons for routine operations (Create, Clear, CopyEntries,  StatusChange, Save, Export)
  * 
  */
 const RoutinePlanning = () => {
@@ -81,7 +82,7 @@ const RoutinePlanning = () => {
             onClick={() => setShowCreateRoutineModal(true)}
             className="overview-btn"
           >
-            Create Routine
+            Create New Routine
           </button>
 
           <button
@@ -90,6 +91,8 @@ const RoutinePlanning = () => {
           >
             Clear All
           </button>
+
+          <CopyEntries/>
         </div>
 
         {/* Right status and actions */}

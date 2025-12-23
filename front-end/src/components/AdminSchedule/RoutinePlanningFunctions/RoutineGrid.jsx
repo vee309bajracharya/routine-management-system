@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import RoutineCell from "./RoutineCell";
+import RoutineEntryModal from "./RoutineEntryModal";
 
 const RoutineGrid = ({
   routine,
@@ -34,7 +35,6 @@ const RoutineGrid = ({
   // get shift from routine/batch
   const currentShift = routine.batch?.shift || 'Morning';
 
-
   return (
     <section className="mt-9">
 
@@ -64,7 +64,7 @@ const RoutineGrid = ({
         </div>
       </section>
 
-      {/* before grid displays, shift display */}
+      {/* shift */}
       <section className="text-right">
         <span className={`px-3 py-1 rounded-md font-medium text-xs
           ${currentShift === 'Morning' ? 'text-blue-700 dark:text-blue-200' : 'text-orange-700 dark:text-orange-200'}`}>
@@ -89,7 +89,6 @@ const RoutineGrid = ({
             className="border-r border-gray-300 p-2 font-semibold text-md text-center text-primary-text dark:text-white bg-gray-50 dark:bg-dark-hover flex items-center justify-center"
           >
             <div className="font-semibold">
-              {/* CLEAN UI: If it's a break, you could optionally show "BREAK" in header too */}
               {typeof slot === 'object' ? slot.display_label : slot}
             </div>
           </div>
@@ -131,6 +130,9 @@ const RoutineGrid = ({
           <Loader2 className="animate-spin dark:invert" size={40} />
         </div>
       )}
+
+      {/* Routine Entry Modal */}
+      <RoutineEntryModal/>
     </section>
   );
 };

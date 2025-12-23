@@ -1,13 +1,34 @@
-const RoutineCell = ({ timeSlot, slotType, entry }) => {
+import { useRoutineEntryModal } from "../../../contexts/RoutineEntryContext";
+
+const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
+  const {openCreateModal, openUpdateModal} = useRoutineEntryModal();
 
   const isBreakTime = () => {
-
     if (slotType === 'Break') return true;
-
     return timeSlot && timeSlot.toLowerCase().includes('break');
   };
-
   const isBreak = isBreakTime();
+
+  // single click - open create modal
+  const handleSingleClick = () => {
+    // not opening modal for Break slots and if entry already exists
+    if (isBreak) return;
+    if (entry) return;
+
+    openCreateModal({
+      day, timeSlot, slotType
+    });
+  };
+
+  // double click - open edit modal
+  const handleDoubleClick = () => {
+    if (isBreak) return;
+    if (!entry) return; // allow double click if entry exists
+
+    openUpdateModal({
+      day, timeSlot, slotType
+    }, entry);
+  };
 
   // Case 1: Break Time Slot (empty cell during break time) → Show BREAK
   if (!entry && isBreak) {
@@ -26,7 +47,9 @@ const RoutineCell = ({ timeSlot, slotType, entry }) => {
   if (entry) {
     return (
       <section
-        className="grid-container">
+        className="grid-container"
+        onDoubleClick={handleDoubleClick}
+        title="Double click to edit entry">
         <div className="flex flex-col justify-center items-center px-2 h-full text-[11px] text-center w-full">
 
           {/* Course Name */}
@@ -79,6 +102,7 @@ const RoutineCell = ({ timeSlot, slotType, entry }) => {
   return (
     <div
       className="grid-container"
+      onClick={handleSingleClick}
       title="Click to add entry"
     >
       <div className="text-[10px] text-sub-text dark:text-gray-400 text-center">

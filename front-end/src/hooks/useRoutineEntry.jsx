@@ -34,7 +34,7 @@ export const useRoutineEntry = () => {
                         Clear all entries from this routine?
                     </div>
                     <p className="text-sm mb-3 text-sub-text">
-                        This will permanently delete all entries from the current shift.
+                        This will permanently delete all entries from the current shift. Before clearing entries save the current routine.
                     </p>
                     <div className="flex gap-2 justify-end">
                         <button
