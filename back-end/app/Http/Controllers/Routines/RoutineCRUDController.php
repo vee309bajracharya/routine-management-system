@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Routines;
 
 use App\Models\Routine;
+use App\Models\RoutineEntry;
 use Illuminate\Http\Request;
 use App\Services\CacheService;
 use Illuminate\Support\Facades\DB;
@@ -251,6 +252,96 @@ class RoutineCRUDController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete routine',
+            ], 500);
+        }
+    }
+
+    // restore soft deleted routine
+    public function restore($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            // find soft-deleted routine
+            $routine = Routine::withTrashed()
+                ->where('id', $id)
+                ->firstOrFail();
+
+            // check if routine is soft-deleted
+            if (!$routine->trashed()) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Routine is not deleted'
+                ], 422);
+            }
+
+            // before routine restore check
+            /**
+             * conflict with 'Published' routines only
+             * for date overlap
+             */
+            $conflictExists = Routine::where('semester_id', $routine->semester_id)
+                ->where('batch_id', $routine->batch_id)
+                ->where('id', '!=', $id)
+                ->where('status', 'published')
+                ->where(function ($query) use ($routine) {
+                    $query->where(function ($q) use ($routine) {
+                        // Case 1: New routine starts during existing routine
+                        $q->where('effective_from', '<=', $routine->effective_from)
+                            ->where('effective_to', '>=', $routine->effective_from);
+                    })->orWhere(function ($q) use ($routine) {
+                        // Case 2: New routine ends during existing routine
+                        $q->where('effective_from', '<=', $routine->effective_to)
+                            ->where('effective_to', '>=', $routine->effective_to);
+                    })->orWhere(function ($q) use ($routine) {
+                        // Case 3: New routine completely contains existing routine
+                        $q->where('effective_from', '>=', $routine->effective_from)
+                            ->where('effective_to', '<=', $routine->effective_to);
+                    });
+                })
+                ->exists();
+            if ($conflictExists) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot restore routine. Please adjust the dates or delete the conflicting routine first.'
+                ], 422);
+            }
+
+            $routine->restore(); //restore the routine
+            //initially set the restored routine to 'draft'
+            $routine->refresh();
+            $routine->status = 'draft';
+            $routine->save();
+
+            // also restore the routine_entries related with this routine
+            RoutineEntry::withTrashed()
+                ->where('routine_id', $id)
+                ->restore();
+
+            (new RoutineHelperController())->clearRoutineCaches($routine); // Clear cache as routine affects listing
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Routine restored successfully',
+                'data' => new RoutineDetailResource($routine),
+            ], 200);
+
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Routine not found',
+            ], 404);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to restore routine',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

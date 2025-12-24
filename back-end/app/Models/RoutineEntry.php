@@ -119,13 +119,13 @@ class RoutineEntry extends Model
     }
 
     // to restore cancelled entry
-    public function restore(): bool
-    {
-        $this->is_cancelled = false;
-        $this->cancellation_reason = null;
-        return $this->save();
+    // public function restoreCancelledEntry(): bool
+    // {
+    //     $this->is_cancelled = false;
+    //     $this->cancellation_reason = null;
+    //     return $this->save();
 
-    }
+    // }
 
     // Check if teacher is already teaching at this time
     public static function teacherHasConflict($teacherId, $timeSlotId, $day, $shift)
