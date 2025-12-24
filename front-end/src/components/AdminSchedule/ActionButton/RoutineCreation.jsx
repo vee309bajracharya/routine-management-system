@@ -146,7 +146,7 @@ const RoutineCreation = ({ isOpen, onClose }) => {
                     value={values.semester_id}
                     onChange={handleSemesterChange}
                     onBlur={handleBlur}
-                    className="createSchedule-option"
+                    className="dropdown-select"
                     disabled={isLoadingSemesters}
                   >
                     <option value="" className="dark:text-white dark:bg-dark-overlay">
@@ -173,7 +173,7 @@ const RoutineCreation = ({ isOpen, onClose }) => {
                     value={values.batch_id}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="createSchedule-option"
+                    className="dropdown-select"
                     disabled={!values.semester_id || isLoadingBatches}
                   >
                     <option value="">
@@ -205,7 +205,7 @@ const RoutineCreation = ({ isOpen, onClose }) => {
                     value={values.title}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="createSchedule-option"
+                    className="dropdown-select"
                     placeholder=""
                     autoComplete="off"
                   />
@@ -224,7 +224,7 @@ const RoutineCreation = ({ isOpen, onClose }) => {
                     value={values.description}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="createSchedule-option"
+                    className="dropdown-select"
                     rows="3"
                     placeholder=""
                   />

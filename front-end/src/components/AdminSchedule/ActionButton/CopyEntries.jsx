@@ -179,11 +179,11 @@ const CopyEntries = () => {
         });
 
         // Show success for each day
-        data.days_completed.forEach(dayInfo => {
-          toast.success(`${dayInfo.day}: ${dayInfo.entries_copied} entries copied`, {
-            autoClose: 5000
-          });
-        });
+        // data.days_completed.forEach(dayInfo => {
+        //   toast.success(`${dayInfo.day}: ${dayInfo.entries_copied} entries copied`, {
+        //     autoClose: 5000
+        //   });
+        // });
 
         // Refresh grid
         await fetchRoutineGrid(
@@ -389,7 +389,7 @@ const CopyEntries = () => {
 
               {/* Summary */}
               {sourceDay && targetDays.length > 0 && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-3">
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-md p-3">
                   <p className="text-sm text-primary-text dark:text-white">
                     <span className="font-semibold">Action:</span> Copy{' '}
                     <span className="font-semibold">{getEntriesCount(sourceDay)} entries</span>{' '}
@@ -404,13 +404,13 @@ const CopyEntries = () => {
             <div className="border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-end gap-3">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-primary-text dark:text-white hover:bg-gray-50 dark:hover:bg-dark-hover transition">
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-primary-text dark:text-white hover:bg-gray-50 dark:hover:bg-dark-hover transition cursor-pointer">
                 Cancel
               </button>
               <button
                 onClick={handleCopyClick}
                 disabled={!sourceDay || targetDays.length === 0}
-                className="px-6 py-2 bg-main-blue text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2">
+                className="px-6 py-2 bg-main-blue text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 cursor-pointer">
                 Copy Entries
               </button>
             </div>

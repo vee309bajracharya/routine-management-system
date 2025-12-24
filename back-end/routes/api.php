@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::put('/{id}', [RoutineCRUDController::class, 'update']);
             Route::delete('/{id}', [RoutineCRUDController::class, 'destroy']);
             Route::put('/archive/{id}', [RoutineCRUDController::class, 'archive']);
+            Route::post('/restore/{id}', [RoutineCRUDController::class, 'restore']);
 
             // Routine versions
             Route::post('/save', [RoutineVersionController::class, 'saveRoutine']);
@@ -73,6 +74,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::put('/{entryId}', [RoutineEntryController::class, 'updateEntry']);
             Route::delete('/{entryId}', [RoutineEntryController::class, 'deleteEntry']);
             Route::delete('/clear/{routineId}', [RoutineEntryController::class, 'clearRoutine']);
+            Route::post('/{entryId}/restore', [RoutineEntryController::class, 'restoreEntry']);
             Route::get('/grid/{routineId}', [RoutineEntryController::class, 'getRoutineGrid']);
             Route::post('/copy', [RoutineEntryController::class, 'copyEntries']);
         });

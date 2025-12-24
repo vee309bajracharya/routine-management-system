@@ -58,7 +58,7 @@
 }
 
 .showError {
-  @apply text-error-red dark:text-red-300 my-2 text-sm font-general-sans;
+  @apply text-error-red dark:text-red-400 my-2 text-sm font-general-sans;
 }
 
 .back-page-link {
@@ -134,5 +134,12 @@
 }
 
 .grid-container{
-  @apply border-r border-gray-300 dark:bg-dark-hover text-primary-text dark:text-white flex items-center justify-center p-2 min-h-[100px] min-w-[200px] transition hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer;
+  @apply border-r border-gray-300 dark:bg-dark-hover text-primary-text dark:text-white flex items-center justify-center p-2 min-h-[100px] min-w-[200px] transition-colors hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer;
+}
+
+.dropdown-select{
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-dark-hover text-primary-text dark:text-white disabled:opacity-50;
+}
+.form-label{
+  @apply block text-sm font-medium text-primary-text dark:text-white mb-2;
 }

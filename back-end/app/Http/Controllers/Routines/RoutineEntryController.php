@@ -201,6 +201,61 @@ class RoutineEntryController extends Controller
         }
     }
 
+    // restore soft deleted entry
+    public function restoreEntry($entryId)
+    {
+        try {
+            DB::beginTransaction();
+
+            // find soft-deleted entry
+            $entry = RoutineEntry::withTrashed()
+                ->with([
+                    'courseAssignment.course',
+                    'courseAssignment.teacher.user',
+                    'room',
+                    'timeSlot',
+                ])
+                ->where('id', $entryId)
+                ->firstOrFail();
+
+            // check if entry is soft-deleted
+            if (!$entry->trashed()) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Entry is not deleted'
+                ], 422);
+            }
+
+            $entry->restore(); //restore soft-deleted entry-> remove deleted_at timestamp
+            $entry->refresh();
+
+            $routine = Routine::find($entry->routine_id);
+            (new RoutineHelperController())->clearRoutineCaches($routine);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Entry restored successfully',
+                'data' => new RoutineEntryResource($entry),
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Entry not found',
+            ], 404);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to restore entry',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     // clear all entries from a routine
     public function clearRoutine($routineId)
     {
