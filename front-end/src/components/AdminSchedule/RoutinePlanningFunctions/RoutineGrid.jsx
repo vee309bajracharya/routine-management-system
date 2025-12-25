@@ -1,6 +1,8 @@
 import { Loader2 } from "lucide-react";
 import RoutineCell from "./RoutineCell";
 import RoutineEntryModal from "./RoutineEntryModal";
+import RoutineEntryEditModal from "./RoutineEntryEditModal";
+import { useRoutineEntryModal } from "../../../contexts/RoutineEntryContext";
 
 const RoutineGrid = ({
   routine,
@@ -11,6 +13,8 @@ const RoutineGrid = ({
   slotMetadata,
   formatDate,
 }) => {
+
+  const { modalMode } = useRoutineEntryModal();
 
   // loading state
   if (isLoading && !grid) {
@@ -131,8 +135,9 @@ const RoutineGrid = ({
         </div>
       )}
 
-      {/* Routine Entry Modal */}
-      <RoutineEntryModal/>
+      {/* Routine Entry and Edit Modal */}
+      {modalMode === 'create' && <RoutineEntryModal />}
+      {modalMode === 'update' && <RoutineEntryEditModal />}
     </section>
   );
 };

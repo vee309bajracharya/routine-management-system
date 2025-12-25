@@ -54,7 +54,7 @@ const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
 
           {/* Course Name */}
           <span className="font-semibold line-clamp-2 text-[14px]">
-            {entry.course?.name || "N/A"}
+            {entry.course_assignment?.course?.name || "N/A"}
           </span>
 
           {/* Room Name */}
@@ -64,7 +64,7 @@ const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
 
           {/* Teacher Name */}
           <span className="text-[12px] text-sub-text dark:text-gray-400 mt-1">
-            {entry.teacher?.teacher_details?.name || "No Teacher"}
+            {entry.course_assignment?.teacher?.teacher_details?.name || "No Teacher"}
           </span>
 
           {/* Entry Type Badge (Lecture/Practical) */}

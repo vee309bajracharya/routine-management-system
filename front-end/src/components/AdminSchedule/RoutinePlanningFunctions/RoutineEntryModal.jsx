@@ -13,7 +13,7 @@ const RoutineEntryModal = () => {
 
     // from contexts
     const { currentRoutine, addRoutineEntry } = useRoutine();
-    const { isModalOpen, selectedCell, closeModal, sessionState, setSessionState } = useRoutineEntryModal();
+    const { isModalOpen, modalMode, selectedCell, closeModal, sessionState, setSessionState } = useRoutineEntryModal();
     const { user } = useAuth();
 
     // for dropdowns
@@ -241,6 +241,7 @@ const RoutineEntryModal = () => {
     };
 
     if (!isModalOpen) return null;
+    if (!isModalOpen || modalMode !== 'create') return null;
 
     return (
         <section className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
