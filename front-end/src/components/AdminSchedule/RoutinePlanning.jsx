@@ -117,7 +117,7 @@ const RoutinePlanning = () => {
           {/* Export */}
           <button className="export-btn">
             <Download size={16} />
-            Export
+            Download
           </button>
         </div>
       </section>

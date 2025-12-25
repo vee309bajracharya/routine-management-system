@@ -326,6 +326,8 @@ class RoutineEntryController extends Controller
                 $entries = RoutineEntry::with([
                     'courseAssignment.course',
                     'courseAssignment.teacher.user',
+                    'courseAssignment.batch.department',
+                    'courseAssignment.semester',
                     'room',
                     'timeSlot'
                 ])

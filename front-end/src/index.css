@@ -38,7 +38,7 @@
 /* custom styling */
 
 * {
-  @apply transition-colors duration-200;
+  @apply transition-colors duration-100;
 }
 
 .inputbox {
@@ -90,7 +90,7 @@
 }
 
 .export-btn {
-  @apply flex justify-between items-center gap-1 border border-main-blue px-3 py-1 text-main-blue rounded hover:bg-main-blue hover:text-white text-sm;
+  @apply flex justify-between items-center gap-1 border border-main-blue px-3 py-1 text-main-blue rounded hover:bg-main-blue hover:text-white text-sm cursor-pointer;
 }
 
 .overview-btn {
@@ -140,6 +140,15 @@
 .dropdown-select{
   @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-dark-hover text-primary-text dark:text-white disabled:opacity-50;
 }
+
 .form-label{
   @apply block text-sm font-medium text-primary-text dark:text-white mb-2;
+}
+
+.edit-form-info-span{
+  @apply text-xs font-medium;
+}
+
+.edit-form-info-p{
+  @apply font-medium text-primary-text dark:text-white mt-1;
 }
