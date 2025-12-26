@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Routines;
 
+use App\Http\Resources\Routines\RoutineSavedVersionResource;
 use App\Models\Routine;
 use App\Models\RoutineEntry;
 use App\Models\SavedRoutine;
@@ -202,5 +203,59 @@ class RoutineVersionController extends Controller
         }
     }
 
+    /**
+     * Delete saved version
+     */
+    public function deleteSavedVersion($savedRoutineId)
+    {
+        try {
+            $saved = SavedRoutine::findOrFail($savedRoutineId);
+            $routineId = $saved->routine_id;
+            $saved->delete();
+            (new RoutineHelperController())->clearSavedVersionCache($routineId);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Saved version deleted',
+                'data' => $saved,
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Saved version entry not found',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete version'
+            ], 500);
+        }
+    }
+
+    /**
+     * preview saved routine version
+     */
+    public function previewSavedRoutine($savedRoutineId)
+    {
+        try {
+            $saved = SavedRoutine::with('createdBy:id')
+                ->findOrFail($savedRoutineId);
+            return response()->json([
+                'success' => true,
+                'message' => 'Saved routine preview fetched successfully',
+                'data' => new RoutineSavedVersionResource($saved),
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Saved routine version not found',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch saved routine preview',
+            ], 500);
+        }
+    }
 
 }
