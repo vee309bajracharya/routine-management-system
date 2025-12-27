@@ -81,10 +81,6 @@ const OverviewFilters = ({
             className="outline-none text-sm text-primary-text dark:text-white bg-transparent w-48" />
           {searchTerm && <button onClick={() => setSearchTerm('')} className="text-sub-text dark:text-white"><X size={14} className="cursor-pointer" /></button>}
         </div>
-
-        <button className="export-btn cursor-pointer">
-          <Download size={16} /> Download
-        </button>
       </div>
 
 

@@ -45,7 +45,10 @@ const RoutineGrid = ({
       {/* routine header section */}
       <section className="flex flex-col justify-center items-center text-primary-text dark:text-white font-general-sans my-5 leading-6">
 
-        {/* Title */}
+        {/* Institution Name */}
+        <h3 className="font-bold text-3xl text-primary-blue dark:text-main-blue">{routine.institution?.name || 'Institution'}</h3>
+
+        {/* Routine Title */}
         <h3 className="font-semibold text-2xl">{routine.title}</h3>
 
         {/* Description */}
