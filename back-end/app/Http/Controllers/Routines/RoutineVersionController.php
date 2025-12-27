@@ -238,8 +238,12 @@ class RoutineVersionController extends Controller
     public function previewSavedRoutine($savedRoutineId)
     {
         try {
-            $saved = SavedRoutine::with('createdBy:id')
-                ->findOrFail($savedRoutineId);
+            $cacheKey = CacheService::routineSavedPreviewKey($savedRoutineId);
+
+            $saved = CacheService::remember($cacheKey, function () use ($savedRoutineId) {
+                return SavedRoutine::findOrFail($savedRoutineId);
+            }, self::SAVED_ROUTINES_TTL);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Saved routine preview fetched successfully',

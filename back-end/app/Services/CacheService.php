@@ -244,6 +244,12 @@ class CacheService
         return "routine:{$routineId}:saved_versions";
     }
 
+    // cache key for preview saved versions
+    public static function routineSavedPreviewKey(int $savedRoutineId): string
+    {
+        return "routine:saved:preview:{$savedRoutineId}";
+    }
+
     /**
      * Generate cache key for batch routine
      * "batch:3:semester:5:routine" or "batch:3:routine"

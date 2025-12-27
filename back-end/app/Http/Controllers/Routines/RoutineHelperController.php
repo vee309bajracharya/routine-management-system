@@ -56,6 +56,7 @@ class RoutineHelperController extends Controller
      */
     public function clearSavedVersionCache(int $routineId): void
     {
-        CacheService::forget(CacheService::routineSavedVersionsKey($routineId));
+        CacheService::forget(CacheService::routineSavedVersionsKey($routineId)); //list cache
+        CacheService::forgetPattern("routine:saved:preview:*"); // clear all saved preview cache for this routine
     }
 }
