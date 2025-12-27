@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Api\DropdownController;
+use App\Http\Controllers\Routines\RoutineExportController;
 use App\Http\Controllers\Routines\RoutineVersionController;
 use App\Http\Controllers\Teacher\TeacherDashboardController;
 use Illuminate\Http\Request;
@@ -68,6 +69,9 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::post('/load/{savedRoutineId}', [RoutineVersionController::class, 'loadSavedRoutine']);
             Route::delete('/saved/{savedRoutineId}', [RoutineVersionController::class, 'deleteSavedVersion']);
             Route::get('/{savedRoutineId}/preview', [RoutineVersionController::class, 'previewSavedRoutine']);
+
+            // Routine Download
+            Route::get('/export/pdf/{routineId}', [RoutineExportController::class, 'exportPdf']);
         });
 
         // Routine entries - Grid Operation

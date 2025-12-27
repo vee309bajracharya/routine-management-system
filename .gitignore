@@ -4,4 +4,3 @@ mysql_data/
 redis_data/
 vendor/
 node_modules/
-back-end/app/Http/Controllers/Routines/RoutineTimeSlotController.php

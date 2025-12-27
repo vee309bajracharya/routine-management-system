@@ -6,6 +6,8 @@ import SaveSchedule from "./ActionButton/SaveSchedule";
 import RoutineGrid from "./RoutinePlanningFunctions/RoutineGrid";
 import RoutineStatusManager from "./RoutinePlanningFunctions/RoutineStatusManager";
 import CopyEntries from "./ActionButton/CopyEntries";
+import { toast } from "react-toastify";
+import axiosClient from "../../services/api/axiosClient";
 
 /**
  * Purpose:
@@ -39,6 +41,41 @@ const RoutinePlanning = () => {
 
   const [showCreateRoutineModal, setShowCreateRoutineModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+
+  // download pdf
+  const handleDownloadPdf = async () => {
+    if (!currentRoutine?.id) {
+      toast.error('Routine not found');
+      return;
+    }
+
+    try {
+      const response = await axiosClient.get(`/admin/routines/export/pdf/${currentRoutine?.id}`, {
+        responseType: "blob",
+      });
+
+      // filename for pdf
+      const routineTitle = currentRoutine?.title || 'Routine';
+      const sanitizedTitle = routineTitle.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_');
+      const dateStamp = new Date().toISOString().slice(0, 10);
+      const fileName = `${sanitizedTitle}_${dateStamp}.pdf`;
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("PDF download failed", error);
+      toast.error("Failed to download routine PDF");
+    }
+  };
 
   // Empty Routine state
   if (!currentRoutine) {
@@ -92,7 +129,7 @@ const RoutinePlanning = () => {
             Clear All
           </button>
 
-          <CopyEntries/>
+          <CopyEntries />
         </div>
 
         {/* Right status and actions */}
@@ -115,7 +152,7 @@ const RoutinePlanning = () => {
           </button>
 
           {/* Export */}
-          <button className="export-btn">
+          <button className="export-btn" onClick={handleDownloadPdf}>
             <Download size={16} />
             Download
           </button>
