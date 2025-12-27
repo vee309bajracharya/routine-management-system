@@ -66,6 +66,8 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::post('/save', [RoutineVersionController::class, 'saveRoutine']);
             Route::get('/{routineId}/saved-versions', [RoutineVersionController::class, 'getSavedRoutines']);
             Route::post('/load/{savedRoutineId}', [RoutineVersionController::class, 'loadSavedRoutine']);
+            Route::delete('/saved/{savedRoutineId}', [RoutineVersionController::class, 'deleteSavedVersion']);
+            Route::get('/{savedRoutineId}/preview', [RoutineVersionController::class, 'previewSavedRoutine']);
         });
 
         // Routine entries - Grid Operation

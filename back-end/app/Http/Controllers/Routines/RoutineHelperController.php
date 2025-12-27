@@ -50,4 +50,13 @@ class RoutineHelperController extends Controller
         CacheService::forget($baseGridKey . ':Day');
         CacheService::forget($baseGridKey . ':all');
     }
+
+    /**
+     * clear saved versions cache
+     */
+    public function clearSavedVersionCache(int $routineId): void
+    {
+        CacheService::forget(CacheService::routineSavedVersionsKey($routineId)); //list cache
+        CacheService::forgetPattern("routine:saved:preview:*"); // clear all saved preview cache for this routine
+    }
 }
