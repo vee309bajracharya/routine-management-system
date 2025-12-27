@@ -4,6 +4,7 @@ import MainLogo from "../../assets/svg/default_logo.svg";
 // import University from "../../assets/svg/University.svg";
 import dash from "../../assets/svg/Dashboard.svg";
 import schedule from "../../assets/svg/schedule.svg";
+import academicstructure from "../../assets/svg/academicstructure.svg";
 import faculty from "../../assets/svg/faculty.svg";
 import department from "../../assets/svg/department.svg";
 import room from "../../assets/svg/rooms.svg";
@@ -16,6 +17,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
+
 
 const sidebarItems = [
   {
@@ -30,6 +32,11 @@ const sidebarItems = [
         icon: schedule,
         label: "Schedule"
       },
+      {
+      to: "/admin/academic-structure",
+      icon: academicstructure,
+      label: "Academic Structure",
+    },
     ],
   },
   {
@@ -62,6 +69,7 @@ const sidebarItems = [
     items: [
       { to: "/admin/activitylog", icon: activitylog, label: "Activity Log" },
       { to: "/admin/settings", icon: settings, label: "Settings" },
+      { to: "/admin/teacher-availability", icon: settings, label: "Teacher Availability" },
     ],
   },
 ];
