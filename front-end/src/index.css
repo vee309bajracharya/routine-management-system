@@ -106,7 +106,7 @@
 }
 
 .scheduleClose-btn {
-  @apply absolute top-4 right-4 text-sub-text bg-box-outline rounded-md hover:text-primary-text transition cursor-pointer;
+  @apply absolute top-4 right-4 text-primary-text dark:text-white rounded-md transition cursor-pointer;
 }
 
 .schedulebtn-popup {

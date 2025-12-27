@@ -35,6 +35,8 @@ const RoutineContext = createContext({
   saveRoutineVersion: () => { },
   fetchSavedVersions: () => { },
   loadSavedVersion: () => { },
+  deleteSavedVersion: () => { },
+  previewSavedRoutineVersion: () => { },
 });
 
 export const RoutineProvider = ({ children }) => {
@@ -42,7 +44,7 @@ export const RoutineProvider = ({ children }) => {
   const [currentRoutine, setCurrentRoutine] = useState(null);
   const [routineGrid, setRoutineGrid] = useState(null);
   const [slotMetadata, setSlotMetadata] = useState({});
-  // const [savedVersions, setSavedVersions] = useState([]);
+  const [savedVersions, setSavedVersions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentShift, setCurrentShift] = useState("Morning");
   const [isPending, startTransition] = useTransition();
@@ -368,6 +370,97 @@ export const RoutineProvider = ({ children }) => {
     }
   }, [fetchRoutineGrid]);
 
+  // ====== Routine Saved Versions ======
+
+  const saveRoutineVersion = useCallback(async (routineId, versionData) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.post("/admin/routines/save", {
+        routine_id: routineId,
+        ...versionData,
+      });
+
+      if (response.data.success) {
+        toast.success("Routine version saved successfully");
+        await fetchSavedVersions(routineId);
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("Failed to save routine version:", error);
+      toast.error(error.userMessage || "Failed to save routine version");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const fetchSavedVersions = useCallback(async (routineId) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.get(`/admin/routines/${routineId}/saved-versions`);
+
+      if (response.data.success) {
+        startTransition(() => {
+          setSavedVersions(response.data.data);
+        });
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("Failed to fetch saved versions:", error);
+      toast.error(error.userMessage || "Failed to fetch saved versions");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const loadSavedVersion = useCallback(async (savedRoutineId, routineId, shift = "Morning") => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.post(`/admin/routines/load/${savedRoutineId}`);
+
+      if (response.data.success) {
+        toast.success("Routine loaded successfully");
+        if (routineId) {
+          await fetchRoutineGrid(routineId, shift, true);
+        }
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("Failed to load saved version:", error);
+      const errorMsg = error.response?.data?.message || error.userMessage || "Failed to load saved version";
+      toast.error(errorMsg);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchRoutineGrid]);
+
+  const deleteSavedVersion = useCallback(async (savedRoutineId) => {
+    try {
+      const response = await axiosClient.delete(`/admin/routines/saved/${savedRoutineId}`);
+      if (response.data.success) {
+        toast.success("Version deleted successfully");
+        if (currentRoutine?.id) {
+          await fetchSavedVersions(currentRoutine.id);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to delete version : ", error);
+      toast.error("Failed to delete version");
+    }
+  }, [currentRoutine, fetchSavedVersions]);
+
+  const previewSavedRoutineVersion = useCallback(async (savedRoutineId) => {
+    try {
+      const response = await axiosClient.get(`/admin/routines/${savedRoutineId}/preview`);
+      if (response.data.success)
+        return response.data.data;
+    } catch (error) {
+      console.error("Failed to load saved version preview : ", error);
+    }
+  }, []);
+
 
   const contextValue = {
 
@@ -375,7 +468,7 @@ export const RoutineProvider = ({ children }) => {
     routines,
     currentRoutine,
     routineGrid,
-    // savedVersions,
+    savedVersions,
     isLoading,
     isPending,
     currentShift,
@@ -399,9 +492,11 @@ export const RoutineProvider = ({ children }) => {
     clearRoutine,
 
     // routine saved versions
-    // saveRoutineVersion,
-    // fetchSavedVersions,
-    // loadSavedVersion,
+    saveRoutineVersion,
+    fetchSavedVersions,
+    loadSavedVersion,
+    deleteSavedVersion,
+    previewSavedRoutineVersion
   };
 
   return (
