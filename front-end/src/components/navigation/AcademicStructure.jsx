@@ -5,7 +5,7 @@ const sidebarItems = [
     {
         section: "Foundational",
         items: [
-            { to: 'user-accounts', label: 'User Accounts' }, 
+            { to: 'user-accounts', label: 'User Accounts' },
         ]
     },
     {
@@ -22,7 +22,7 @@ const sidebarItems = [
     {
         section: "Resources",
         items: [
-            { to: 'rooms', label: 'Rooms' }, 
+            { to: 'rooms', label: 'Rooms' },
         ]
     },
     {
@@ -52,10 +52,9 @@ const AcademicStructure = () => {
                                             to={item.to}
                                             end={item.to === 'user-accounts'}
                                             className={({ isActive }) =>
-                                                `block w-full px-3 py-2 rounded-md text-sm transition-colors duration-200 ${
-                                                    isActive
-                                                        ? 'bg-blue-600 text-white shadow-sm '
-                                                        : 'text-primary-text hover:bg-primary6-blue dark:hover:bg-dark-hover dark:text-white'
+                                                `block w-full px-3 py-2 rounded-md text-sm transition-colors duration-200 ${isActive
+                                                    ? 'bg-blue-600 text-white shadow-sm '
+                                                    : 'text-primary-text hover:bg-primary6-blue dark:hover:bg-dark-hover dark:text-white'
                                                 }`
                                             }
                                         >

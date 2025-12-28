@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
-import { useRoutineEntry } from "../../hooks/useRoutineEntry";
-import RoutineCreation from "./ActionButton/RoutineCreation";
-import SaveSchedule from "./ActionButton/SaveSchedule";
-import RoutineGrid from "./RoutinePlanningFunctions/RoutineGrid";
-import RoutineStatusManager from "./RoutinePlanningFunctions/RoutineStatusManager";
-import CopyEntries from "./ActionButton/CopyEntries";
 import { toast } from "react-toastify";
-import axiosClient from "../../services/api/axiosClient";
+import { useRoutineEntry } from "../../../hooks/useRoutineEntry";
+import axiosClient from "../../../services/api/axiosClient";
+import RoutineCreation from "../../../components/AdminSchedule/ActionButton/RoutineCreation";
+import SaveSchedule from "../../../components/AdminSchedule/ActionButton/SaveSchedule";
+import RoutineGrid from "../../../components/AdminSchedule/RoutinePlanningFunctions/RoutineGrid";
+import RoutineStatusManager from "../../../components/AdminSchedule/RoutinePlanningFunctions/RoutineStatusManager";
+import CopyEntries from "../../../components/AdminSchedule/ActionButton/CopyEntries";
+
 
 /**
  * Purpose:
@@ -81,6 +82,8 @@ const RoutinePlanning = () => {
   if (!currentRoutine) {
     return (
       <section className="font-general-sans mt-4">
+
+        {/* initial state */}
         <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-dark-overlay rounded-md">
           <div className="text-center space-y-4">
             <h2 className="text-2xl font-semibold text-primary-text dark:text-white">

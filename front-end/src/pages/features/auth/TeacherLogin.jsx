@@ -1,15 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff, ChevronLeft, Loader } from 'lucide-react';
+import { Eye, EyeOff, ChevronLeft, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { LoginValidationSchema } from '../../../validations/LoginValidationSchema';
+import { LoginValidationSchema, LoginInitialValues } from '../../../validations/LoginValidationSchema';
 import { useFormik } from 'formik';
-import { LoginInitialValues } from '../../../validations/LoginValidationSchema';
 import { useAuth } from '../../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import Loader from "../../../components/common/Loader";
 
 const TeacherLogin = () => {
 
@@ -19,9 +19,9 @@ const TeacherLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  useEffect(()=>{
-    if (isAuthenticated) navigate('/teacher/dashboard', {replace:true});
-  },[isAuthenticated, navigate]);
+  useEffect(() => {
+    if (isAuthenticated) navigate('/teacher/dashboard', { replace: true });
+  }, [isAuthenticated, navigate]);
 
   const formik = useFormik({
     initialValues: LoginInitialValues,
@@ -44,7 +44,7 @@ const TeacherLogin = () => {
 
   const { values, errors, handleBlur, handleSubmit, handleChange, touched } = formik;
 
-  if (isAuthenticated) return <Loader/>;
+  if (isAuthenticated) return <Loader />;
 
   return (
     <section
@@ -129,7 +129,7 @@ const TeacherLogin = () => {
                 className="w-4 h-4 bg-main-blue"
                 id='remember'
                 checked={rememberMe}
-                onChange={(e)=> setRememberMe(e.target.checked)}
+                onChange={(e) => setRememberMe(e.target.checked)}
                 disabled={isLoading}
               />
               <label
@@ -145,7 +145,7 @@ const TeacherLogin = () => {
               type="submit"
               className="auth-btn"
             >
-              {isLoading ? <Loader className='animate-spin mx-auto w-6 h-6' /> : 'Submit'}
+              {isLoading ? <Loader2 className='animate-spin mx-auto w-6 h-6' /> : 'Submit'}
             </motion.button>
           </form>
 

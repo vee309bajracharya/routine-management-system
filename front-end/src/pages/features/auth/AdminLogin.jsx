@@ -1,16 +1,15 @@
 /* eslint-disable no-unused-vars */
-import { Link, replace } from "react-router-dom";
-import { Eye, EyeOff, ChevronLeft, Loader } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { Eye, EyeOff, ChevronLeft, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from "react";
-import { LoginValidationSchema } from '../../../validations/LoginValidationSchema';
+import { LoginValidationSchema, LoginInitialValues } from '../../../validations/LoginValidationSchema';
 import { useFormik } from 'formik';
-import { LoginInitialValues } from '../../../validations/LoginValidationSchema';
 import { useAuth } from '../../../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from "react-helmet";
-
+import Loader from "../../../components/common/Loader";
 
 const AdminLogin = () => {
 
@@ -20,9 +19,9 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  useEffect(()=>{
-    if (isAuthenticated) navigate('/admin/dashboard', {replace:true});
-  },[isAuthenticated,navigate]);
+  useEffect(() => {
+    if (isAuthenticated) navigate('/admin/dashboard', { replace: true });
+  }, [isAuthenticated, navigate]);
 
   const formik = useFormik({
     initialValues: LoginInitialValues,
@@ -45,15 +44,15 @@ const AdminLogin = () => {
 
   const { values, errors, handleBlur, handleSubmit, handleChange, touched } = formik;
 
-  if (isAuthenticated) return <Loader/>;
+  if (isAuthenticated) return <Loader />;
 
   return (
     <section className="bg-primary6-blue">
 
-        <Helmet>
+      <Helmet>
         <title>Admin Login - Routine Management System</title>
         <meta name="description" content="Admin Login page for Routine Management System" />
-        </Helmet>
+      </Helmet>
 
       <section className="wrapper min-h-screen flex flex-col items-center justify-center font-general-sans">
         <div
@@ -94,7 +93,7 @@ const AdminLogin = () => {
               )}
             </div>
 
-              {/* password */}
+            {/* password */}
             <div className="relative mb-3">
               <label
                 htmlFor="password"
@@ -131,7 +130,7 @@ const AdminLogin = () => {
                 className="w-4 h-4 bg-main-blue"
                 id='remember'
                 checked={rememberMe}
-                onChange={(e)=> setRememberMe(e.target.checked)}
+                onChange={(e) => setRememberMe(e.target.checked)}
                 disabled={isLoading}
               />
               <label
@@ -146,7 +145,7 @@ const AdminLogin = () => {
               type="submit"
               className="auth-btn"
             >
-              {isLoading ? <Loader className='animate-spin mx-auto w-6 h-6' /> : 'Submit'}
+              {isLoading ? <Loader2 className='animate-spin mx-auto w-6 h-6' /> : 'Submit'}
 
             </motion.button>
           </form>
