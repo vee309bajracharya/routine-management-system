@@ -1,15 +1,16 @@
 <?php
 
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Api\DropdownController;
-use App\Http\Controllers\Routines\RoutineExportController;
-use App\Http\Controllers\Routines\RoutineVersionController;
-use App\Http\Controllers\Teacher\TeacherDashboardController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DropdownController;
+use App\Http\Controllers\Admin\InstitutionController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Routines\RoutineCRUDController;
 use App\Http\Controllers\Routines\RoutineEntryController;
+use App\Http\Controllers\Routines\RoutineExportController;
+use App\Http\Controllers\Routines\RoutineVersionController;
+use App\Http\Controllers\Teacher\TeacherDashboardController;
 
 // No Auth required (Public Routes)
 Route::prefix('auth')->group(function () {
@@ -32,6 +33,13 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
 
         // Admin dashboard route
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+
+        // Institution settings
+        Route::prefix('institution')->group(function () {
+            Route::get('/', [InstitutionController::class, 'show']);
+            Route::post('/update', [InstitutionController::class, 'update']);
+            Route::delete('/logo', [InstitutionController::class, 'deleteLogo']);
+        });
 
         // Dropdown routes
         Route::prefix('dropdowns')->group(function () {
