@@ -1,8 +1,8 @@
-import OverviewEditModal from "./OverviewFunctionalities/OverviewEditModal";
-import OverviewFilters from "./OverviewFunctionalities/OverviewFilters";
-import OverviewPagination from "./OverviewFunctionalities/OverviewPagination";
-import OverviewTable from "./OverviewFunctionalities/OverviewTable";
-import { useRoutineOverview } from "../../hooks/useRoutineOverview";
+import OverviewEditModal from "../../../components/AdminSchedule/OverviewFunctionalities/OverviewEditModal";
+import OverviewFilters from "../../../components/AdminSchedule/OverviewFunctionalities/OverviewFilters";
+import OverviewPagination from "../../../components/AdminSchedule/OverviewFunctionalities/OverviewPagination";
+import OverviewTable from "../../../components/AdminSchedule/OverviewFunctionalities/OverviewTable";
+import { useRoutineOverview } from "../../../hooks/useRoutineOverview";
 import { useCallback } from "react";
 import { toast } from "react-toastify";
 

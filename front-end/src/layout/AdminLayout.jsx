@@ -35,7 +35,7 @@ const AdminLayout = () => {
 
         {/* ===== Dynamic Page Content ===== */}
         <main
-          className={`mt-[30px] pt-9 overflow-y-auto h-full transition-all duration-500 dark:bg-dark-overlay`}
+          className={`mt-[50px] p-9 overflow-y-auto h-full transition-all duration-500 dark:bg-dark-overlay`}
         >
           <Outlet />
         </main>

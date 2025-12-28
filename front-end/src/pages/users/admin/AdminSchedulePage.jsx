@@ -1,7 +1,7 @@
 import { NavLink, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Overview from "../../../components/AdminSchedule/Overview";
-import RoutinePlanning from "../../../components/AdminSchedule/RoutinePlanning";
-import SavedRoutines from "../../../components/AdminSchedule/SavedRoutines";
+import Overview from "../../features/routine-schedule/Overview";
+import RoutinePlanning from "../../features/routine-schedule/RoutinePlanning";
+import SavedRoutines from "../../features/routine-schedule/SavedRoutines";
 
 const AdminSchedulePage = () => {
   const location = useLocation();

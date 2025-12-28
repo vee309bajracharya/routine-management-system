@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import Arch from "../../assets/svg/Architecture.svg";
-import Science from "../../assets/svg/Science.svg";
-import CivilEng from "../../assets/svg/CivilEng.svg";
-import Electric from "../../assets/svg/Electric.svg";
-import ElectroniComp from "../../assets/svg/ElectronicComp.svg";
-import Mechanical from "../../assets/svg/Mechanical.svg";
+import Arch from "../../../assets/svg/Architecture.svg";
+import Science from "../../../assets/svg/Science.svg";
+import CivilEng from "../../../assets/svg/CivilEng.svg";
+import Electric from "../../../assets/svg/Electric.svg";
+import ElectroniComp from "../../../assets/svg/ElectronicComp.svg";
+import Mechanical from "../../../assets/svg/Mechanical.svg";
 
 
 const Department = () => {

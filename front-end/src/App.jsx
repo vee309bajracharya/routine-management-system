@@ -17,58 +17,30 @@ const TeacherLayout = lazy(() => import("./layout/TeacherLayout"));
 
 //Admin page
 const AdminDashboard = lazy(() => import("./pages/users/admin/AdminDashboard"));
-const AdminSchedulePage = lazy(() =>
-  import("./pages/users/admin/AdminSchedulePage")
-);
+const AdminSchedulePage = lazy(() => import("./pages/users/admin/AdminSchedulePage"));
 const AdminFaculty = lazy(() => import("./pages/users/admin/AdminFaculty"));
-const AdminDepartment = lazy(() =>
-  import("./pages/users/admin/AdminDepartment")
-);
+const AdminDepartment = lazy(() => import("./pages/users/admin/AdminDepartment"));
 const AdminRooms = lazy(() => import("./pages/users/admin/AdminRooms"));
 const AdminLabs = lazy(() => import("./pages/users/admin/AdminLabs"));
 const AdminActivityLog = lazy(() => import("./pages/users/admin/AdminActivityLog"));
 const AdminSettings = lazy(() => import("./pages/users/admin/AdminSettings"));
 const TeacherAvaibility = lazy(() => import("./pages/users/admin/TeacherAvaibility"));
 
-//Academic Structure sidebar imports
-const AcademicStructure = lazy(() =>
-  import("./components/navigation/AcademicStructure")
-);
-const UserAccounts = lazy(() =>
-  import("./pages/users/admin/academic-structure/UserAccounts")
-);
-const AcademicDepartments = lazy(() =>
-  import("./pages/users/admin/academic-structure/AcademicDepartments")
-);
-const Teachers = lazy(() =>
-  import("./pages/users/admin/academic-structure/Teachers")
-);
-const AcademicYears = lazy(() =>
-  import("./pages/users/admin/academic-structure/AcademicYears")
-);
-const Semesters = lazy(() =>
-  import("./pages/users/admin/academic-structure/Semesters")
-);
-const Batches = lazy(() =>
-  import("./pages/users/admin/academic-structure/Batches")
-);
-const Courses = lazy(() =>
-  import("./pages/users/admin/academic-structure/Courses")
-);
-const Rooms = lazy(() =>
-  import("./pages/users/admin/academic-structure/Rooms")
-);
-const TimeSlots = lazy(() =>
-  import("./pages/users/admin/academic-structure/TimeSlots")
-);
-const CourseAssignments = lazy(() =>
-  import("./pages/users/admin/academic-structure/CourseAssignments")
-);
+//Academic Structure sidebar
+const AcademicStructure = lazy(() => import("./components/navigation/AcademicStructure"));
+const UserAccounts = lazy(() => import("./pages/users/admin/academic-structure/UserAccounts"));
+const AcademicDepartments = lazy(() => import("./pages/users/admin/academic-structure/AcademicDepartments"));
+const Teachers = lazy(() => import("./pages/users/admin/academic-structure/Teachers"));
+const AcademicYears = lazy(() => import("./pages/users/admin/academic-structure/AcademicYears"));
+const Semesters = lazy(() => import("./pages/users/admin/academic-structure/Semesters"));
+const Batches = lazy(() => import("./pages/users/admin/academic-structure/Batches"));
+const Courses = lazy(() => import("./pages/users/admin/academic-structure/Courses"));
+const Rooms = lazy(() => import("./pages/users/admin/academic-structure/Rooms"));
+const TimeSlots = lazy(() => import("./pages/users/admin/academic-structure/TimeSlots"));
+const CourseAssignments = lazy(() => import("./pages/users/admin/academic-structure/CourseAssignments"));
 
 //Teacher Pages
-const TeacherDashboard = lazy(() =>
-  import("./pages/users/teacher/TeacherDashboard")
-);
+const TeacherDashboard = lazy(() => import("./pages/users/teacher/TeacherDashboard"));
 
 const App = () => {
   return (
