@@ -58,7 +58,7 @@ class InstitutionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'institution_name' => 'required|string|max:255',
-            'type' => 'required|in:University, College, School, Institute',
+            'type' => 'required|in:University,College,School,Institute',
             'address' => 'nullable|string|max:500',
             'contact_email' => 'nullable|email|max:255',
             'contact_phone' => 'nullable|string|max:15',
