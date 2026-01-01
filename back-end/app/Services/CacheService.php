@@ -215,6 +215,16 @@ class CacheService
     }
 
     /**
+     * @param int $id
+     * @return string
+     * Generate cache key for showing user details
+     */
+    public static function userModelKey(int $id): string
+    {
+        return "user:model:{$id}";
+    }
+
+    /**
      * Generate cache key for routine entries
      * "routine:5"
      */
