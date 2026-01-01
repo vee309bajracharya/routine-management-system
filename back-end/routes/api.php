@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -39,6 +40,15 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::get('/', [InstitutionController::class, 'show']);
             Route::post('/update', [InstitutionController::class, 'update']);
             Route::delete('/logo', [InstitutionController::class, 'deleteLogo']);
+        });
+
+        // User mgmt routes
+        Route::prefix('users')->group(function () {
+            Route::get('/', [UserController::class, 'index']);
+            Route::get('/{id}', [UserController::class, 'show']);
+            Route::post('/', [UserController::class, 'store']);
+            Route::put('/{id}', [UserController::class, 'update']);
+            Route::delete('/{id}', [UserController::class, 'destroy']);
         });
 
         // Dropdown routes
@@ -92,7 +102,6 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::get('/grid/{routineId}', [RoutineEntryController::class, 'getRoutineGrid']);
             Route::post('/copy', [RoutineEntryController::class, 'copyEntries']);
         });
-
 
     });
 
