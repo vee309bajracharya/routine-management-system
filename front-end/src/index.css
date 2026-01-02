@@ -25,7 +25,7 @@
   --color-warning-faidorange: oklch(0.9246 0.0845 86.39);
   --color-dark-overlay: hsl(228, 28%, 20%);
   --color-dark-hover: hsl(230, 17%, 14%);
-
+  --color-dark-box-outline: hsl(228, 28%, 35%);
   /*Dark*/
 
   /* font */
@@ -34,6 +34,25 @@
   /* responsive */
   --breakpoint-xs: 12.5rem; /* 200px */
 }
+/* Date picker indicator */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+}
+
+/* Dark mode invert */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+/* Time picker icon*/
+input[type="time"]::-webkit-calendar-picker-indicator {
+  opacity: 0.6;
+}
+
+/* Dark mode*/
+.dark input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 
 /* custom styling */
 
@@ -144,6 +163,12 @@
 .form-label{
   @apply block text-sm font-medium text-primary-text dark:text-white mb-2;
 }
+.textarea-input {
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+  bg-white dark:bg-dark-hover text-primary-text dark:text-white 
+  placeholder-gray-400 dark:placeholder-gray-500
+  disabled:opacity-50 resize-none;
+}
 
 .edit-form-info-span{
   @apply text-xs font-medium;
@@ -151,4 +176,28 @@
 
 .edit-form-info-p{
   @apply font-medium text-primary-text dark:text-white mt-1;
+}
+.cancel-btn {
+  @apply w-full bg-white text-primary-text border border-box-outline py-2 rounded-lg hover:text-error-red hover:border-error-red transition-colors duration-200 cursor-pointer dark:bg-dark-hover dark:text-white;
+}
+.form-radio {
+  @apply mr-1 rounded border-box-outline placeholder:text-sub-text text-main-blue focus:ring-mouse-pressed-blue;
+}
+.form-radio-title {
+  @apply text-sm text-primary-text dark:text-white;
+}
+.form-title {
+  @apply block text-sm font-medium text-primary-text dark:text-white mb-1;
+}
+.form-option {
+  @apply text-black dark:text-white dark:bg-dark-overlay;
+}
+.form-subtext {
+  @apply text-sm text-sub-text mt-1;
+}
+.form-header {
+  @apply text-2xl font-semibold text-primary-text dark:text-white;
+}
+.table-header {
+  @apply px-4 py-2 text-left text-xs font-medium uppercase text-primary-text dark:text-white;
 }

@@ -114,7 +114,7 @@ const AdminDepartment = () => {
           <select
             value={departmentSelectValue}
             onChange={(e) => addDepartment(e.target.value)}
-            className="inputbox"
+            className="dropdown-select"
           >
             <option value="" disabled>
               Choose a department
@@ -187,7 +187,7 @@ const AdminDepartment = () => {
               Choose a semester to view available courses and time slots.
             </p>
 
-            <select disabled className="inputbox w-full">
+            <select disabled className="dropdown-select w-full">
               <option>Choose a Semester</option>
             </select>
 
@@ -245,7 +245,7 @@ const AdminDepartment = () => {
             <select
               value={selectedSemesters[deptId] || ""}
               onChange={(e) => handleSemesterChange(deptId, e.target.value)}
-              className="inputbox w-full"
+              className="dropdown-select w-full"
             >
               <option value="" disabled>
                 Choose a Semester

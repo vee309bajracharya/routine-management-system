@@ -39,7 +39,7 @@ const AcademicDepartments = () => {
                 placeholder="Enter Department Name"
                 value={departmentName}
                 onChange={(e) => setDepartmentName(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>
@@ -49,7 +49,7 @@ const AcademicDepartments = () => {
                 placeholder="Enter Department Code"
                 value={departmentCode}
                 onChange={(e) => setDepartmentCode(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
           </div>
@@ -61,11 +61,7 @@ const AcademicDepartments = () => {
               <select
                 value={headOfDepartment}
                 onChange={(e) => setHeadOfDepartment(e.target.value)}
-                className={`inputbox dark:bg-dark-overlay appearance-none pr-10 w-full ${
-                  headOfDepartment === ""
-                    ? "!text-box-outline"
-                    : "text-black"
-                }`}
+                className="dropdown-select"
               >
                 <option value="" disabled>
                   Select Head of Department
@@ -73,10 +69,6 @@ const AcademicDepartments = () => {
                 <option value="john-doe">Ashish</option>
                 <option value="jane-smith">Veerin</option>
               </select>
-              <ChevronDown
-                size={18}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-              />
             </div>
           </div>
 
@@ -88,7 +80,7 @@ const AcademicDepartments = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="inputbox resize-none"
+              className="textarea-input"
             />
           </div>
 

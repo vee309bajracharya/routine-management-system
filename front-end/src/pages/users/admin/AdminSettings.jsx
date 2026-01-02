@@ -1,24 +1,56 @@
-import React, { useRef, useState } from "react";
-import { ImageUp } from "lucide-react";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
+import React, { useRef, useState, useEffect } from "react";
+import { ImageUp, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+import { useInstitution } from "../../../contexts/InstitutionContext";
+import { useFormik } from "formik";
+import { InstitutionValidationSchema } from "../../../validations/InstitutionValidationSchema";
 
 const AdminSettings = () => {
-  const [type, setType] = useState("Admin");
-  const [logo, setLogo] = useState(null);
+  const {
+    institution,
+    updateInstitution,
+    deleteInstitutionLogo,
+    fetchInstitution,
+    loading,
+  } = useInstitution();
+  const [logoPreview, setLogoPreview] = useState(null);
   const [logoFileName, setLogoFileName] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    // Fetch only if data does not exist
+    const fetchDetails = async () => {
+      if (!institution) {
+        await fetchInstitution();
+      }
+    };
+    fetchDetails();
+  }, [institution]);
+
+  //prefetch logo from back-end
+  useEffect(() => {
+    if (institution?.logo) {
+      setLogoPreview(institution.logo);
+    }
+  }, [institution]);
 
   // handle file select
   const handleFile = (file) => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file");
+      toast.error("Please upload an image file");
       return;
     }
 
-    setLogo(URL.createObjectURL(file));
+    setLogoPreview(URL.createObjectURL(file));
+    setLogoFile(file);
     setLogoFileName(file.name);
   };
 
@@ -27,18 +59,12 @@ const AdminSettings = () => {
     fileInputRef.current.click();
   };
 
-  // update logo
-  const handleUpdate = () => {
-    handleBrowse();
-  };
-
   // delete logo
-  const handleDelete = () => {
-    setLogo(null);
+  const handleDeletelogo = async () => {
+    await deleteInstitutionLogo();
+    setLogoPreview(null);
+    setLogoFile(null);
     setLogoFileName(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   // drag events
@@ -57,6 +83,49 @@ const AdminSettings = () => {
     handleFile(e.dataTransfer.files[0]);
   };
 
+  //formik setup
+  const formik = useFormik({
+    initialValues: {
+      institution_name: institution?.institution_name || "",
+      type: institution?.type,
+      address: institution?.address || "",
+      contact_email: institution?.contact_email,
+      contact_phone: institution?.contact_phone || "",
+    },
+    validationSchema: InstitutionValidationSchema,
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      try {
+        setIsLoading(true);
+
+        const formData = new FormData();
+        Object.entries(values).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        if (logoFile) {
+          formData.append("logo", logoFile);
+        }
+        await updateInstitution(formData);
+      } catch (error) {
+        throw new error();
+      } finally {
+        setIsLoading(false);
+      }
+    },
+  });
+
+  const { values, errors, touched, handleSubmit, handleChange } = formik;
+  //Loader show while fetching data
+  if (loading && !institution) {
+    return (
+      <div className="wrapper flex flex-col items-center justify-center min-h-[400px]">
+        <Loader2 size={40} className="animate-spin text-main-blue mb-2" />
+        <p className="text-sm text-sub-text animate-pulse font-medium">
+          Loading institutional settings...
+        </p>
+      </div>
+    );
+  }
   return (
     <section className="wrapper">
       <div className="max-w-2xl mx-auto p-6 border border-box-outline rounded-md font-general">
@@ -75,16 +144,16 @@ const AdminSettings = () => {
           onDrop={handleDrop}
           className={`mb-6 border-2 border-dashed rounded-lg bg-white dark:bg-dark-overlay p-8 text-center transition
             ${
-              dragActive || logo
+              dragActive || logoPreview
                 ? "border-main-blue bg-box-outline"
                 : "border-box-outline bg-white"
             }
           `}
         >
-          {logo ? (
+          {logoPreview ? (
             <div className="space-y-3">
               <img
-                src={logo}
+                src={logoPreview}
                 alt="Logo Preview"
                 className="mx-auto h-24 object-contain"
               />
@@ -92,15 +161,15 @@ const AdminSettings = () => {
               <div className="flex justify-center gap-2">
                 <button
                   type="button"
-                  onClick={handleUpdate}
-                  className="px-3 py-1 bg-main-blue text-white text-sm rounded hover:bg-mouse-pressed-blue transition-colors"
+                  onClick={handleBrowse}
+                  className="px-3 py-1 bg-main-blue text-white text-sm rounded hover:bg-mouse-pressed-blue transition-colors cursor-pointer"
                 >
                   Update
                 </button>
                 <button
                   type="button"
-                  onClick={handleDelete}
-                  className="px-3 py-1 bg-white text-primary-text text-sm border border-box-outline rounded hover:text-error-red transition-colors"
+                  onClick={handleDeletelogo}
+                  className="px-3 py-1 bg-white text-primary-text text-sm border border-box-outline rounded hover:text-error-red transition-colors cursor-pointer"
                 >
                   Delete
                 </button>
@@ -111,8 +180,12 @@ const AdminSettings = () => {
               <div className="flex items-center justify-center mx-auto mb-3 w-10 h-10 rounded-full bg-gray-100">
                 <ImageUp size={20} className="text-sub-text" />
               </div>
-              <p className="text-sm dark:text-white">Drag and drop your logo to upload</p>
-              <p className="text-xs my-2 text-box-outline dark:text-white">or</p>
+              <p className="text-sm dark:text-white">
+                Drag and drop your logo to upload
+              </p>
+              <p className="text-xs my-2 text-box-outline dark:text-white">
+                or
+              </p>
               <button
                 type="button"
                 onClick={handleBrowse}
@@ -133,56 +206,71 @@ const AdminSettings = () => {
         </div>
 
         {/* Form */}
-        <div className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Type */}
-          <div>
-            <label className="block text-sm font-medium mb-2 dark:text-white">Type</label>
-            <div className="flex gap-6">
-              <label className="flex items-center gap-2 cursor-pointer dark:text-white">
-                <input
-                  type="radio"
-                  checked={type === "Admin"}
-                  onChange={() => setType("Admin")}
-                />
-                Admin
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer dark:text-white ">
-                <input
-                  type="radio"
-                  checked={type === "Teacher"}
-                  onChange={() => setType("Teacher")}
-                />
-                Teacher
-              </label>
-            </div>
+          <div className="flex gap-6">
+            {["University", "College", "School", "Institute"].map(
+              (typeValue) => (
+                <label
+                  key={typeValue}
+                  className="flex items-center text-primary-text dark:text-white gap-2"
+                >
+                  <input
+                    type="radio"
+                    name="type"
+                    value={typeValue}
+                    checked={values.type === typeValue}
+                    onChange={handleChange}
+                  />
+                  {typeValue}
+                </label>
+              )
+            )}
           </div>
 
           {/* Inputs */}
           <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="form-title">Name</label>
-              <input className="inputbox" placeholder="Enter Full Name" />
-            </div>
-            <div>
-              <label className="form-title">Address</label>
-              <input className="inputbox" placeholder="Enter Your Address" />
-            </div>
-            <div>
-              <label className="form-title">Email</label>
-              <input className="inputbox" placeholder="Enter Your Email" />
-            </div>
-            <div>
-              <label className="form-title">Phone Number</label>
-              <input className="inputbox" placeholder="Enter Phone Number" />
-            </div>
+            {[
+              ["institution_name", "Institution Name", true],
+              ["address", "Address", false],
+              ["contact_email", "Email", false],
+              ["contact_phone", "Phone", false],
+            ].map(([field, label, required]) => (
+              <div key={field}>
+                <label className="form-title">
+                  {label}
+                  {required && <span className="text-error-red ml-1">*</span>}
+                </label>
+
+                <input
+                  name={field}
+                  value={values[field]}
+                  onChange={handleChange}
+                  onBlur={formik.handleBlur}
+                  className="dropdown-select"
+                />
+
+                {touched[field] && errors[field] && (
+                  <p className="text-error-red text-xs mt-3">{errors[field]}</p>
+                )}
+              </div>
+            ))}
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-4">
-            <button className="cancel-btn">Cancel</button>
-            <button className="auth-btn">Submit</button>
+          <div>
+            <button className="auth-btn" disabled={isLoading}>
+              {isLoading ? (
+                <Loader2
+                  size={16}
+                  className="animate-spin mx-auto dark:invert"
+                />
+              ) : (
+                "Save Changes"
+              )}
+            </button>
           </div>
-        </div>
+        </form>
       </div>
     </section>
   );

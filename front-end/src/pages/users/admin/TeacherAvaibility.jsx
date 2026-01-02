@@ -83,7 +83,7 @@ const TeacherAvailability = () => {
               <select
                 value={teacherName}
                 onChange={(e) => setTeacherName(e.target.value)}
-                className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                className="dropdown-select"
               >
                 {teachers.map((teacher) => (
                   <option key={teacher.value} value={teacher.value}>
@@ -91,10 +91,6 @@ const TeacherAvailability = () => {
                   </option>
                 ))}
               </select>
-              <ChevronDown
-                size={18}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-box-outline pointer-events-none"
-              />
             </div>
           </div>
 
@@ -153,7 +149,7 @@ const TeacherAvailability = () => {
                           onChange={(e) =>
                             handleTimeChange(dayFull, "from", e.target.value)
                           }
-                          className="inputbox w-20"
+                          className="dropdown-select w-20"
                         />
                         -
                         <input
@@ -162,7 +158,7 @@ const TeacherAvailability = () => {
                           onChange={(e) =>
                             handleTimeChange(dayFull, "to", e.target.value)
                           }
-                          className="inputbox w-20"
+                          className="dropdown-select w-20"
                         />
                       </div>
                       <select
@@ -170,7 +166,7 @@ const TeacherAvailability = () => {
                         onChange={(e) =>
                           handleTimeChange(dayFull, "period", e.target.value)
                         }
-                        className="inputbox w-16"
+                        className="dropdown-select w-16"
                       >
                         <option>AM</option>
                         <option>PM</option>
@@ -194,7 +190,7 @@ const TeacherAvailability = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="inputbox resize-none"
+              className="textarea-input resize-none"
             />
           </div>
 

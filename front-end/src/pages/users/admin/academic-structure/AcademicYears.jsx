@@ -37,7 +37,7 @@ const AcademicYears = () => {
               <select
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
-                className={`inputbox appearance-none pr-10 w-full bg-white dark:bg-dark-overlay text-black dark:text-white`}
+                className={`dropdown-select`}
               >
                 {departments.map((dept) => (
                   <option
@@ -50,10 +50,6 @@ const AcademicYears = () => {
                   </option>
                 ))}
               </select>
-              <ChevronDown
-                size={18}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-box-outline pointer-events-none"
-              />
             </div>
           </div>
 
@@ -65,7 +61,7 @@ const AcademicYears = () => {
               placeholder="Enter Academic Year Name"
               value={academicYearName}
               onChange={(e) => setAcademicYearName(e.target.value)}
-              className="inputbox"
+              className="dropdown-select"
             />
           </div>
 
@@ -77,7 +73,7 @@ const AcademicYears = () => {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="inputbox w-full"
+                className="dropdown-select"
               />
             </div>
 
@@ -87,7 +83,7 @@ const AcademicYears = () => {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="inputbox w-full"
+                className="dropdown-select"
               />
             </div>
           </div>
@@ -98,7 +94,7 @@ const AcademicYears = () => {
               Cancel
             </button>
             <button type="submit" className="auth-btn">
-              Submit
+                Create
             </button>
           </div>
         </form>
