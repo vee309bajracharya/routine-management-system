@@ -358,6 +358,7 @@ class UserController extends Controller
                 'name' => 'sometimes|string|max:255',
                 'email' => 'sometimes|email|unique:users,email,' . $id,
                 'phone' => 'nullable|string|max:10',
+                'status' => 'sometimes|in:active,inactive',
             ];
 
             // pwd update validation
@@ -389,6 +390,8 @@ class UserController extends Controller
                 $user->email = $request->email;
             if ($request->has('phone'))
                 $user->phone = $request->phone;
+            if ($request->has('status'))
+                $user->status = $request->status;
 
             //handle pwd update
             $shouldLogout = false;
@@ -401,7 +404,7 @@ class UserController extends Controller
                     DB::rollBack();
                     return response()->json([
                         'success' => false,
-                        'message' => 'Top many password change attempts. Try again after few minutes.'
+                        'message' => 'Too many password change attempts. Try again after few minutes.'
                     ], 429);
                 }
                 RateLimiter::hit($ratekey, 900);
@@ -457,6 +460,7 @@ class UserController extends Controller
                 }
             }
 
+            // load full response for teacher
             $user->load([
                 'teacher.department:id,department_name,code'
             ]);
