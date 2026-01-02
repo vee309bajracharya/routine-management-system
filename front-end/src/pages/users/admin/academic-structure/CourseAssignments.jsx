@@ -60,7 +60,7 @@ const CourseAssignments = () => {
                 <select
                   value={courseName}
                   onChange={(e) => setCourseName(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {courses.map((course) => (
                     <option key={course.value} value={course.value}>
@@ -68,10 +68,6 @@ const CourseAssignments = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
               </div>
             </div>
             <div>
@@ -80,7 +76,7 @@ const CourseAssignments = () => {
                 <select
                   value={teacherName}
                   onChange={(e) => setTeacherName(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {teachers.map((teacher) => (
                     <option key={teacher.value} value={teacher.value}>
@@ -88,10 +84,6 @@ const CourseAssignments = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
               </div>
             </div>
           </div>
@@ -104,7 +96,7 @@ const CourseAssignments = () => {
                 <select
                   value={batchName}
                   onChange={(e) => setBatchName(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {batches.map((batch) => (
                     <option key={batch.value} value={batch.value}>
@@ -112,10 +104,6 @@ const CourseAssignments = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
               </div>
             </div>
             <div>
@@ -124,7 +112,7 @@ const CourseAssignments = () => {
                 <select
                   value={semesterName}
                   onChange={(e) => setSemesterName(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {semesters.map((sem) => (
                     <option key={sem.value} value={sem.value}>
@@ -132,10 +120,6 @@ const CourseAssignments = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
               </div>
             </div>
           </div>
@@ -148,7 +132,7 @@ const CourseAssignments = () => {
                 <select
                   value={departmentName}
                   onChange={(e) => setDepartmentName(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {departments.map((dept) => (
                     <option key={dept.value} value={dept.value}>
@@ -156,10 +140,6 @@ const CourseAssignments = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
               </div>
             </div>
             <div>
@@ -199,7 +179,7 @@ const CourseAssignments = () => {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={4}
-              className="inputbox resize-none"
+              className="textarea-input resize-none"
             />
           </div>
 
@@ -209,7 +189,7 @@ const CourseAssignments = () => {
               Cancel
             </button>
             <button type="submit" className="auth-btn">
-              Submit
+              Create
             </button>
           </div>
         </form>

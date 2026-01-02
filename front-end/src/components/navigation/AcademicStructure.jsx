@@ -12,7 +12,6 @@ const sidebarItems = [
         section: "Curriculum",
         items: [
             { to: 'academic-departments', label: 'Departments' },
-            { to: 'teachers', label: 'Teachers' },
             { to: 'academic-years', label: 'Academic Years' },
             { to: 'semesters', label: 'Semesters' },
             { to: 'batches', label: 'Batches' },

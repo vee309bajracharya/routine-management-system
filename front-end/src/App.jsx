@@ -30,7 +30,6 @@ const TeacherAvaibility = lazy(() => import("./pages/users/admin/TeacherAvaibili
 const AcademicStructure = lazy(() => import("./components/navigation/AcademicStructure"));
 const UserAccounts = lazy(() => import("./pages/users/admin/academic-structure/UserAccounts"));
 const AcademicDepartments = lazy(() => import("./pages/users/admin/academic-structure/AcademicDepartments"));
-const Teachers = lazy(() => import("./pages/users/admin/academic-structure/Teachers"));
 const AcademicYears = lazy(() => import("./pages/users/admin/academic-structure/AcademicYears"));
 const Semesters = lazy(() => import("./pages/users/admin/academic-structure/Semesters"));
 const Batches = lazy(() => import("./pages/users/admin/academic-structure/Batches"));
@@ -100,7 +99,6 @@ const App = () => {
               path="academic-departments"
               element={<AcademicDepartments />}
             />
-            <Route path="teachers" element={<Teachers />} />
             <Route path="academic-years" element={<AcademicYears />} />
             <Route path="semesters" element={<Semesters />} />
             <Route path="batches" element={<Batches />} />

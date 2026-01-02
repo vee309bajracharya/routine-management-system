@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronDown, Calendar } from "lucide-react";
+
 
 const Semesters = () => {
   const [academicYear, setAcademicYear] = useState("BCA-2022");
@@ -39,9 +39,7 @@ const Semesters = () => {
                 <select
                   value={academicYear}
                   onChange={(e) => setAcademicYear(e.target.value)}
-                  className={`inputbox form-option text-box-outline appearance-none pr-10 w-full ${
-                    academicYear === "" ? "text-box-outline" : "text-black"
-                  }`}
+                  className="dropdown-select"
                 >
                   {academicYears.map((year) => (
                     <option key={year.value} value={year.value}>
@@ -49,10 +47,7 @@ const Semesters = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
+                
               </div>
             </div>
             <div>
@@ -62,7 +57,7 @@ const Semesters = () => {
                 placeholder="Enter Semester Name"
                 value={semesterName}
                 onChange={(e) => setSemesterName(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>
@@ -72,7 +67,7 @@ const Semesters = () => {
                 placeholder="Enter Semester Number"
                 value={semesterNumber}
                 onChange={(e) => setSemesterNumber(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
           </div>
@@ -85,7 +80,7 @@ const Semesters = () => {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="inputbox pr-10"
+                className="dropdown-select pr-10"
               />
             </div>
             <div className="relative">
@@ -94,7 +89,7 @@ const Semesters = () => {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="inputbox pr-10"
+                className="dropdown-select pr-10"
               />
             </div>
           </div>

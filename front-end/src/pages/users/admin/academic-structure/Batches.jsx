@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ChevronDown } from "lucide-react";
 
 const Batches = () => {
   const [departmentName, setDepartmentName] = useState("BCA");
@@ -46,9 +45,7 @@ const Batches = () => {
                 <select
                   value={departmentName}
                   onChange={(e) => setDepartmentName(e.target.value)}
-                  className={`inputbox form-option text-box-outline appearance-none pr-10 w-full ${
-                    departmentName === "" ? "text-sub-text" : "text-black"
-                  }`}
+                  className="dropdown-select"
                 >
                   {departments.map((dept) => (
                     <option key={dept.value} value={dept.value}>
@@ -56,10 +53,6 @@ const Batches = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
               </div>
             </div>
             <div>
@@ -68,9 +61,7 @@ const Batches = () => {
                 <select
                   value={semesterName}
                   onChange={(e) => setSemesterName(e.target.value)}
-                  className={`inputbox form-option text-box-outline appearance-none pr-10 w-full ${
-                    semesterName === "" ? "text-sub-text" : "text-black"
-                  }`}
+                  className="dropdown-select"
                 >
                   {semesters.map((sem) => (
                     <option key={sem.value} value={sem.value}>
@@ -78,15 +69,11 @@ const Batches = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sub-text pointer-events-none"
-                />
               </div>
             </div>
           </div>
 
-          {/* Batch Code and Batch Name */}
+          {/* Batch Name and Batch Code */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="form-title">Batch Name</label>
@@ -95,7 +82,7 @@ const Batches = () => {
                 placeholder="Enter Batch Name"
                 value={batchName}
                 onChange={(e) => setBatchName(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>
@@ -105,7 +92,7 @@ const Batches = () => {
                 placeholder="Enter Batch Code"
                 value={batchCode}
                 onChange={(e) => setBatchCode(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             
@@ -120,7 +107,7 @@ const Batches = () => {
                 placeholder="Enter Batch Year Level"
                 value={batchYearLevel}
                 onChange={(e) => setBatchYearLevel(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>

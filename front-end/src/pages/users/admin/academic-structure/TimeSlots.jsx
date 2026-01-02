@@ -160,7 +160,7 @@ const TimeSlots = () => {
                 <select
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {departments.map((dept) => (
                     <option key={dept.value} value={dept.value}>
@@ -168,10 +168,6 @@ const TimeSlots = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
               </div>
             </div>
             <div>
@@ -180,7 +176,7 @@ const TimeSlots = () => {
                 <select
                   value={semester}
                   onChange={(e) => setSemester(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {semestersList.map((sem) => (
                     <option key={sem.value} value={sem.value}>
@@ -188,10 +184,6 @@ const TimeSlots = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
               </div>
             </div>
           </div>
@@ -204,7 +196,7 @@ const TimeSlots = () => {
                 <select
                   value={batch}
                   onChange={(e) => setBatch(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {batches.map((batch) => (
                     <option key={batch.value} value={batch.value}>
@@ -212,10 +204,6 @@ const TimeSlots = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
               </div>
             </div>
             <div>
@@ -224,7 +212,7 @@ const TimeSlots = () => {
                 <select
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="inputbox form-option text-box-outline appearance-none pr-10 w-full"
+                  className="dropdown-select"
                 >
                   {nameslist.map((name) => (
                     <option key={name.value} value={name.value}>
@@ -232,10 +220,6 @@ const TimeSlots = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
               </div>
             </div>
           </div>
@@ -250,7 +234,7 @@ const TimeSlots = () => {
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>
@@ -259,7 +243,7 @@ const TimeSlots = () => {
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
           </div>
@@ -272,7 +256,7 @@ const TimeSlots = () => {
               placeholder="Enter Duration"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="inputbox"
+              className="dropdown-select"
             />
           </div>
 
@@ -283,13 +267,13 @@ const TimeSlots = () => {
               <button
                 type="button"
                 onClick={() => setApplicableDaysOpen(!applicableDaysOpen)}
-                className="inputbox form-option text-box-outline pr-10 w-full text-left flex flex-wrap items-center gap-2 py-2 pl-3"
+                className="dropdown-select w-full flex items-center"
               >
                 {selectedDays.length > 0 ? (
                   selectedDays.map((day) => (
                     <span
                       key={day}
-                      className="inline-flex items-center bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
+                      className="inline-flex items-center bg-main-blue text-white text-xs px-2 py-1 rounded-full"
                     >
                       {day}
                       <button
@@ -305,23 +289,23 @@ const TimeSlots = () => {
                     </span>
                   ))
                 ) : (
-                  <span className="text-gray-400">Select Applicable Days</span>
+                  <span className="text-sub-text">Select Applicable Days</span>
                 )}
                 <ChevronDown
                   size={18}
-                  className={`ml-auto text-gray-400 transition-transform ${applicableDaysOpen ? 'rotate-180' : ''}`}
+                  className={`ml-auto text-black dark:text-white transition-transform ${applicableDaysOpen ? 'rotate-180' : ''}`}
                 />
               </button>
               {applicableDaysOpen && (
-                <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
+                <div className="dropdown-select">
                   {/* Weeks Section */}
                   <div className="p-3">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-700">Weeks</span>
+                      <span className="text-sm font-medium text-primary-text dark:text-white">Weeks</span>
                       <button
                         type="button"
                         onClick={selectAllDays}
-                        className="px-3 py-1 bg-gray-200 rounded text-xs text-gray-700 hover:bg-gray-300"
+                        className="px-3 py-1 bg-box-outline rounded text-xs text-primary-text hover:bg-gray-300"
                       >
                         All
                       </button>
@@ -351,7 +335,7 @@ const TimeSlots = () => {
               Cancel
             </button>
             <button type="submit" className="auth-btn">
-              Submit
+              Create
             </button>
           </div>
         </form>

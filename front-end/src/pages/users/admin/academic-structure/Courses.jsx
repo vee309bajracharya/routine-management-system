@@ -53,9 +53,7 @@ const Courses = () => {
                 <select
                   value={departmentName}
                   onChange={(e) => setDepartmentName(e.target.value)}
-                  className={`inputbox form-option text-box-outline appearance-none pr-10 w-full ${
-                    departmentName === "" ? "text-gray-400" : "text-black"
-                  }`}
+                  className="dropdown-select"
                 >
                   {departments.map((dept) => (
                     <option key={dept.value} value={dept.value}>
@@ -63,10 +61,6 @@ const Courses = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
               </div>
             </div>
             <div>
@@ -75,9 +69,7 @@ const Courses = () => {
                 <select
                   value={semesterNumber}
                   onChange={(e) => setSemesterNumber(e.target.value)}
-                  className={`inputbox form-option text-box-outline appearance-none pr-10 w-full ${
-                    semesterNumber === "" ? "text-gray-400" : "text-black"
-                  }`}
+                  className="dropdown-select"
                 >
                   {semesters.map((sem) => (
                     <option key={sem.value} value={sem.value}>
@@ -85,10 +77,6 @@ const Courses = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDown
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                />
               </div>
             </div>
           </div>
@@ -102,7 +90,7 @@ const Courses = () => {
                 placeholder="Enter Course Name"
                 value={courseName}
                 onChange={(e) => setCourseName(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>
@@ -112,7 +100,7 @@ const Courses = () => {
                 placeholder="Enter Course Code"
                 value={courseCode}
                 onChange={(e) => setCourseCode(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
           </div>
@@ -165,7 +153,7 @@ const Courses = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="inputbox resize-none"
+              className="textarea-input resize-none"
             />
           </div>
 

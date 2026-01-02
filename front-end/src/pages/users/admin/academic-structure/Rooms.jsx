@@ -30,7 +30,7 @@ const Rooms = () => {
                 placeholder="Enter Room Name / Lab"
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>
@@ -40,7 +40,7 @@ const Rooms = () => {
                 placeholder="Enter Room Number"
                 value={roomNumber}
                 onChange={(e) => setRoomNumber(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
           </div>
@@ -54,7 +54,7 @@ const Rooms = () => {
                 placeholder="Enter Building"
                 value={building}
                 onChange={(e) => setBuilding(e.target.value)}
-                className="inputbox"
+                className="dropdown-select"
               />
             </div>
             <div>
