@@ -21,7 +21,8 @@ class RoutineExportController extends Controller
         $timeSlots = TimeSlot::where('batch_id', $routine->batch_id)
             ->where('semester_id', $routine->semester_id)
             ->where('is_active', true)
-            ->orderBy('slot_order', 'asc')
+            ->select('start_time', 'end_time', 'slot_type')
+            ->distinct()
             ->orderBy('start_time', 'asc')
             ->get();
 
@@ -35,10 +36,11 @@ class RoutineExportController extends Controller
             ->whereNull('deleted_at')
             ->get();
 
-        // grid [Day][TimeSlotID]
+        // Grid mapping using time String as key
         $grid = [];
         foreach ($entries as $entry) {
-            $grid[$entry->day_of_week][$entry->time_slot_id] = [
+            $timeKey = $entry->timeSlot->start_time->format('H:i');
+            $grid[$entry->day_of_week][$timeKey] = [
                 'course_name' => $entry->courseAssignment?->course?->course_name,
                 'teacher_name' => $entry->courseAssignment?->teacher?->user?->name,
                 'room_label' => $entry->room?->display_label ?? $entry->room?->name,

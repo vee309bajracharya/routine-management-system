@@ -167,26 +167,30 @@
                 @endphp
 
                 @foreach($days as $day)
-                    <tr>
-                        <td class="day-column">{{ $day }}</td>
+                            <tr>
+                                <td class="day-column">{{ $day }}</td>
 
-                        @foreach($timeSlots as $slot)
-                            @if($slot->slot_type === 'Break')
-                                <td class="break-cell">BREAK</td>
-                            @else
-                                @php $data = $grid[$day][$slot->id] ?? null; @endphp
-                                <td>
-                                    @if($data)
-                                        <span class="course-name">{{ $data['course_name'] }}</span>
-                                        <span class="teacher-name">{{ $data['teacher_name'] }}</span>
-                                        <span class="room-label">Room: {{ $data['room_label'] }}</span>
-                                        <span class="entry-type">{{ $data['entry_type'] }}</span>
-                                    @else
-                                        <span class="empty-cell">—</span>
+                                @foreach($timeSlots as $slot)
+                                            @php 
+                                                $timeKey = $slot->start_time->format('H:i');
+                                                $data = $grid[$day][$timeKey] ?? null; 
+                                            @endphp
+
+                                         @if($slot->slot_type === 'Break')
+                                            <td class="break-cell">BREAK</td>
+                                        @else
+                                        <td>
+                                            @if($data)
+                                                <span class="course-name">{{ $data['course_name'] }}</span>
+                                                <span class="teacher-name">{{ $data['teacher_name'] }}</span>
+                                                <span class="room-label">Room: {{ $data['room_label'] }}</span>
+                                                <span class="entry-type">{{ $data['entry_type'] }}</span>
+                                            @else
+                                                <span class="empty-cell">—</span>
+                                            @endif
+                                        </td>
                                     @endif
-                                </td>
-                            @endif
-                        @endforeach
+                                @endforeach
                     </tr>
                 @endforeach
             </tbody>
