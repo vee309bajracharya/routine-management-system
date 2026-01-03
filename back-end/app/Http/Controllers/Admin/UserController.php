@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Department;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Models\RoutineEntry;
 use App\Services\CacheService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,10 +57,10 @@ class UserController extends Controller
                 }
 
                 if ($request->filled('department')) {
-                    $department = $request->department;
-                    $query->whereHas('teacher.department', function ($q) use ($department) {
-                        $q->where('code', 'like', "%{$department}%");
-                    });
+                    $query->where('role', 'teacher')
+                        ->whereHas('teacher.department', function ($q) use ($request) {
+                            $q->where('code', $request->department);
+                        });
                 }
 
                 return $query->orderBy('created_at', 'desc')->paginate(15);
@@ -133,6 +134,7 @@ class UserController extends Controller
      * 
      * get specific user details with all relationships
      *  - accessible by both admin and teacher
+     *  - teacher schedule details
      */
     public function show($id)
     {
@@ -144,11 +146,6 @@ class UserController extends Controller
                 return User::where('institution_id', $institutionId)
                     ->with([
                         'teacher.department:id,department_name,code',
-                        'teacher.courseAssignments.course:id,course_name,code',
-                        'teacher.courseAssignments.batch:id,batch_name,shift',
-                        'teacher.availability' => function ($q) {
-                            $q->orderByRaw("FIELD(day_of_week, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')");
-                        }
                     ])
                     ->findOrFail($id);
             }, self::USER_CACHE_TTL);
@@ -167,36 +164,65 @@ class UserController extends Controller
 
             // but for teacher, add extra info's to $data
             if ($user->role === 'teacher' && $user->teacher) {
+                $teacherId = $user->teacher->id;
+
+                // Schedule Availability
+                $scheduleCacheKey = CacheService::teacherScheduleKey($teacherId);
+                $schedule = CacheService::remember($scheduleCacheKey, function () use ($teacherId) {
+                    return RoutineEntry::whereHas('courseAssignment', function ($q) use ($teacherId) {
+                        $q->where('teacher_id', $teacherId);
+                    })
+                        ->with([
+                            'timeSlot:id,start_time,end_time',
+                            'room:id,room_number,room_type',
+                            'courseAssignment.course:id,course_name',
+                            'courseAssignment.batch:id,batch_name,shift',
+                        ])
+                        ->orderByRaw(
+                            "FIELD(day_of_week, 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday')"
+                        )
+                        ->get()
+                        ->map(function ($entry) {
+                            return [
+                                'day' => $entry->day_of_week,
+
+                                'batch' => [
+                                    'id' => $entry->courseAssignment->batch->id,
+                                    'name' => $entry->courseAssignment->batch->batch_name,
+                                    'shift' => $entry->courseAssignment->batch->shift,
+                                ],
+
+                                'course' => [
+                                    'id' => $entry->courseAssignment->course->id,
+                                    'name' => $entry->courseAssignment->course->course_name,
+                                ],
+
+                                'time_slot' => [
+                                    'id' => $entry->timeSlot->id,
+                                    'display_label' =>
+                                        "{$entry->timeSlot->start_time->format('H:i')} - {$entry->timeSlot->end_time->format('H:i')}",
+                                ],
+
+                                'room' => [
+                                    'id' => $entry->room->id,
+                                    'room_type' => $entry->room->room_type,
+                                    'room_number' => $entry->room->room_number,
+                                ],
+                            ];
+                        });
+                }, self::USER_CACHE_TTL);
+
                 $data['teacher_info'] = [
                     'id' => $user->id,
                     'employment_type' => $user->teacher->employment_type,
+
                     'department' => $user->teacher->department ? [
                         'id' => $user->teacher->department->id,
                         'name' => $user->teacher->department->department_name,
                         'code' => $user->teacher->department->code,
                     ] : null,
-                    'course_assignments' => $user->teacher->courseAssignments->map(function ($assignment) {
-                        return [
-                            'id' => $assignment->id,
-                            'course' => [
-                                'id' => $assignment->course->id,
-                                'name' => $assignment->course->course_name,
-                                'code' => $assignment->course->code,
-                            ],
-                            'batch' => [
-                                'id' => $assignment->batch->id,
-                                'name' => $assignment->batch->batch_name,
-                                'shift' => $assignment->batch->shift,
-                            ],
-                        ];
-                    }),
-                    'availability' => $user->teacher->availability->map(function ($avail) {
-                        return [
-                            'id' => $avail->id,
-                            'day_of_week' => $avail->day_of_week,
-                            'time_range' => $avail->available_from->format('H:i') . ' - ' . $avail->available_to->format('H:i'),
-                        ];
-                    }),
+                    
+                    'schedule_availability' => $schedule,
                 ];
             }
 
@@ -205,6 +231,7 @@ class UserController extends Controller
                 'message' => 'User details fetched successfully',
                 'data' => $data,
             ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

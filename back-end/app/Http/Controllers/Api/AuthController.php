@@ -151,7 +151,6 @@ class AuthController extends Controller
             'email' => $user->email,
             'role'=> $user->role,
             'status'=> $user->status,
-            'institution_id'=> auth()->user()->id,
             'teacher' => $user->teacher()->first(['id', 'institution_id', 'department_id',]),
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
