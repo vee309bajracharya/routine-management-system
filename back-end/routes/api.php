@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Teacher\TeacherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -108,7 +109,10 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
     // Teacher routes
     Route::middleware(['check.role:teacher'])->prefix('teacher')->group(function () {
 
-        // Teacher dashboard route
-        Route::get('/dashboard', [TeacherDashboardController::class, 'index']);
+        Route::get('/dashboard', [TeacherDashboardController::class, 'index']); //dashboard
+        Route::get('/profile', [TeacherController::class, 'show']); //show profile details
+        Route::put('/update-profile', [TeacherController::class, 'update']); //update profile details
+        Route::get('/today-classes', [TeacherController::class, 'getTodayClasses']); // get today's schedule status
+        Route::get('/schedule', [TeacherController::class, 'getSchedule']); // get all assigned schedules
     });
 });
