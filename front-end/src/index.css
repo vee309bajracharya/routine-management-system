@@ -53,6 +53,17 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
+::-webkit-scrollbar {
+  width: 0.1rem;
+  height: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+/* ::-webkit-scrollbar-thumb {
+  background-color: var(--color-main-blue);
+} */
 
 /* custom styling */
 
@@ -144,23 +155,23 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply px-3 py-1 border border-gray-300 rounded-md bg-gray-100 text-sm cursor-pointer;
 }
 
-.routine-list-head{
+.routine-list-head {
   @apply p-3 text-left;
 }
 
-.status-btn{
+.status-btn {
   @apply px-3 py-1 text-sm font-medium rounded-md cursor-pointer;
 }
 
-.grid-container{
+.grid-container {
   @apply border-r border-gray-300 dark:bg-dark-hover text-primary-text dark:text-white flex items-center justify-center p-2 min-h-[100px] min-w-[200px] transition-colors hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer;
 }
 
-.dropdown-select{
+.dropdown-select {
   @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-dark-hover text-primary-text dark:text-white disabled:opacity-50;
 }
 
-.form-label{
+.form-label {
   @apply block text-sm font-medium text-primary-text dark:text-white mb-2;
 }
 .textarea-input {
@@ -170,11 +181,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   disabled:opacity-50 resize-none;
 }
 
-.edit-form-info-span{
+.edit-form-info-span {
   @apply text-xs font-medium;
 }
 
-.edit-form-info-p{
+.edit-form-info-p {
   @apply font-medium text-primary-text dark:text-white mt-1;
 }
 .cancel-btn {

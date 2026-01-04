@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\Semester;
+use App\Models\Department;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Carbon\Carbon;
 
 class AcademicYear extends Model
 {
@@ -31,6 +32,11 @@ class AcademicYear extends Model
     public function institution()
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    // academic year belongs to a department
+    public function department(){
+        return $this->belongsTo(Department::class);
     }
 
     // all semesters of this academic year

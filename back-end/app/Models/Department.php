@@ -7,6 +7,7 @@ use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Teacher;
 use App\Models\Institution;
+use App\Models\AcademicYear;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,6 +43,12 @@ class Department extends Model
         return $this->hasMany(Teacher::class);
     }
 
+    // a department has many academic years
+    public function academicYears()
+    {
+        return $this->hasMany(AcademicYear::class);
+    }
+
     // get all courses in this department
     public function courses()
     {
@@ -57,13 +64,15 @@ class Department extends Model
     // ===== Scopes ======
 
     // departments filter based on institution
-    public function scopeByInstitution($query,$institutionId){
-        return $query->where('institution_id',$institutionId);
+    public function scopeByInstitution($query, $institutionId)
+    {
+        return $query->where('institution_id', $institutionId);
     }
 
     // filter active departments
-    public function scopeActive($query){
-        return $query->where('status','active');
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 
 }

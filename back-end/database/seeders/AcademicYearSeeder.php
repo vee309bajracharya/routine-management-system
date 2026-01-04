@@ -18,6 +18,7 @@ class AcademicYearSeeder extends Seeder
             // Demo Institution - Departments Academic Year
             [
                 'institution_id' => 1,
+                'department_id'=> 1,
                 'year_name' => 'BCA-2022',
                 'start_date' => '2022-07-30',
                 'end_date' => '2026-07-30',
@@ -27,6 +28,7 @@ class AcademicYearSeeder extends Seeder
             ],
             [
                 'institution_id' => 1,
+                'department_id'=> 2,
                 'year_name' => 'BSc-CSIT-2022',
                 'start_date' => '2022-07-30',
                 'end_date' => '2026-07-30',
@@ -36,6 +38,7 @@ class AcademicYearSeeder extends Seeder
             ],
             [
                 'institution_id' => 1,
+                'department_id'=> 3,
                 'year_name' => 'BIM-2022',
                 'start_date' => '2022-07-30',
                 'end_date' => '2026-07-30',
@@ -45,6 +48,7 @@ class AcademicYearSeeder extends Seeder
             ],
             [
                 'institution_id' => 1,
+                'department_id'=> 4,
                 'year_name' => 'BBM-2022',
                 'start_date' => '2022-07-30',
                 'end_date' => '2026-07-30',
@@ -54,6 +58,7 @@ class AcademicYearSeeder extends Seeder
             ],
             [
                 'institution_id' => 1,
+                'department_id'=> 5,
                 'year_name' => 'BBS-2022',
                 'start_date' => '2022-07-30',
                 'end_date' => '2026-07-30',
