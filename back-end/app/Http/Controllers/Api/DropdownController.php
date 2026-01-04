@@ -67,7 +67,7 @@ class DropdownController extends Controller
             $departmentId = $request->query('department_id'); //filter
 
             $validator = Validator::make($request->all(), [
-                'department_id' => 'nullable|exists:departments,id'
+                'department_id' => 'required|exists:departments,id'
             ]);
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
@@ -79,17 +79,7 @@ class DropdownController extends Controller
 
             $academicYears = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId) {
                 $query = AcademicYear::where('institution_id', $institutionId)
-                    ->where('is_active', true);
-
-                // if department_id is provided, ensure only selected department academic years are shown
-                if ($departmentId) {
-                    //filter via year_name
-                    $query->where(function ($q) use ($departmentId) {
-                        $dept = Department::find($departmentId);
-                        if ($dept)
-                            $q->where('year_name', 'like', $dept->code . '%');
-                    });
-                }
+                    ->where('department_id', $departmentId);
 
                 return $query->select('id', 'year_name', 'start_date', 'end_date', 'is_active')
                     ->orderBy('start_date', 'desc')
@@ -101,7 +91,7 @@ class DropdownController extends Controller
                             'start_date' => $year->start_date,
                             'end_date' => $year->end_date,
                             'is_active' => $year->is_active,
-                            'display_label' => "{$year->year_name} ({$year->start_date->format('Y')} - {$year->end_date->format('Y')})" //display as : BCA-2022 (2022-2026)
+                            'display_label' => $year->year_name,
                         ];
                     });
             }, self::DROPDOWN_CACHE_TTL);

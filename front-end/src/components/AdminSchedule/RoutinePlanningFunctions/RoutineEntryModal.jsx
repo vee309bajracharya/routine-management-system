@@ -112,12 +112,14 @@ const RoutineEntryModal = () => {
                 shift: currentRoutine.batch?.shift || 'Morning',
             });
         }
-        // fetch dropdowns
-        if (user?.institution_id) {
-            fetchDepartments();
-            fetchRooms();
-        }
     }, [isModalOpen, selectedCell, currentRoutine]);
+
+    useEffect(() => {
+        if (!isModalOpen) return;
+        if (!user?.institution_id) return;
+        fetchDepartments();
+        fetchRooms();
+    }, [isModalOpen, user?.institution_id, fetchDepartments, fetchRooms]);
 
     // Lock room after first selection (per routine)
     useEffect(() => {
@@ -218,10 +220,10 @@ const RoutineEntryModal = () => {
             };
 
             // save to session state
-            setSessionState(prev=>({
+            setSessionState(prev => ({
                 ...prev,
-                [currentRoutine.id] : {
-                    formValues : sessionValues,
+                [currentRoutine.id]: {
+                    formValues: sessionValues,
                     lockedRoom: values.room_id
                 }
             }));
