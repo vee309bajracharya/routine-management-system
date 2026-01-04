@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Teacher\TeacherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DropdownController;
+use App\Http\Controllers\Teacher\TeacherController;
+use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Routines\RoutineCRUDController;
@@ -50,6 +51,14 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::post('/', [UserController::class, 'store']);
             Route::put('/{id}', [UserController::class, 'update']);
             Route::delete('/{id}', [UserController::class, 'destroy']);
+        });
+
+        // Department routes
+        Route::prefix('departments')->group(function (){
+            Route::get('/', [DepartmentController::class, 'index']);
+            Route::post('/', [DepartmentController::class, 'store']);
+            Route::put('/{id}', [DepartmentController::class, 'update']);
+            Route::delete('/{id}', [DepartmentController::class, 'destroy']);
         });
 
         // Dropdown routes
