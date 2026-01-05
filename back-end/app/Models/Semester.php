@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use App\Models\Batch;
+use App\Models\Course;
 use App\Models\Routine;
 use App\Models\AcademicYear;
 use App\Models\CourseAssignment;
@@ -42,6 +43,12 @@ class Semester extends Model
         return $this->hasMany(Batch::class);
     }
 
+    // get all courses of this semester
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+
     // get all course assignment in this sem
     public function courseAssignments()
     {
@@ -53,7 +60,7 @@ class Semester extends Model
     {
         return $this->hasMany(Routine::class);
     }
-    
+
     // to check if semester is currently active
     public function isCurrentlyActive(): bool
     {

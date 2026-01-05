@@ -357,8 +357,8 @@ class DropdownController extends Controller
                             'start_time' => $slot->start_time->format('H:i'),
                             'end_time' => $slot->end_time->format('H:i'),
                             'shift' => $slot->shift,
-                            'slot_type'=> $slot->slot_type,
-                            'slot_order'=> $slot->slot_order ?? 0,
+                            'slot_type' => $slot->slot_type,
+                            'slot_order' => $slot->slot_order ?? 0,
                             'applicable_days' => $slot->applicable_days, // Days array
                             'display_label' => "{$slot->start_time->format('H:i')} - {$slot->end_time->format('H:i')} {$daysDisplay}"
                         ];
@@ -449,16 +449,15 @@ class DropdownController extends Controller
                 $cacheKey .= ".sem:{$semesterId}";
 
             $courses = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId, $semesterId) {
-                $query = Course::where('institution_id', $institutionId)
-                    ->where('status', 'active');
-                if ($departmentId)
-                    $query->where('department_id', $departmentId);
-                if ($semesterId) {
-                    $semester = Semester::find($semesterId);
-                    if ($semester)
-                        $query->where('semester_number', $semester->semester_number);
-                }
-                return $query->select('id', 'course_name', 'code', 'semester_number')
+                return Course::with([
+                    'department:id,department_name,code',
+                    'semester:id,academic_year_id,semester_name,semester_number',
+                    'semester.academicYear:id,year_name',
+                ])
+                    ->where('institution_id', $institutionId)
+                    ->where('department_id', $departmentId)
+                    ->where('semester_id', $semesterId)
+                    ->where('status', 'active')
                     ->orderBy('course_name', 'asc')
                     ->get()
                     ->map(function ($course) {
@@ -466,8 +465,24 @@ class DropdownController extends Controller
                             'id' => $course->id,
                             'course_name' => $course->course_name,
                             'course_code' => $course->code,
-                            'semester_number' => $course->semester_number,
-                            'display_label' => "{$course->course_name} ({$course->code})"
+                            'display_label' => "{$course->course_name} ({$course->code})",
+
+                            'department' => [
+                                'id' => $course->department->id,
+                                'name' => $course->department->department_name,
+                                'code' => $course->department->code,
+                            ],
+
+                            'semester' => [
+                                'id' => $course->semester->id,
+                                'name' => $course->semester->semester_name,
+                                'number' => $course->semester->semester_number,
+                            ],
+
+                            'academic_year' => [
+                                'id' => $course->semester->academicYear->id,
+                                'year_name' => $course->semester->academicYear->year_name,
+                            ],
                         ];
                     });
             }, self::DROPDOWN_CACHE_TTL);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Teacher;
+use App\Models\Semester;
 use App\Models\Department;
 use App\Models\Institution;
 use App\Models\CourseAssignment;
@@ -17,6 +18,7 @@ class Course extends Model
     protected $fillable = [
         'institution_id',
         'department_id',
+        'semester_id',
         'course_name',
         'code',
         'description',
@@ -34,6 +36,12 @@ class Course extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    // get the semester that owns this course
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
     }
 
     // get all course assignments for this course
@@ -65,17 +73,20 @@ class Course extends Model
     }
 
     // filter active courses
-    public function scopeActive($query){
-        return $query->where('status','active');
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 
     // filter by course type
-    public function scopeType($query, string $type){
+    public function scopeType($query, string $type)
+    {
         return $query->where('course_type', $type);
     }
 
     // filter by semester number
-    public function scopeBySemesterNumber($query, int $semesterNumber){
+    public function scopeBySemesterNumber($query, int $semesterNumber)
+    {
         return $query->where('semester_number', $semesterNumber);
     }
 }
