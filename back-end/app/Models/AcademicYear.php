@@ -16,6 +16,7 @@ class AcademicYear extends Model
 
     protected $fillable = [
         'institution_id',
+        'department_id',
         'year_name',
         'start_date',
         'end_date',
