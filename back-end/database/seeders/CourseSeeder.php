@@ -20,6 +20,7 @@ class CourseSeeder extends Seeder
             [
                 'institution_id' => 1,
                 'department_id' => 1,
+                'semester_id'=> 1,
                 'course_name' => 'Cyber Law and Prof. Ethics',
                 'code' => 'CACS-401',
                 'description' => null,
@@ -32,6 +33,7 @@ class CourseSeeder extends Seeder
             [
                 'institution_id' => 1,
                 'department_id' => 1,
+                'semester_id'=> 1,
                 'course_name' => 'Cloud Computing',
                 'code' => 'CACS-402',
                 'description' => null,
@@ -44,6 +46,7 @@ class CourseSeeder extends Seeder
             [
                 'institution_id' => 1,
                 'department_id' => 1,
+                'semester_id'=> 1,
                 'course_name' => 'Software Project Management',
                 'code' => 'CACS-403',
                 'description' => null,
@@ -56,6 +59,7 @@ class CourseSeeder extends Seeder
             [
                 'institution_id' => 1,
                 'department_id' => 1,
+                'semester_id'=> 1,
                 'course_name' => 'E-Governance',
                 'code' => 'CACS-404',
                 'description' => null,

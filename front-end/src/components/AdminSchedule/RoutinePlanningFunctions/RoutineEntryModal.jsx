@@ -112,14 +112,13 @@ const RoutineEntryModal = () => {
                 shift: currentRoutine.batch?.shift || 'Morning',
             });
         }
-    }, [isModalOpen, selectedCell, currentRoutine]);
 
-    useEffect(() => {
-        if (!isModalOpen) return;
-        if (!user?.institution_id) return;
-        fetchDepartments();
-        fetchRooms();
-    }, [isModalOpen, user?.institution_id, fetchDepartments, fetchRooms]);
+        // fetch dropdowns
+        if (user?.institution_id) {
+            fetchDepartments();
+            fetchRooms();
+        }
+    }, [isModalOpen, selectedCell, currentRoutine]);
 
     // Lock room after first selection (per routine)
     useEffect(() => {
