@@ -30,6 +30,7 @@ class DepartmentController extends Controller
                 $query = Department::where('institution_id', $institutionId)
                     ->with([
                         'headTeacher:id,name',
+                        'teachers',
                     ]);
 
                 // filter (search by department name or code)
@@ -40,8 +41,14 @@ class DepartmentController extends Controller
                             ->orWhere('code', 'like', "%{$search}%");
                     });
                 }
-                // pagination, perPage = 3
-                return $query->orderBy('department_name', 'asc')->paginate(3);
+
+                // filter (status)
+                if ($request->filled('status')) {
+                    $query->where('status', $request->status);
+                }
+
+                // pagination, perPage = 5
+                return $query->orderBy('department_name', 'asc')->paginate(5);
             }, self::DEPARTMENT_CACHE_TTL);
 
             return response()->json([
@@ -57,6 +64,7 @@ class DepartmentController extends Controller
                             'id' => $dept->headTeacher->id,
                             'name' => $dept->headTeacher->name,
                         ] : null,
+                        'teachers_count' => $dept->teachers->count(),
                         'status' => $dept->status,
                     ];
                 }),
@@ -283,7 +291,8 @@ class DepartmentController extends Controller
             // check if department has academic years
             if ($department->academic_years_count > 0) {
                 return response()->json([
-                    'message' => 'Cannot delete department with associated academic years'
+                    'success' => false,
+                    'message' => 'Cannot delete department with associated academic years. Please remove associated academic year first',
                 ], 422);
             }
 
