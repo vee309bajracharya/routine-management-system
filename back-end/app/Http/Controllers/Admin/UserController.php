@@ -42,7 +42,7 @@ class UserController extends Controller
                         }
                     ]);
 
-                // === filters (role, search by name or email, department) ===
+                // === filters (role, search by name, email and department code) ===
 
                 if ($request->filled('role')) {
                     $query->where('role', $request->role);
@@ -51,18 +51,17 @@ class UserController extends Controller
                 if ($request->filled('search')) {
                     $search = $request->search;
                     $query->where(function ($q) use ($search) {
+
+                        // search in user table
                         $q->where('name', 'like', "%{$search}%")
-                            ->orWhere('email', 'like', "%{$search}%");
+                            ->orWhere('email', 'like', "%{$search}%")
+                        
+                        // search in department table via teacher relationship
+                        ->orWhereHas('teacher.department', function ($subQuery) use ($search){
+                            $subQuery->where('code','like',"%{$search}");
+                        });
                     });
                 }
-
-                if ($request->filled('department')) {
-                    $query->where('role', 'teacher')
-                        ->whereHas('teacher.department', function ($q) use ($request) {
-                            $q->where('code', $request->department);
-                        });
-                }
-
                 return $query->orderBy('created_at', 'desc')->paginate(15);
             }, 1800);
 
@@ -221,7 +220,7 @@ class UserController extends Controller
                         'name' => $user->teacher->department->department_name,
                         'code' => $user->teacher->department->code,
                     ] : null,
-                    
+
                     'schedule_availability' => $schedule,
                 ];
             }
