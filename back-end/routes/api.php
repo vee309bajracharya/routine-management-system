@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DropdownController;
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\InstitutionController;
+use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Routines\RoutineCRUDController;
 use App\Http\Controllers\Routines\RoutineEntryController;
@@ -54,11 +55,19 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         });
 
         // Department routes
-        Route::prefix('departments')->group(function (){
+        Route::prefix('departments')->group(function () {
             Route::get('/', [DepartmentController::class, 'index']);
             Route::post('/', [DepartmentController::class, 'store']);
             Route::put('/{id}', [DepartmentController::class, 'update']);
             Route::delete('/{id}', [DepartmentController::class, 'destroy']);
+        });
+
+        // Academic Year routes
+        Route::prefix('academic-years')->group(function () {
+            Route::get('/', [AcademicYearController::class, 'index']);
+            Route::post('/', [AcademicYearController::class, 'store']);
+            Route::put('/{id}', [AcademicYearController::class, 'update']);
+            Route::delete('/{id}', [AcademicYearController::class, 'destroy']);
         });
 
         // Dropdown routes
