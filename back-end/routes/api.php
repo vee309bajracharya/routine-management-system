@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Api\DropdownController;
+use App\Http\Controllers\Admin\SemesterController;
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\InstitutionController;
@@ -68,6 +69,14 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::post('/', [AcademicYearController::class, 'store']);
             Route::put('/{id}', [AcademicYearController::class, 'update']);
             Route::delete('/{id}', [AcademicYearController::class, 'destroy']);
+        });
+
+        // Semester routes
+        Route::prefix('/semesters')->group(function () {
+            Route::get('/', [SemesterController::class, 'index']);
+            Route::post('/', [SemesterController::class, 'store']);
+            Route::put('/{id}', [SemesterController::class, 'update']);
+            Route::delete('/{id}', [SemesterController::class, 'destroy']);
         });
 
         // Dropdown routes
