@@ -408,7 +408,7 @@ class DropdownController extends Controller
                             'code' => $teacher->department->code,
                         ] : null,
                         'employment_type' => $teacher->employment_type,
-                        'display_label' => $teacher->user->name . ' (' . ($teacher->department ? $teacher->department->code : 'N/A') . ')'
+                        'display_label' => $teacher->user->name,
                     ];
                 });
             }, self::DROPDOWN_CACHE_TTL);

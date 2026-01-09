@@ -87,11 +87,7 @@ class AcademicYearController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch academic years',
-                'error' => $e->getMessage()
-            ], 500);
+            $this->errorResponse('Failed to fetch academic years', $e->getMessage());
         }
     }
 
@@ -115,14 +111,14 @@ class AcademicYearController extends Controller
             ], 422);
         }
 
+        $institutionId = auth()->user()->institution_id;
+
+        $department = Department::where('institution_id', $institutionId)
+            ->findOrFail($request->department_id);
+
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
-
-            $institutionId = auth()->user()->institution_id;
-
-            $department = Department::where('institution_id', $institutionId)
-                ->findOrFail($request->department_id);
-
             $academicYear = AcademicYear::create([
                 'institution_id' => $institutionId,
                 'department_id' => $department->id,
@@ -156,11 +152,7 @@ class AcademicYearController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create academic year',
-                'error' => $e->getMessage()
-            ], 500);
+            $this->errorResponse('Failed to create academic year', $e->getMessage());
         }
     }
 
@@ -183,23 +175,22 @@ class AcademicYearController extends Controller
             ], 422);
         }
 
+        $institutionId = auth()->user()->institution_id;
+        $academicYear = AcademicYear::where('institution_id', $institutionId)->findOrFail($id);
+
+        // validate date range if both dates are provided or being updated
+        $startDate = $request->start_date ?? Carbon::parse($academicYear->start_date)->format('Y-m-d');
+        $endDate = $request->end_date ?? Carbon::parse($academicYear->end_date)->format('Y-m-d');
+
+        if ($startDate >= $endDate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'End date must be after start date'
+            ], 422);
+        }
+
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            $institutionId = auth()->user()->institution_id;
-            $academicYear = AcademicYear::where('institution_id', $institutionId)->findOrFail($id);
-
-            // validate date range if both dates are provided or being updated
-            $startDate = $request->start_date ?? Carbon::parse($academicYear->start_date)->format('Y-m-d');
-            $endDate = $request->end_date ?? Carbon::parse($academicYear->end_date)->format('Y-m-d');
-
-            if ($startDate >= $endDate) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'End date must be after start date'
-                ], 422);
-            }
-
             // update fields
             if ($request->has('year_name')) {
                 $academicYear->year_name = $request->year_name;
@@ -236,11 +227,7 @@ class AcademicYearController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update academic year',
-                'error' => $e->getMessage()
-            ], 500);
+            $this->errorResponse('Failed to update academic year', $e->getMessage());
         }
     }
 
@@ -249,19 +236,19 @@ class AcademicYearController extends Controller
      */
     public function destroy($id)
     {
+
+        $institutionId = auth()->user()->institution_id;
+        $academicYear = AcademicYear::where('institution_id', $institutionId)->findOrFail($id);
+
+        if ($academicYear->semesters()->count() > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete academic year with semesters. Please remove associated semesters first.'
+            ], 422);
+        }
+
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            $institutionId = auth()->user()->institution_id;
-            $academicYear = AcademicYear::where('institution_id', $institutionId)->findOrFail($id);
-
-            if ($academicYear->semesters()->count() > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot delete academic year with semesters. Please remove associated semesters first.'
-                ], 422);
-            }
-
             $academicYear->forceDelete();
 
             CacheService::forget("academic_year:{$id}:details");
@@ -284,11 +271,17 @@ class AcademicYearController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete academic year',
-                'error' => $e->getMessage()
-            ], 500);
+            $this->errorResponse('Failed to delete academic year', $e->getMessage());
         }
+    }
+
+    // private helper method
+    private function errorResponse($message, $error = null, $status = 500)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'error' => $error,
+        ], $status);
     }
 }

@@ -19,9 +19,7 @@ class UserController extends Controller
     private const USER_CACHE_TTL = 3600;
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     * 
+     * index()
      * get all users details with filters and pagination
      * extras: show available_days for role=>teacher
      */
@@ -55,11 +53,11 @@ class UserController extends Controller
                         // search in user table
                         $q->where('name', 'like', "%{$search}%")
                             ->orWhere('email', 'like', "%{$search}%")
-                        
-                        // search in department table via teacher relationship
-                        ->orWhereHas('teacher.department', function ($subQuery) use ($search){
-                            $subQuery->where('code','like',"%{$search}");
-                        });
+
+                            // search in department table via teacher relationship
+                            ->orWhereHas('teacher.department', function ($subQuery) use ($search) {
+                                $subQuery->where('code', 'like', "%{$search}");
+                            });
                     });
                 }
                 return $query->orderBy('created_at', 'desc')->paginate(15);
@@ -118,19 +116,13 @@ class UserController extends Controller
                 ]
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch user details',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to fetch user details', $e->getMessage());
         }
     }
 
     // get single user details
     /**
-     * @param mixed $id
-     * @return \Illuminate\Http\JsonResponse
-     * 
+     * show()
      * get specific user details with all relationships
      *  - accessible by both admin and teacher
      *  - teacher schedule details
@@ -232,18 +224,13 @@ class UserController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found',
-                'error' => $e->getMessage(),
-            ], 404);
+            $this->errorResponse('User not found', $e->getMessage(), 404);
         }
     }
 
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * store()
      * create new user based on role (admin or teacher)
      *  - only admin can create new users
      */
@@ -273,24 +260,23 @@ class UserController extends Controller
             ], 422);
         }
 
-        try {
-            DB::beginTransaction();
-            $institutionId = auth()->user()->institution_id;
+        $institutionId = auth()->user()->institution_id;
 
-            // if role->teacher, verify department belongs to institution
-            if ($request->role === 'teacher') {
-                $department = Department::where('id', $request->department_id)
-                    ->where('institution_id', $institutionId)
-                    ->first();
-                if (!$department) {
-                    DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Invalid department selection',
-                    ], 422);
-                }
+        // if role->teacher, verify department belongs to institution
+        if ($request->role === 'teacher') {
+            $department = Department::where('id', $request->department_id)
+                ->where('institution_id', $institutionId)
+                ->first();
+            if (!$department) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid department selection',
+                ], 422);
             }
+        }
 
+        DB::beginTransaction();
+        try {
             // create new user
             $user = User::create([
                 // admin
@@ -346,69 +332,62 @@ class UserController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create user',
-                'error' => $e->getMessage()
-            ], 500);
+            $this->errorResponse('Failed to create user', $e->getMessage());
         }
     }
 
     /**
-     * @param Request $request
-     * @param mixed $id
-     * @return \Illuminate\Http\JsonResponse
+     * update()
      * admin update details - name,email,phone and password ,
      * restrict admin to edit another admin's detail , 
      * admin also can update teacher's department_id and employment_type
      */
     public function update(Request $request, $id)
     {
+        $currentUser = auth()->user();
+        $institutionId = $currentUser->institution_id;
+        $user = User::where('institution_id', $institutionId)->findOrFail($id);
+
+        // GUARD
+        if ($user->role === 'admin' && $currentUser->role === 'admin' && $user->id !== $currentUser->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not allowed to edit another admin details'
+            ], 403);
+        }
+
+        //validation for admin related basic fields
+        $rules = [
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $id,
+            'phone' => 'nullable|string|max:10',
+            'status' => 'sometimes|in:active,inactive',
+        ];
+
+        // pwd update validation
+        if ($request->filled('password')) {
+            $rules['current_password'] = 'required|string';
+            $rules['password'] = 'required|string|min:8|confirmed';
+            $rules['password_confirmation'] = 'required|string|min:8';
+        }
+
+        // admin can update teacher's department or employment
+        if ($user->role === 'teacher' && $currentUser->role === 'admin') {
+            $rules['department_id'] = 'sometimes|exists:departments,id';
+            $rules['employment_type'] = 'sometimes|in:Full Time,Part Time,Guest';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'error' => $validator->errors(),
+            ], 422);
+        }
+
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-            $currentUser = auth()->user();
-            $institutionId = $currentUser->institution_id;
-            $user = User::where('institution_id', $institutionId)->findOrFail($id);
-
-            // GUARD
-            if ($user->role === 'admin' && $currentUser->role === 'admin' && $user->id !== $currentUser->id) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You are not allowed to edit another admin details'
-                ], 403);
-            }
-
-            //validation for admin related basic fields
-            $rules = [
-                'name' => 'sometimes|string|max:255',
-                'email' => 'sometimes|email|unique:users,email,' . $id,
-                'phone' => 'nullable|string|max:10',
-                'status' => 'sometimes|in:active,inactive',
-            ];
-
-            // pwd update validation
-            if ($request->filled('password')) {
-                $rules['current_password'] = 'required|string';
-                $rules['password'] = 'required|string|min:8|confirmed';
-                $rules['password_confirmation'] = 'required|string|min:8';
-            }
-
-            // admin can update teacher's department or employment
-            if ($user->role === 'teacher' && $currentUser->role === 'admin') {
-                $rules['department_id'] = 'sometimes|exists:departments,id';
-                $rules['employment_type'] = 'sometimes|in:Full Time,Part Time,Guest';
-            }
-
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'error' => $validator->errors(),
-                ], 422);
-            }
-
             // update admin basic fields
             if ($request->has('name'))
                 $user->name = $request->name;
@@ -537,17 +516,11 @@ class UserController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update user details',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to update user details', $e->getMessage());
         }
     }
 
     /**
-     * @param mixed $id
-     * @return \Illuminate\Http\JsonResponse
      * delete()
      *  - restrict own deletion of current logged in admin
      *  - other admin's can be permanently deleted (based on role)
@@ -555,20 +528,20 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
+        $currentUser = auth()->user();
+        $institutionId = $currentUser->institution_id;
+        $user = User::where('institution_id', $institutionId)->findOrFail($id);
+
+        // prevent self deletion
+        if ($user->id === $currentUser->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot delete your own account'
+            ], 422);
+        }
+
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-            $currentUser = auth()->user();
-            $institutionId = $currentUser->institution_id;
-            $user = User::where('institution_id', $institutionId)->findOrFail($id);
-
-            // prevent self deletion
-            if ($user->id === $currentUser->id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You cannot delete your own account'
-                ], 422);
-            }
-
             // permanent delete
             if ($user->role === 'admin') {
                 $user->forceDelete();
@@ -604,14 +577,19 @@ class UserController extends Controller
                 'message' => $message
             ], 200);
 
-
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete user',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->errorResponse('Failed to delete user', $e->getMessage());
         }
+    }
+
+    // private helper method
+    private function errorResponse($message, $error = null, $status = 500)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'error' => $error,
+        ], $status);
     }
 }
