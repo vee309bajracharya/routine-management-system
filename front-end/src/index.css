@@ -212,3 +212,30 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .table-header {
   @apply px-4 py-2 text-left text-xs font-medium uppercase text-primary-text dark:text-white;
 }
+.filter-btn{
+  @apply flex items-center border border-box-outline px-3 py-1 rounded-md cursor-pointer
+}
+.action-eye-btn{
+  @apply p-2 rounded-full hover:bg-blue-200 dark:hover:bg-blue-500 cursor-pointer
+}
+.action-edit-btn{
+  @apply p-2 rounded-full hover:bg-green-200 dark:hover:bg-green-500 cursor-pointer
+}
+.action-delete-btn{
+  @apply p-2 rounded-full hover:bg-red-200 dark:hover:bg-red-500 cursor-pointer
+}
+.loadingstate-wrapper{
+  @apply flex flex-col items-center justify-center rounded-lg
+}
+.x-btn{
+  @apply text-gray-400 hover:text-gray-600 dark:hover:bg-dark-hover transition cursor-pointer
+}
+.search-btn{
+  @apply pl-9 pr-10 py-2 border border-box-outline rounded-md text-sm w-full bg-white dark:bg-dark-overlay dark:text-white focus:outline-none focus:ring-2 focus:ring-main-blue
+}
+.btn-link{
+  @apply flex items-center gap-2 bg-main-blue text-white px-4 py-2 rounded-md cursor-pointer text-sm hover:bg-hover-blue transition-colors
+}
+.background-blur{
+  @apply absolute inset-0 bg-black/40 backdrop-blur-sm
+}

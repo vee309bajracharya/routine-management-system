@@ -1,28 +1,28 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { AuthProvider } from './contexts/AuthContext.jsx'
-import { ThemeProvider } from './contexts/ThemeContext.jsx'
-import { RoutineProvider } from './contexts/RoutineContext.jsx'
-import { RoutineEntryProvider } from './contexts/RoutineEntryContext.jsx'
-import { InstitutionProvider } from './contexts/InstitutionContext.jsx'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext.jsx";
+import { ThemeProvider } from "./contexts/ThemeContext.jsx";
+import { RoutineProvider } from "./contexts/RoutineContext.jsx";
+import { RoutineEntryProvider } from "./contexts/RoutineEntryContext.jsx";
+import { InstitutionProvider } from "./contexts/InstitutionContext.jsx";
+import "./index.css";
+import App from "./App.jsx";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
         <InstitutionProvider>
-        <RoutineProvider>
-          <RoutineEntryProvider>
-            <ThemeProvider>
-              <App />
-            </ThemeProvider>
-          </RoutineEntryProvider>
-        </RoutineProvider>
+          <RoutineProvider>
+            <RoutineEntryProvider>
+              <ThemeProvider>
+                <App />
+              </ThemeProvider>
+            </RoutineEntryProvider>
+          </RoutineProvider>
         </InstitutionProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>
-)
+);
