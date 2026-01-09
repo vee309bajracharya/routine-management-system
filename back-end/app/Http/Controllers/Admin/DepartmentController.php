@@ -16,8 +16,7 @@ class DepartmentController extends Controller
     private const DEPARTMENT_CACHE_TTL = 3600;
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * index()
      * get all departments list with filters and pagination
      */
     public function index(Request $request)
@@ -47,8 +46,8 @@ class DepartmentController extends Controller
                     $query->where('status', $request->status);
                 }
 
-                // pagination, perPage = 5
-                return $query->orderBy('department_name', 'asc')->paginate(5);
+                // pagination
+                return $query->orderBy('department_name', 'asc')->paginate(10);
             }, self::DEPARTMENT_CACHE_TTL);
 
             return response()->json([
@@ -77,17 +76,12 @@ class DepartmentController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch departments',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to fetch departments', $e->getMessage());
         }
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * store()
      * create new department
      */
     public function store(Request $request)
@@ -113,25 +107,25 @@ class DepartmentController extends Controller
             ], 422);
         }
 
-        try {
-            DB::beginTransaction();
-            $institutionId = auth()->user()->institution_id;
+        $institutionId = auth()->user()->institution_id;
 
-            // verify teacher for HOD,
-            if ($request->head_teacher_id) {
-                $headTeacher = User::where('id', $request->head_teacher_id)
-                    ->where('institution_id', $institutionId)
-                    ->where('role', 'teacher')
-                    ->first();
+        // verify teacher for HOD,
+        if ($request->head_teacher_id) {
+            $headTeacher = User::where('id', $request->head_teacher_id)
+                ->where('institution_id', $institutionId)
+                ->where('role', 'teacher')
+                ->first();
 
-                if (!$headTeacher) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Invalid head teacher selection',
-                    ], 422);
-                }
+            if (!$headTeacher) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid head teacher selection',
+                ], 422);
             }
+        }
 
+        DB::beginTransaction();
+        try {
             // create new department
             $department = Department::create([
                 'institution_id' => $institutionId,
@@ -166,19 +160,13 @@ class DepartmentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create department',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to create department', $e->getMessage());
         }
     }
 
 
     /**
-     * @param Request $request
-     * @param mixed $id
-     * @return \Illuminate\Http\JsonResponse
+     * update()
      * update any specific department details
      */
     public function update(Request $request, $id)
@@ -204,26 +192,26 @@ class DepartmentController extends Controller
             ], 422);
         }
 
-        try {
-            DB::beginTransaction();
-            $institutionId = auth()->user()->institution_id;
-            $department = Department::where('institution_id', $institutionId)->findOrFail($id);
+        $institutionId = auth()->user()->institution_id;
+        $department = Department::where('institution_id', $institutionId)->findOrFail($id);
 
-            // verify HOD
-            if ($request->has('head_teacher_id') && $request->head_teacher_id) {
-                $headTeacher = User::where('id', $request->head_teacher_id)
-                    ->where('institution_id', $institutionId)
-                    ->where('role', 'teacher')
-                    ->first();
+        // verify HOD
+        if ($request->has('head_teacher_id') && $request->head_teacher_id) {
+            $headTeacher = User::where('id', $request->head_teacher_id)
+                ->where('institution_id', $institutionId)
+                ->where('role', 'teacher')
+                ->first();
 
-                if (!$headTeacher) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Invalid head teacher selection'
-                    ], 422);
-                }
+            if (!$headTeacher) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid head teacher selection'
+                ], 422);
             }
+        }
 
+        DB::beginTransaction();
+        try {
             // update fields
             if ($request->has('department_name')) {
                 $department->department_name = $request->department_name;
@@ -267,35 +255,29 @@ class DepartmentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update department',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to update department', $e->getMessage());
         }
     }
 
-
     /**
-     * @param mixed $id
-     * @return \Illuminate\Http\JsonResponse
+     * destroy()
      * delete department record permanently - no soft delete
      */
     public function destroy($id)
     {
+        $institutionId = auth()->user()->institution_id;
+        $department = Department::where('institution_id', $institutionId)->withCount('academicYears')->findOrFail($id);
+
+        // check if department has academic years
+        if ($department->academic_years_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot delete department with associated academic years. Please remove associated academic year first',
+            ], 422);
+        }
+
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-            $institutionId = auth()->user()->institution_id;
-            $department = Department::where('institution_id', $institutionId)->withCount('academicYears')->findOrFail($id);
-
-            // check if department has academic years
-            if ($department->academic_years_count > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot delete department with associated academic years. Please remove associated academic year first',
-                ], 422);
-            }
-
             $department->forceDelete();
 
             // cache clear
@@ -312,12 +294,17 @@ class DepartmentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete department',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to delete department', $e->getMessage());
         }
+    }
 
+    // private helper method
+    private function errorResponse($message, $error = null, $status = 500)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'error' => $error,
+        ], $status);
     }
 }

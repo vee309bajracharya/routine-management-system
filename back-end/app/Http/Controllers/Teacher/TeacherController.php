@@ -18,7 +18,7 @@ class TeacherController extends Controller
     private const TODAY_CLASSES_TTL = 300;
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * show()
      * get teacher's own profile details
      */
     public function show()
@@ -48,56 +48,50 @@ class TeacherController extends Controller
                 ],
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch profile',
-                'error' => $e->getMessage()
-            ], 500);
+            $this->errorResponse('Failed to fetch profile', $e->getMessage());
         }
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * update()
      * teacher updates basic fields (name,email,phone)
      * updates pwd
      * can't update department_id and employment_type on their own
      */
     public function update(Request $request)
     {
+        $userId = auth()->id();
+        $institutionId = auth()->user()->institution_id;
+
+        $user = User::where('id', $userId)
+            ->where('institution_id', $institutionId)
+            ->firstOrFail();
+
+        // validation
+        $rules = [
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|unique:users,email,' . $userId,
+            'phone' => 'nullable|string|max:10',
+        ];
+
+        // pwd update
+        if ($request->filled('password')) {
+            $rules['current_password'] = 'required|string';
+            $rules['password'] = 'required|string|min:8|confirmed';
+            $rules['password_confirmation'] = 'required|string|min:8';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'error' => $validator->errors(),
+            ], 422);
+        }
+
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-
-            $userId = auth()->id();
-            $institutionId = auth()->user()->institution_id;
-
-            $user = User::where('id', $userId)
-                ->where('institution_id', $institutionId)
-                ->firstOrFail();
-
-            // validation
-            $rules = [
-                'name' => 'sometimes|string|max:255',
-                'email' => 'sometimes|email|unique:users,email,' . $userId,
-                'phone' => 'nullable|string|max:10',
-            ];
-
-            // pwd update
-            if ($request->filled('password')) {
-                $rules['current_password'] = 'required|string';
-                $rules['password'] = 'required|string|min:8|confirmed';
-                $rules['password_confirmation'] = 'required|string|min:8';
-            }
-
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation error',
-                    'error' => $validator->errors(),
-                ], 422);
-            }
-
             // update basic fields
             if ($request->has('name'))
                 $user->name = $request->name;
@@ -179,18 +173,13 @@ class TeacherController extends Controller
                 ]
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update details',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to update details', $e->getMessage());
         }
     }
 
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * getSchedule()
      * getSchedule function to view details of assigned schedule (act as index for teacher's account)
      */
     public function getSchedule(Request $request)
@@ -290,16 +279,12 @@ class TeacherController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get assigned schedules',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to get assigned schedules', $e->getMessage());
         }
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * getTodayClasses()
      * teacher's today's classes status - Ongoing and Upcoming classes
      */
     public function getTodayClasses()
@@ -373,12 +358,19 @@ class TeacherController extends Controller
                 'message' => $classes->isEmpty() ? 'No further classes right now' : 'Today classes schedule fetched successfully',
                 'data' => $classes,
             ], 200);
+
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch today classes schedule',
-                'error' => $e->getMessage(),
-            ], 500);
+            $this->errorResponse('Failed to fetch today classes schedule', $e->getMessage());
         }
+    }
+
+    // private helper method
+    private function errorResponse($message, $error = null, $status = 500)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'error' => $error,
+        ], $status);
     }
 }
