@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Api\DropdownController;
 use App\Http\Controllers\Admin\SemesterController;
 use App\Http\Controllers\Teacher\TeacherController;
@@ -38,6 +39,8 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
 
         // Admin dashboard route
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+
+        // ===== Academic Details Components Routes ======
 
         // Institution settings
         Route::prefix('institution')->group(function () {
@@ -79,23 +82,39 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::delete('/{id}', [SemesterController::class, 'destroy']);
         });
 
-        // Dropdown routes
+        // Batch routes
+        Route::prefix('/batches')->group(function () {
+            Route::get('/', [BatchController::class, 'index']);
+            Route::post('/', [BatchController::class, 'store']);
+            Route::put('/{id}', [BatchController::class, 'update']);
+            Route::delete('/{id}', [BatchController::class, 'destroy']);
+        });
+
+        /**
+         * Dropdown Routes(DR)
+         *  - DR1 : Mainly for 'Create Routine Entry' Form
+         *  - DR2: 'Create Routine' Form
+         *  - DR3: for 'Academic Details' components Create Form
+         */
         Route::prefix('dropdowns')->group(function () {
 
-            //mainly for RoutineEntry
+            // DR1 
             Route::get('/departments/{institutionId}', [DropdownController::class, 'getDepartments']);
             Route::get('/academic-years', [DropdownController::class, 'getAcademicYears']);
             Route::get('/semesters', [DropdownController::class, 'getSemesters']);
             Route::get('/batches', [DropdownController::class, 'getBatches']);
             Route::get('/course-assignments', [DropdownController::class, 'getCourseAssignments']);
-            Route::get('/teachers', [DropdownController::class, 'getTeachers']);
-            Route::get('/courses', [DropdownController::class, 'getCourses']);
             Route::get('/rooms', [DropdownController::class, 'getRooms']);
             Route::get('/time-slots', [DropdownController::class, 'getTimeSlots']);
 
-            // RoutineCreation dropdowns
+            // DR2
             Route::get('/all-semesters', [DropdownController::class, 'getAllSemesters']);
             Route::get('/batches-by-semester', [DropdownController::class, 'getBatchesBySemester']);
+
+            // DR3
+            Route::get('/teachers', [DropdownController::class, 'getTeachers']);
+            Route::get('/courses', [DropdownController::class, 'getCourses']);
+
         });
 
         // Routines
