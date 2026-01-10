@@ -20,6 +20,8 @@ class DropdownController extends Controller
 {
     private const DROPDOWN_CACHE_TTL = 600; //10mins
 
+    // ======= Mainly for 'Create Routine Entry' Form ======= 
+
     /** Part 1 - Departments (independent)
      * get all departments based on an institution
      * /dropdowns/departments/1
@@ -135,7 +137,7 @@ class DropdownController extends Controller
                             'semester_number' => $semester->semester_number,
                             'start_date' => $semester->start_date->format('Y-m-d'),
                             'end_date' => $semester->end_date->format('Y-m-d'),
-                            'display_label' => "{$semester->semester_name} ({$semester->start_date->format('M Y')} - {$semester->end_date->format('M Y')})" //Seventh Semester (Aug 2024 - Feb 2025)
+                            'display_label' => "{$semester->semester_name}" //Seventh Semester
                         ];
                     });
             }, self::DROPDOWN_CACHE_TTL);
@@ -374,130 +376,7 @@ class DropdownController extends Controller
         }
     }
 
-    /** Part 7 - Teachers (filtered by department)
-     * /dropdowns/teachers?department_id=1
-     */
-    public function getTeachers(Request $request)
-    {
-        try {
-            $institutionId = auth()->user()->institution_id;
-            $departmentId = $request->query('department_id');
-
-            $cacheKey = "institution:{$institutionId}:teachers";
-            if ($departmentId)
-                $cacheKey .= ":dept:{$departmentId}";
-
-            $teachers = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId) {
-                $query = Teacher::where('institution_id', $institutionId)
-                    ->with([
-                        'user:id,name',
-                        'department:id,department_name,code',
-                    ]);
-
-                if ($departmentId)
-                    $query->where('department_id', $departmentId);
-
-                return $query->get()->map(function ($teacher) {
-                    return [
-                        'id' => $teacher->id,
-                        'user_id' => $teacher->user_id,
-                        'name' => $teacher->user->name,
-                        'department' => $teacher->department ? [
-                            'id' => $teacher->department->id,
-                            'name' => $teacher->department->department_name,
-                            'code' => $teacher->department->code,
-                        ] : null,
-                        'employment_type' => $teacher->employment_type,
-                        'display_label' => $teacher->user->name,
-                    ];
-                });
-            }, self::DROPDOWN_CACHE_TTL);
-
-            return $this->successResponse($teachers, 'Teachers fetched successfully');
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch teachers',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /** Part 8 - Courses (filtered by department and semesters)
-     * /dropdowns/courses?department_id=1&semester_id=1
-     * fetch courses related to selected semester
-     */
-    public function getCourses(Request $request)
-    {
-        try {
-            $institutionId = auth()->user()->institution_id;
-            $departmentId = $request->query('department_id');
-            $semesterId = $request->query('semester_id');
-
-            $validator = Validator::make($request->all(), [
-                'department_id' => 'required|exists:departments,id',
-                'semester_id' => 'required|exists:semesters,id',
-            ]);
-            if ($validator->fails()) {
-                return $this->validationError($validator->errors());
-            }
-
-            $cacheKey = "institution:{$institutionId}:courses";
-            if ($departmentId)
-                $cacheKey .= ":dept:{$departmentId}";
-            if ($semesterId)
-                $cacheKey .= ".sem:{$semesterId}";
-
-            $courses = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId, $semesterId) {
-                return Course::with([
-                    'department:id,department_name,code',
-                    'semester:id,academic_year_id,semester_name,semester_number',
-                    'semester.academicYear:id,year_name',
-                ])
-                    ->where('institution_id', $institutionId)
-                    ->where('department_id', $departmentId)
-                    ->where('semester_id', $semesterId)
-                    ->where('status', 'active')
-                    ->orderBy('course_name', 'asc')
-                    ->get()
-                    ->map(function ($course) {
-                        return [
-                            'id' => $course->id,
-                            'course_name' => $course->course_name,
-                            'course_code' => $course->code,
-                            'display_label' => "{$course->course_name} ({$course->code})",
-
-                            'department' => [
-                                'id' => $course->department->id,
-                                'name' => $course->department->department_name,
-                                'code' => $course->department->code,
-                            ],
-
-                            'semester' => [
-                                'id' => $course->semester->id,
-                                'name' => $course->semester->semester_name,
-                                'number' => $course->semester->semester_number,
-                            ],
-
-                            'academic_year' => [
-                                'id' => $course->semester->academicYear->id,
-                                'year_name' => $course->semester->academicYear->year_name,
-                            ],
-                        ];
-                    });
-            }, self::DROPDOWN_CACHE_TTL);
-            return $this->successResponse($courses, 'Courses fetched successfully');
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch courses',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /** Part 9 - Rooms 
+    /** Part 7 - Rooms 
      * get all available rooms
      * if room is already booked, won't be shown in dropdown
      */
@@ -535,8 +414,9 @@ class DropdownController extends Controller
             ], 500);
         }
     }
+    
 
-    // Dropdowns needed for Routine Creation Process
+    // ======= For 'Create Routine' Form ======= 
 
     /**
      * getAllSemesters based on 'is_active'
@@ -630,6 +510,131 @@ class DropdownController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch batches',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // ======= Academic Details Create Forms ======= 
+
+    /** Teachers (filtered by department)
+     * /dropdowns/teachers?department_id=1
+     */
+    public function getTeachers(Request $request)
+    {
+        try {
+            $institutionId = auth()->user()->institution_id;
+            $departmentId = $request->query('department_id');
+
+            $cacheKey = "institution:{$institutionId}:teachers";
+            if ($departmentId)
+                $cacheKey .= ":dept:{$departmentId}";
+
+            $teachers = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId) {
+                $query = Teacher::where('institution_id', $institutionId)
+                    ->with([
+                        'user:id,name',
+                        'department:id,department_name,code',
+                    ]);
+
+                if ($departmentId)
+                    $query->where('department_id', $departmentId);
+
+                return $query->get()->map(function ($teacher) {
+                    return [
+                        'id' => $teacher->id,
+                        'user_id' => $teacher->user_id,
+                        'name' => $teacher->user->name,
+                        'department' => $teacher->department ? [
+                            'id' => $teacher->department->id,
+                            'name' => $teacher->department->department_name,
+                            'code' => $teacher->department->code,
+                        ] : null,
+                        'employment_type' => $teacher->employment_type,
+                        'display_label' => $teacher->user->name,
+                    ];
+                });
+            }, self::DROPDOWN_CACHE_TTL);
+
+            return $this->successResponse($teachers, 'Teachers fetched successfully');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch teachers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /** Courses (filtered by department and semesters)
+     * /dropdowns/courses?department_id=1&semester_id=1
+     * fetch courses related to selected semester
+     */
+    public function getCourses(Request $request)
+    {
+        try {
+            $institutionId = auth()->user()->institution_id;
+            $departmentId = $request->query('department_id');
+            $semesterId = $request->query('semester_id');
+
+            $validator = Validator::make($request->all(), [
+                'department_id' => 'required|exists:departments,id',
+                'semester_id' => 'required|exists:semesters,id',
+            ]);
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+
+            $cacheKey = "institution:{$institutionId}:courses";
+            if ($departmentId)
+                $cacheKey .= ":dept:{$departmentId}";
+            if ($semesterId)
+                $cacheKey .= ".sem:{$semesterId}";
+
+            $courses = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId, $semesterId) {
+                return Course::with([
+                    'department:id,department_name,code',
+                    'semester:id,academic_year_id,semester_name,semester_number',
+                    'semester.academicYear:id,year_name',
+                ])
+                    ->where('institution_id', $institutionId)
+                    ->where('department_id', $departmentId)
+                    ->where('semester_id', $semesterId)
+                    ->where('status', 'active')
+                    ->orderBy('course_name', 'asc')
+                    ->get()
+                    ->map(function ($course) {
+                        return [
+                            'id' => $course->id,
+                            'course_name' => $course->course_name,
+                            'course_code' => $course->code,
+                            'display_label' => "{$course->course_name} ({$course->code})",
+
+                            'department' => [
+                                'id' => $course->department->id,
+                                'name' => $course->department->department_name,
+                                'code' => $course->department->code,
+                            ],
+
+                            'semester' => [
+                                'id' => $course->semester->id,
+                                'name' => $course->semester->semester_name,
+                                'number' => $course->semester->semester_number,
+                            ],
+
+                            'academic_year' => [
+                                'id' => $course->semester->academicYear->id,
+                                'year_name' => $course->semester->academicYear->year_name,
+                            ],
+                        ];
+                    });
+            }, self::DROPDOWN_CACHE_TTL);
+            return $this->successResponse($courses, 'Courses fetched successfully');
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch courses',
                 'error' => $e->getMessage(),
             ], 500);
         }
