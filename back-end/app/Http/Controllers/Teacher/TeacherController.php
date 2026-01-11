@@ -48,7 +48,7 @@ class TeacherController extends Controller
                 ],
             ], 200);
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch profile', $e->getMessage());
+            return $this->errorResponse('Failed to fetch profile', $e->getMessage());
         }
     }
 
@@ -173,7 +173,7 @@ class TeacherController extends Controller
                 ]
             ], 200);
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to update details', $e->getMessage());
+            return $this->errorResponse('Failed to update details', $e->getMessage());
         }
     }
 
@@ -279,7 +279,7 @@ class TeacherController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to get assigned schedules', $e->getMessage());
+            return $this->errorResponse('Failed to get assigned schedules', $e->getMessage());
         }
     }
 
@@ -360,7 +360,7 @@ class TeacherController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch today classes schedule', $e->getMessage());
+           return $this->errorResponse('Failed to fetch today classes schedule', $e->getMessage());
         }
     }
 

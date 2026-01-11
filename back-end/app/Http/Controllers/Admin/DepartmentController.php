@@ -76,7 +76,7 @@ class DepartmentController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch departments', $e->getMessage());
+           return $this->errorResponse('Failed to fetch departments', $e->getMessage());
         }
     }
 
@@ -160,7 +160,7 @@ class DepartmentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to create department', $e->getMessage());
+           return $this->errorResponse('Failed to create department', $e->getMessage());
         }
     }
 
@@ -213,25 +213,19 @@ class DepartmentController extends Controller
         DB::beginTransaction();
         try {
             // update fields
-            if ($request->has('department_name')) {
-                $department->department_name = $request->department_name;
-            }
-            if ($request->has('code')) {
-                $department->code = strtoupper($request->code);
-            }
-            if ($request->has('head_teacher_id')) {
-                $department->head_teacher_id = $request->head_teacher_id;
-            }
-            if ($request->has('description')) {
-                $department->description = $request->description;
-            }
-            if ($request->has('status')) {
-                $department->status = $request->status;
-            }
-            $department->save();
+            $data = $request->only([
+                'department_name',
+                'code',
+                'head_teacher_id',
+                'description',
+                'status',
+            ]);
+            if ($request->has('code'))
+                $data['code'] = strtoupper($request->code);
+
+            $department->update($data);
 
             // cache clear
-            CacheService::forget("department:{$id}:details");
             CacheService::forget(CacheService::departmentsKey($institutionId));
             CacheService::forgetPattern("institution:{$institutionId}:departments:*");
 
@@ -255,7 +249,7 @@ class DepartmentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to update department', $e->getMessage());
+           return $this->errorResponse('Failed to update department', $e->getMessage());
         }
     }
 
@@ -281,7 +275,6 @@ class DepartmentController extends Controller
             $department->forceDelete();
 
             // cache clear
-            CacheService::forget("department:{$id}:details");
             CacheService::forget(CacheService::departmentsKey($institutionId));
             CacheService::forgetPattern("institution:{$institutionId}:departments:*");
 
@@ -294,7 +287,7 @@ class DepartmentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to delete department', $e->getMessage());
+           return $this->errorResponse('Failed to delete department', $e->getMessage());
         }
     }
 

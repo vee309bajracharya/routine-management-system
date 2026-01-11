@@ -116,7 +116,7 @@ class UserController extends Controller
                 ]
             ], 200);
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch user details', $e->getMessage());
+           return $this->errorResponse('Failed to fetch user details', $e->getMessage());
         }
     }
 
@@ -224,7 +224,7 @@ class UserController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('User not found', $e->getMessage(), 404);
+           return $this->errorResponse('User not found', $e->getMessage(), 404);
         }
     }
 
@@ -332,7 +332,7 @@ class UserController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to create user', $e->getMessage());
+           return $this->errorResponse('Failed to create user', $e->getMessage());
         }
     }
 
@@ -516,7 +516,7 @@ class UserController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to update user details', $e->getMessage());
+           return $this->errorResponse('Failed to update user details', $e->getMessage());
         }
     }
 

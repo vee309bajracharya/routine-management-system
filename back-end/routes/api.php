@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BatchController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Api\DropdownController;
 use App\Http\Controllers\Admin\SemesterController;
 use App\Http\Controllers\Teacher\TeacherController;
@@ -88,6 +90,23 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::post('/', [BatchController::class, 'store']);
             Route::put('/{id}', [BatchController::class, 'update']);
             Route::delete('/{id}', [BatchController::class, 'destroy']);
+        });
+
+        // Room routes
+        Route::prefix('/rooms')->group(function () {
+            Route::get('/', [RoomController::class, 'index']);
+            Route::post('/', [RoomController::class, 'store']);
+            Route::put('/{id}', [RoomController::class, 'update']);
+            Route::delete('/{id}', [RoomController::class, 'destroy']);
+        });
+
+        // Course routes
+        Route::prefix('/courses')->group(function () {
+            Route::get('/', [CourseController::class, 'index']);
+            Route::get('/{id}', [CourseController::class, 'show']);
+            Route::post('/', [CourseController::class, 'store']);
+            Route::put('/{id}', [CourseController::class, 'update']);
+            Route::delete('/{id}', [CourseController::class, 'destroy']);
         });
 
         /**
