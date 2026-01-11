@@ -31,15 +31,13 @@ class SemesterController extends Controller
                 })->with('academicYear:id,year_name');
 
                 // filter by academic year
-                if ($academicYearId) {
+                if ($academicYearId)
                     $query->where('academic_year_id', $academicYearId);
-                }
-
+            
                 // filter by status
-                if ($request->filled('is_active')) {
+                if ($request->filled('is_active'))
                     $query->where('is_active', $request->is_active);
-                }
-
+            
                 // search by semester name or academic year name
                 if ($request->filled('search')) {
                     $search = $request->search;
@@ -82,7 +80,7 @@ class SemesterController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch semester', $e->getMessage());
+            return $this->errorResponse('Failed to fetch semester', $e->getMessage());
         }
     }
 
@@ -164,7 +162,7 @@ class SemesterController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to create semester', $e->getMessage());
+            return $this->errorResponse('Failed to create semester', $e->getMessage());
         }
     }
 
@@ -219,20 +217,18 @@ class SemesterController extends Controller
 
         DB::beginTransaction();
         try {
-            $semesterId = $semester->id;
             $academicYearId = $semester->academic_year_id;
 
             // update only fields provided
-            $semester->fill($request->only([
+            $semester->update($request->only([
                 'semester_name',
                 'semester_number',
                 'start_date',
                 'end_date',
                 'is_active'
-            ]))->save();
+            ]));
 
             // cache clear
-            CacheService::forget("semester:{$semesterId}:details");
             CacheService::forget("academic_year:{$academicYearId}:semesters");
             CacheService::forgetPattern("institution:{$institutionId}:semesters*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
@@ -258,7 +254,7 @@ class SemesterController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to update semester', $e->getMessage());
+            return $this->errorResponse('Failed to update semester', $e->getMessage());
         }
     }
 
@@ -282,13 +278,11 @@ class SemesterController extends Controller
 
         DB::beginTransaction();
         try {
-            $semesterId = $semester->id;
             $academicYearId = $semester->academic_year_id;
 
             $semester->forceDelete();
 
             // cache clear
-            CacheService::forget("semester:{$semesterId}:details");
             CacheService::forget("academic_year:{$academicYearId}:semesters");
             CacheService::forgetPattern("institution:{$institutionId}:semesters*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
@@ -302,7 +296,7 @@ class SemesterController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to delete semester', $e->getMessage());
+            return $this->errorResponse('Failed to delete semester', $e->getMessage());
         }
     }
 

@@ -32,21 +32,17 @@ class CourseController extends Controller
                         'semester:id,semester_name',
                     ]);
 
-                if ($request->filled('department_id')) {
+                if ($request->filled('department_id'))
                     $query->where('department_id', $request->department_id);
-                }
 
-                if ($request->filled('semester_id')) {
+                if ($request->filled('semester_id'))
                     $query->where('semester_id', $request->semester_id);
-                }
 
-                if ($request->filled('course_type')) {
+                if ($request->filled('course_type'))
                     $query->where('course_type', $request->course_type);
-                }
 
-                if ($request->filled('status')) {
+                if ($request->filled('status'))
                     $query->where('status', $request->status);
-                }
 
                 if ($request->filled('search')) {
                     $search = $request->search;
@@ -95,7 +91,7 @@ class CourseController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch courses', $e->getMessage());
+            return $this->errorResponse('Failed to fetch courses', $e->getMessage());
         }
     }
 
@@ -163,7 +159,7 @@ class CourseController extends Controller
                 ]
             ], 200);
         } catch (\Exception $e) {
-            $this->errorResponse('Course not found', $e->getMessage(), 404);
+           return $this->errorResponse('Course not found', $e->getMessage(), 404);
         }
     }
 
@@ -228,6 +224,11 @@ class CourseController extends Controller
                 'message' => 'Course created successfully',
                 'data' => [
                     'id' => $course->id,
+                    'course_name' => $course->course_name,
+                    'code' => $course->code,
+                    'description' => $course->description,
+                    'course_type' => $course->course_type,
+                    'status' => $course->status,
                     'department' => [
                         'id' => $course->department?->id,
                         'code' => $course->department?->code,
@@ -236,17 +237,12 @@ class CourseController extends Controller
                         'id' => $course->semester?->id,
                         'semester_name' => $course->semester?->semester_name,
                     ],
-                    'course_name' => $course->course_name,
-                    'code' => $course->code,
-                    'description' => $course->description,
-                    'course_type' => $course->course_type,
-                    'status' => $course->status,
                 ]
             ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to create course', $e->getMessage());
+            return $this->errorResponse('Failed to create course', $e->getMessage());
         }
     }
 
@@ -256,8 +252,6 @@ class CourseController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'department_id' => 'sometimes|exists:departments,id',
-            'semester_id' => 'sometimes|exists:semesters,id',
             'course_name' => 'sometimes|string|max:255',
             'code' => 'sometimes|string|max:50|unique:courses,code,' . $id,
             'description' => 'nullable|string',
@@ -277,8 +271,6 @@ class CourseController extends Controller
         DB::beginTransaction();
         try {
             $course->update($request->only([
-                'department_id',
-                'semester_id',
                 'course_name',
                 'code',
                 'description',
@@ -296,6 +288,11 @@ class CourseController extends Controller
                 'message' => 'Course updated successfully',
                 'data' => [
                     'id' => $course->id,
+                    'course_name' => $course->course_name,
+                    'code' => $course->code,
+                    'description' => $course->description,
+                    'course_type' => $course->course_type,
+                    'status' => $course->status,
                     'department' => [
                         'id' => $course->department?->id,
                         'code' => $course->department?->code,
@@ -304,17 +301,12 @@ class CourseController extends Controller
                         'id' => $course->semester?->id,
                         'semester_name' => $course->semester?->semester_name,
                     ],
-                    'course_name' => $course->course_name,
-                    'code' => $course->code,
-                    'description' => $course->description,
-                    'course_type' => $course->course_type,
-                    'status' => $course->status,
                 ]
             ], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to update course', $e->getMessage());
+            return $this->errorResponse('Failed to update course', $e->getMessage());
         }
     }
 

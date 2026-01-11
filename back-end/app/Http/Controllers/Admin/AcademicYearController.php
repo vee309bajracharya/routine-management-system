@@ -31,13 +31,11 @@ class AcademicYearController extends Controller
                 $query = AcademicYear::where('institution_id', $institutionId)
                     ->with(['department:id,department_name,code', 'semesters']);
 
-                if ($departmentId) {
+                if ($departmentId)
                     $query->where('department_id', $departmentId);
-                }
 
-                if ($request->filled('is_active')) {
+                if ($request->filled('is_active'))
                     $query->where('is_active', $request->is_active);
-                }
 
                 if ($request->filled('search')) {
                     $search = $request->search;
@@ -87,7 +85,7 @@ class AcademicYearController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch academic years', $e->getMessage());
+            return $this->errorResponse('Failed to fetch academic years', $e->getMessage());
         }
     }
 
@@ -152,12 +150,12 @@ class AcademicYearController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to create academic year', $e->getMessage());
+            return $this->errorResponse('Failed to create academic year', $e->getMessage());
         }
     }
 
     /**
-     * Update academic year (department immutable)
+     * Update academic year
      */
     public function update(Request $request, $id)
     {
@@ -192,22 +190,13 @@ class AcademicYearController extends Controller
         DB::beginTransaction();
         try {
             // update fields
-            if ($request->has('year_name')) {
-                $academicYear->year_name = $request->year_name;
-            }
-            if ($request->has('start_date')) {
-                $academicYear->start_date = $request->start_date;
-            }
-            if ($request->has('end_date')) {
-                $academicYear->end_date = $request->end_date;
-            }
-            if ($request->has('is_active')) {
-                $academicYear->is_active = $request->is_active;
-            }
+            $academicYear->update($request->only([
+                'year_name',
+                'start_date',
+                'end_date',
+                'is_active',
+            ]));
 
-            $academicYear->save();
-
-            CacheService::forget("academic_year:{$id}:details");
             CacheService::forgetPattern("institution:{$institutionId}:academic_years*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
 
@@ -227,7 +216,7 @@ class AcademicYearController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to update academic year', $e->getMessage());
+            return $this->errorResponse('Failed to update academic year', $e->getMessage());
         }
     }
 
@@ -251,7 +240,6 @@ class AcademicYearController extends Controller
         try {
             $academicYear->forceDelete();
 
-            CacheService::forget("academic_year:{$id}:details");
             CacheService::forgetPattern("institution:{$institutionId}:academic_years*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
 
@@ -271,7 +259,7 @@ class AcademicYearController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to delete academic year', $e->getMessage());
+            return $this->errorResponse('Failed to delete academic year', $e->getMessage());
         }
     }
 

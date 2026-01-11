@@ -28,14 +28,14 @@ class RoomController extends Controller
                 $query = Room::where('institution_id', $institutionId);
 
                 // Filter by room type
-                if ($request->filled('room_type')) {
+                if ($request->filled('room_type'))
                     $query->where('room_type', $request->room_type);
-                }
+
 
                 // Filter by status
-                if ($request->filled('status')) {
+                if ($request->filled('status'))
                     $query->where('status', $request->status);
-                }
+
 
                 // Search by name, room number
                 if ($request->filled('search')) {
@@ -70,7 +70,7 @@ class RoomController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch rooms', $e->getMessage());
+            return $this->errorResponse('Failed to fetch rooms', $e->getMessage());
         }
     }
 
@@ -135,7 +135,7 @@ class RoomController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to create room', $e->getMessage());
+            return $this->errorResponse('Failed to create room', $e->getMessage());
         }
     }
 
@@ -175,23 +175,14 @@ class RoomController extends Controller
         DB::beginTransaction();
         try {
             // Update fields
-            if ($request->has('name')) {
-                $room->name = $request->name;
-            }
-            if ($request->has('room_number')) {
-                $room->room_number = $request->room_number;
-            }
-            if ($request->has('room_type')) {
-                $room->room_type = $request->room_type;
-            }
-            if ($request->has('status')) {
-                $room->status = $request->status;
-            }
-
-            $room->save();
+            $room->update($request->only([
+                'name',
+                'room_number',
+                'room_type',
+                'status',
+            ]));
 
             // Clear caches
-            CacheService::forget("room:{$id}:details");
             CacheService::forgetPattern("institution:{$institutionId}:rooms*");
             CacheService::forget(CacheService::roomAvailabilityKey($id));
 
@@ -211,7 +202,7 @@ class RoomController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to update room', $e->getMessage());
+            return $this->errorResponse('Failed to update room', $e->getMessage());
         }
     }
 
@@ -227,7 +218,6 @@ class RoomController extends Controller
             $room->forceDelete();
 
             // Clear caches
-            CacheService::forget("room:{$id}:details");
             CacheService::forgetPattern("institution:{$institutionId}:rooms*");
             CacheService::forget(CacheService::roomAvailabilityKey($id));
 
@@ -240,7 +230,7 @@ class RoomController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to delete room', $e->getMessage());
+            return $this->errorResponse('Failed to delete room', $e->getMessage());
         }
     }
 

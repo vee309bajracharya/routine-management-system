@@ -33,24 +33,20 @@ class BatchController extends Controller
                     ]);
 
                 // filter by department
-                if ($request->filled('department_id')) {
+                if ($request->filled('department_id'))
                     $query->where('department_id', $request->department_id);
-                }
 
                 // filter by semester
-                if ($request->filled('semester_id')) {
+                if ($request->filled('semester_id'))
                     $query->where('semester_id', $request->semester_id);
-                }
 
                 // filter by shift
-                if ($request->filled('shift')) {
+                if ($request->filled('shift'))
                     $query->where('shift', $request->shift);
-                }
 
                 // filter by status
-                if ($request->filled('status')) {
+                if ($request->filled('status'))
                     $query->where('status', $request->status);
-                }
 
                 // search by batch, semester and department
                 if ($request->filled('search')) {
@@ -104,7 +100,7 @@ class BatchController extends Controller
                 ]
             ], 200);
         } catch (\Exception $e) {
-            $this->errorResponse('Failed to fetch batches', $e->getMessage());
+            return $this->errorResponse('Failed to fetch batches', $e->getMessage());
         }
     }
 
@@ -171,9 +167,6 @@ class BatchController extends Controller
 
             // clear cache
             CacheService::forgetPattern("institution:{$institutionId}:batches*");
-            if ($request->department_id) {
-                CacheService::forgetPattern("batch:{$request->department_id}:*");
-            }
 
             DB::commit();
 
@@ -187,11 +180,19 @@ class BatchController extends Controller
                     'year_level' => $batch->year_level,
                     'shift' => $batch->shift,
                     'status' => $batch->status,
+                    'department' => $batch->department ? [
+                        'id' => $batch->department->id,
+                        'code' => $batch->department->code,
+                    ] : null,
+                    'semester' => $batch->semester ? [
+                        'id' => $batch->semester->id,
+                        'semester_name' => $batch->semester->semester_name,
+                    ] : null,
                 ]
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to create batch', $e->getMessage());
+            return $this->errorResponse('Failed to create batch', $e->getMessage());
         }
     }
 
@@ -199,8 +200,6 @@ class BatchController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'department_id' => 'sometimes|exists:departments,id',
-            'semester_id' => 'sometimes|exists:semesters,id',
             'batch_name' => 'sometimes|string|max:100',
             'code' => 'sometimes|string|max:50|unique:batches,code,' . $id,
             'year_level' => 'sometimes|integer|min:1|max:8',
@@ -219,63 +218,17 @@ class BatchController extends Controller
         $institutionId = auth()->user()->institution_id;
         $batch = Batch::where('institution_id', $institutionId)->findOrFail($id);
 
-        // Verify department if provided
-        if ($request->has('department_id') && $request->department_id) {
-            $department = Department::where('id', $request->department_id)
-                ->where('institution_id', $institutionId)
-                ->first();
-
-            if (!$department) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid department selection'
-                ], 422);
-            }
-        }
-
-        // Verify semester if provided
-        if ($request->has('semester_id')) {
-            $semester = Semester::whereHas('academicYear', function ($q) use ($institutionId) {
-                $q->where('institution_id', $institutionId);
-            })->find($request->semester_id);
-
-            if (!$semester) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid semester selection'
-                ], 422);
-            }
-        }
-
         DB::beginTransaction();
         try {
-            // Update fields
-            if ($request->has('department_id')) {
-                $batch->department_id = $request->department_id;
-            }
-            if ($request->has('semester_id')) {
-                $batch->semester_id = $request->semester_id;
-            }
-            if ($request->has('batch_name')) {
-                $batch->batch_name = $request->batch_name;
-            }
-            if ($request->has('code')) {
-                $batch->code = $request->code;
-            }
-            if ($request->has('year_level')) {
-                $batch->year_level = $request->year_level;
-            }
-            if ($request->has('shift')) {
-                $batch->shift = $request->shift;
-            }
-            if ($request->has('status')) {
-                $batch->status = $request->status;
-            }
-
-            $batch->save();
+            $batch->update($request->only([
+                'batch_name',
+                'code',
+                'year_level',
+                'shift',
+                'status',
+            ]));
 
             // cache clear
-            CacheService::forget("batch:{$id}:details");
             CacheService::forgetPattern("institution:{$institutionId}:batches*");
 
             DB::commit();
@@ -290,12 +243,20 @@ class BatchController extends Controller
                     'year_level' => $batch->year_level,
                     'shift' => $batch->shift,
                     'status' => $batch->status,
+                    'department' => $batch->department ? [
+                        'id' => $batch->department->id,
+                        'code' => $batch->department->code,
+                    ] : null,
+                    'semester' => $batch->semester ? [
+                        'id' => $batch->semester->id,
+                        'semester_name' => $batch->semester->semester_name,
+                    ] : null,
                 ]
             ], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to update batch', $e->getMessage());
+            return $this->errorResponse('Failed to update batch', $e->getMessage());
         }
     }
 
@@ -319,7 +280,6 @@ class BatchController extends Controller
             $batch->forceDelete();
 
             // cache clear
-            CacheService::forget("batch:{$id}:details");
             CacheService::forgetPattern("institution:{$institutionId}:batches*");
 
             DB::commit();
@@ -330,7 +290,7 @@ class BatchController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorResponse('Failed to delete batch', $e->getMessage());
+            return $this->errorResponse('Failed to delete batch', $e->getMessage());
         }
     }
 
