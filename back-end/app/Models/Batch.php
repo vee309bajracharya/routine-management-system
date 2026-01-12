@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Routine;
 use App\Models\Semester;
+use App\Models\TimeSlot;
 use App\Models\Department;
 use App\Models\Institution;
 use App\Models\CourseAssignment;
@@ -44,6 +45,12 @@ class Batch extends Model
         return $this->belongsTo(Semester::class);
     }
 
+    // timeslots of this batch
+    public function timeSlots()
+    {
+        return $this->hasMany(TimeSlot::class);
+    }
+
     // get all course assignments for this batch
     public function courseAssignments()
     {
@@ -77,12 +84,14 @@ class Batch extends Model
     }
 
     // filter active batches
-    public function scopeActive($query){
-        return $query->where('status','active');
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 
     // filter by shift
-    public function scopeShift($query, string $shift){
-        return $query->where('shift',$shift);
+    public function scopeShift($query, string $shift)
+    {
+        return $query->where('shift', $shift);
     }
 }
