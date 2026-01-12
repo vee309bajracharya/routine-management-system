@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use App\Models\Batch;
 use App\Models\Routine;
+use App\Models\Semester;
 use App\Models\Department;
 use App\Models\Institution;
 use App\Models\RoutineEntry;
@@ -59,6 +61,16 @@ class TimeSlot extends Model
     public function routines()
     {
         return $this->hasMany(Routine::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
     }
 
     // check if time_slot is applicable for specific day

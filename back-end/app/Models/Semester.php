@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Batch;
 use App\Models\Course;
 use App\Models\Routine;
+use App\Models\TimeSlot;
 use App\Models\AcademicYear;
 use App\Models\CourseAssignment;
 use Illuminate\Database\Eloquent\Model;
@@ -59,6 +60,12 @@ class Semester extends Model
     public function routines()
     {
         return $this->hasMany(Routine::class);
+    }
+
+    // one sem has many timeslots
+    public function timeSlots()
+    {
+        return $this->hasMany(TimeSlot::class);
     }
 
     // to check if semester is currently active

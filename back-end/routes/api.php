@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BatchController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\TimeSlotController;
 use App\Http\Controllers\Api\DropdownController;
 use App\Http\Controllers\Admin\SemesterController;
 use App\Http\Controllers\Teacher\TeacherController;
@@ -107,6 +108,15 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::post('/', [CourseController::class, 'store']);
             Route::put('/{id}', [CourseController::class, 'update']);
             Route::delete('/{id}', [CourseController::class, 'destroy']);
+        });
+
+        // Timeslot routes
+        Route::prefix('/time-slots')->group(function () {
+            Route::get('/', [TimeSlotController::class, 'index']);
+            Route::get('/{id}', [TimeSlotController::class, 'show']);
+            Route::post('/', [TimeSlotController::class, 'store']);
+            Route::put('/{id}', [TimeSlotController::class, 'update']);
+            Route::delete('/{id}', [TimeSlotController::class, 'destroy']);
         });
 
         /**
