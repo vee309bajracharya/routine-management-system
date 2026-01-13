@@ -7,7 +7,7 @@ use App\Models\Course;
 use App\Models\Routine;
 use App\Models\Teacher;
 use App\Models\Semester;
-use App\Models\TimeSlot;
+use App\Models\Department;
 use App\Models\RoutineEntry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -61,6 +61,11 @@ class CourseAssignment extends Model
     public function routines()
     {
         return $this->hasMany(Routine::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
 

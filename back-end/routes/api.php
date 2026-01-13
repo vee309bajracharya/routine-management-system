@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Routines\RoutineCRUDController;
 use App\Http\Controllers\Routines\RoutineEntryController;
+use App\Http\Controllers\Admin\CourseAssignmentController;
 use App\Http\Controllers\Routines\RoutineExportController;
 use App\Http\Controllers\Routines\RoutineVersionController;
 use App\Http\Controllers\Teacher\TeacherDashboardController;
@@ -118,6 +119,17 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::put('/{id}', [TimeSlotController::class, 'update']);
             Route::delete('/{id}', [TimeSlotController::class, 'destroy']);
         });
+
+        // Course Assignment routes
+        Route::prefix('/course-assignments')->group(function () {
+            Route::get('/', [CourseAssignmentController::class, 'index']);
+            Route::get('/{id}', [CourseAssignmentController::class, 'show']);
+            Route::post('/', [CourseAssignmentController::class, 'store']);
+            Route::put('/{id}', [CourseAssignmentController::class, 'update']);
+            Route::delete('/{id}', [CourseAssignmentController::class, 'destroy']);
+        });
+
+        // ===== Academic Details Components Routes End ======
 
         /**
          * Dropdown Routes(DR)

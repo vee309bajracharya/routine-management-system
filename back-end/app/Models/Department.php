@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Teacher;
 use App\Models\Institution;
 use App\Models\AcademicYear;
+use App\Models\CourseAssignment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -59,6 +60,10 @@ class Department extends Model
     public function batches()
     {
         return $this->hasMany(Batch::class);
+    }
+    public function courseAssignments()
+    {
+        return $this->hasMany(CourseAssignment::class);
     }
 
     // ===== Scopes ======
