@@ -79,7 +79,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         });
 
         // Semester routes
-        Route::prefix('/semesters')->group(function () {
+        Route::prefix('semesters')->group(function () {
             Route::get('/', [SemesterController::class, 'index']);
             Route::post('/', [SemesterController::class, 'store']);
             Route::put('/{id}', [SemesterController::class, 'update']);
@@ -87,7 +87,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         });
 
         // Batch routes
-        Route::prefix('/batches')->group(function () {
+        Route::prefix('batches')->group(function () {
             Route::get('/', [BatchController::class, 'index']);
             Route::post('/', [BatchController::class, 'store']);
             Route::put('/{id}', [BatchController::class, 'update']);
@@ -95,7 +95,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         });
 
         // Room routes
-        Route::prefix('/rooms')->group(function () {
+        Route::prefix('rooms')->group(function () {
             Route::get('/', [RoomController::class, 'index']);
             Route::post('/', [RoomController::class, 'store']);
             Route::put('/{id}', [RoomController::class, 'update']);
@@ -103,7 +103,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         });
 
         // Course routes
-        Route::prefix('/courses')->group(function () {
+        Route::prefix('courses')->group(function () {
             Route::get('/', [CourseController::class, 'index']);
             Route::get('/{id}', [CourseController::class, 'show']);
             Route::post('/', [CourseController::class, 'store']);
@@ -112,7 +112,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         });
 
         // Timeslot routes
-        Route::prefix('/time-slots')->group(function () {
+        Route::prefix('time-slots')->group(function () {
             Route::get('/', [TimeSlotController::class, 'index']);
             Route::get('/{id}', [TimeSlotController::class, 'show']);
             Route::post('/', [TimeSlotController::class, 'store']);
@@ -121,7 +121,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         });
 
         // Course Assignment routes
-        Route::prefix('/course-assignments')->group(function () {
+        Route::prefix('course-assignments')->group(function () {
             Route::get('/', [CourseAssignmentController::class, 'index']);
             Route::get('/{id}', [CourseAssignmentController::class, 'show']);
             Route::post('/', [CourseAssignmentController::class, 'store']);
@@ -134,7 +134,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         /**
          * Dropdown Routes(DR)
          *  - DR1 : Mainly for 'Create Routine Entry' Form
-         *  - DR2: 'Create Routine' Form
+         *  - DR2: Mainly for 'Create Routine' Form
          *  - DR3: for 'Academic Details' components Create Form
          */
         Route::prefix('dropdowns')->group(function () {
@@ -153,7 +153,9 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::get('/batches-by-semester', [DropdownController::class, 'getBatchesBySemester']);
 
             // DR3
-            Route::get('/teachers', [DropdownController::class, 'getTeachers']);
+            Route::get('/teachers', [DropdownController::class, 'getTeachers']); // for HOD selection in Departments
+            Route::get('/all-academic-years', [DropdownController::class, 'getAllAcademicYears']); // for Semester creation
+            Route::get('/semesters-by-department', [DropdownController::class, 'getSemestersByDepartment']); // for Batches and Courses creation
             Route::get('/courses', [DropdownController::class, 'getCourses']);
 
         });
