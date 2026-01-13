@@ -3,13 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\BatchController;
-use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\CourseController;
-use App\Http\Controllers\Admin\TimeSlotController;
 use App\Http\Controllers\Api\DropdownController;
 use App\Http\Controllers\Admin\SemesterController;
+use App\Http\Controllers\Admin\TimeSlotController;
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\InstitutionController;
@@ -184,10 +184,8 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
     // Teacher routes
     Route::middleware(['check.role:teacher'])->prefix('teacher')->group(function () {
 
-        Route::get('/dashboard', [TeacherDashboardController::class, 'index']); //dashboard
+        Route::get('/dashboard', [TeacherDashboardController::class, 'index']); //dashboard with todayClasses and getSchedule functionality
         Route::get('/profile', [TeacherController::class, 'show']); //show profile details
         Route::put('/update-profile', [TeacherController::class, 'update']); //update profile details
-        Route::get('/today-classes', [TeacherController::class, 'getTodayClasses']); // get today's schedule status
-        Route::get('/schedule', [TeacherController::class, 'getSchedule']); // get all assigned schedules
     });
 });
