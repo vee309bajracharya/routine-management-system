@@ -414,7 +414,7 @@ class DropdownController extends Controller
             ], 500);
         }
     }
-    
+
 
     // ======= For 'Create Routine' Form ======= 
 
@@ -517,50 +517,139 @@ class DropdownController extends Controller
 
     // ======= Academic Details Create Forms ======= 
 
-    /** Teachers (filtered by department)
-     * /dropdowns/teachers?department_id=1
+    /** getTeachers()
+     *  applicable in Departments HOD and Course Assignment
      */
     public function getTeachers(Request $request)
     {
         try {
             $institutionId = auth()->user()->institution_id;
             $departmentId = $request->query('department_id');
+            $searchTerm = $request->query('search');
 
-            $cacheKey = "institution:{$institutionId}:teachers";
-            if ($departmentId)
-                $cacheKey .= ":dept:{$departmentId}";
+            $cacheKey = "institution:{$institutionId}:teachers" . ($departmentId ? ":dept:{$departmentId}" : "");
 
-            $teachers = CacheService::remember($cacheKey, function () use ($institutionId, $departmentId) {
-                $query = Teacher::where('institution_id', $institutionId)
-                    ->with([
-                        'user:id,name',
-                        'department:id,department_name,code',
-                    ]);
+            $teachersCallback = function () use ($institutionId, $departmentId, $searchTerm) {
+                $query = Teacher::where('teachers.institution_id', $institutionId)
+                    ->join('users', 'teachers.user_id', '=', 'users.id')
+                    ->select('teachers.*')
+                    ->with(['user:id,name','department:id,code']);
 
+                // Filter by department
                 if ($departmentId)
-                    $query->where('department_id', $departmentId);
+                    $query->where('teachers.department_id', $departmentId);
 
-                return $query->get()->map(function ($teacher) {
+                // search teacher's name
+                if ($searchTerm)
+                    $query->where('users.name', 'like', "%{$searchTerm}%");
+
+                return $query->orderBy('users.name', 'asc')->get()->map(function ($teacher) {
+                    $deptCode = $teacher->department->code;
+
                     return [
                         'id' => $teacher->id,
                         'user_id' => $teacher->user_id,
                         'name' => $teacher->user->name,
                         'department' => $teacher->department ? [
                             'id' => $teacher->department->id,
-                            'name' => $teacher->department->department_name,
                             'code' => $teacher->department->code,
                         ] : null,
                         'employment_type' => $teacher->employment_type,
-                        'display_label' => $teacher->user->name,
+                        'display_label' => "{$teacher->user->name} ({$deptCode} - {$teacher->employment_type})",
                     ];
                 });
-            }, self::DROPDOWN_CACHE_TTL);
+            };
+
+            // in searching scenario, not using cache , otherwiase use the cache for initial load
+            $teachers = $searchTerm ? $teachersCallback() : CacheService::remember($cacheKey, $teachersCallback, self::DROPDOWN_CACHE_TTL);
 
             return $this->successResponse($teachers, 'Teachers fetched successfully');
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch teachers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * getAllAcademicYears - by 'active' status
+     *  - for Semester creation
+     */
+    public function getAllAcademicYears()
+    {
+        try {
+            $institutionId = auth()->user()->institution_id;
+            $cacheKey = "institution:{$institutionId}:all_academic_years";
+
+            $academicYears = CacheService::remember($cacheKey, function () use ($institutionId) {
+                return AcademicYear::where('institution_id', $institutionId)
+                    ->where('is_active', true)
+                    ->select('id', 'year_name', 'start_date', 'end_date')
+                    ->orderBy('start_date', 'desc')
+                    ->get()
+                    ->map(function ($year) {
+                        return [
+                            'id' => $year->id,
+                            'year_name' => $year->year_name, //display for front-end
+                        ];
+                    });
+            }, self::DROPDOWN_CACHE_TTL);
+
+            return $this->successResponse($academicYears, 'All academic years fetched successfully');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch academic years',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * getSemestersByDepartment() - to filter semesters by department
+     *  - for Batches and Courses creation form
+     */
+    public function getSemestersByDepartment(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'department_id' => 'required|exists:departments,id',
+            ]);
+            if ($validator->fails())
+                return $this->validationError($validator->errors());
+
+            $departmentId = $request->query('department_id');
+            $institutionId = auth()->user()->institution_id;
+
+            $cacheKey = "institution:{$institutionId}:dept:{$departmentId}:semesters";
+
+            $semesters = CacheService::remember($cacheKey, function () use ($departmentId, $institutionId) {
+                return Semester::whereHas('academicYear', function ($query) use ($departmentId, $institutionId) {
+                    $query->where('department_id', $departmentId)
+                        ->where('institution_id', $institutionId);
+                })
+                    ->where('is_active', true)
+                    ->with('academicYear:id,year_name')
+                    ->orderBy('semester_number', 'asc')
+                    ->get()
+                    ->map(function ($semester) {
+                        return [
+                            'id' => $semester->id,
+                            'semester_name' => $semester->semester_name, //display_label
+                            'semester_number' => $semester->semester_number,
+                            'academic_year' => $semester->academicYear->year_name,
+                        ];
+                    });
+            }, self::DROPDOWN_CACHE_TTL);
+            return $this->successResponse($semesters, 'Semesters for selected department fetched successfully');
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch semesters for the department',
                 'error' => $e->getMessage(),
             ], 500);
         }
