@@ -19,6 +19,7 @@ use App\Http\Controllers\Routines\RoutineCRUDController;
 use App\Http\Controllers\Routines\RoutineEntryController;
 use App\Http\Controllers\Admin\CourseAssignmentController;
 use App\Http\Controllers\Routines\RoutineExportController;
+use App\Http\Controllers\Api\TeacherAvailabilityController;
 use App\Http\Controllers\Routines\RoutineVersionController;
 use App\Http\Controllers\Teacher\TeacherDashboardController;
 
@@ -127,6 +128,14 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::post('/', [CourseAssignmentController::class, 'store']);
             Route::put('/{id}', [CourseAssignmentController::class, 'update']);
             Route::delete('/{id}', [CourseAssignmentController::class, 'destroy']);
+        });
+
+        // Teacher Availability routes
+        Route::prefix('teacher-availability')->group(function () {
+            Route::get('/', [TeacherAvailabilityController::class, 'index']);
+            Route::post('/', [TeacherAvailabilityController::class, 'store']);
+            Route::put('/{id}', [TeacherAvailabilityController::class, 'update']);
+            Route::delete('/{id}', [TeacherAvailabilityController::class, 'destroy']);
         });
 
         // ===== Academic Details Components Routes End ======
