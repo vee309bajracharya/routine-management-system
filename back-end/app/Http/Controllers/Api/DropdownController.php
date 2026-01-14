@@ -560,7 +560,7 @@ class DropdownController extends Controller
                 });
             };
 
-            // in searching scenario, not using cache , otherwiase use the cache for initial load
+            // in searching scenario, not using cache , otherwise use the cache for initial load
             $teachers = $searchTerm ? $teachersCallback() : CacheService::remember($cacheKey, $teachersCallback, self::DROPDOWN_CACHE_TTL);
 
             return $this->successResponse($teachers, 'Teachers fetched successfully');

@@ -33,11 +33,11 @@ class SemesterController extends Controller
                 // filter by academic year
                 if ($academicYearId)
                     $query->where('academic_year_id', $academicYearId);
-            
+
                 // filter by status
                 if ($request->filled('is_active'))
                     $query->where('is_active', $request->is_active);
-            
+
                 // search by semester name or academic year name
                 if ($request->filled('search')) {
                     $search = $request->search;
@@ -138,8 +138,8 @@ class SemesterController extends Controller
 
             // cache clear
             CacheService::forget("academic_year:{$request->academic_year_id}:semesters");
-            CacheService::forgetPattern("institution:{$institutionId}:semesters*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
+            CacheService::forgetPattern("institution:{$institutionId}:semesters*");
 
             DB::commit();
 
@@ -230,8 +230,8 @@ class SemesterController extends Controller
 
             // cache clear
             CacheService::forget("academic_year:{$academicYearId}:semesters");
-            CacheService::forgetPattern("institution:{$institutionId}:semesters*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
+            CacheService::forgetPattern("institution:{$institutionId}:semesters*");
 
             DB::commit();
 
@@ -284,8 +284,8 @@ class SemesterController extends Controller
 
             // cache clear
             CacheService::forget("academic_year:{$academicYearId}:semesters");
-            CacheService::forgetPattern("institution:{$institutionId}:semesters*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
+            CacheService::forgetPattern("institution:{$institutionId}:semesters*");
 
             DB::commit();
 
