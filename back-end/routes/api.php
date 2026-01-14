@@ -165,7 +165,7 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
             Route::get('/teachers', [DropdownController::class, 'getTeachers']); // for HOD selection in Departments
             Route::get('/all-academic-years', [DropdownController::class, 'getAllAcademicYears']); // for Semester creation
             Route::get('/semesters-by-department', [DropdownController::class, 'getSemestersByDepartment']); // for Batches and Courses creation
-            Route::get('/courses', [DropdownController::class, 'getCourses']);
+            Route::get('/courses', [DropdownController::class, 'getCourses']); //for Course Assignment creation
 
         });
 

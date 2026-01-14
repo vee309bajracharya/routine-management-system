@@ -128,6 +128,7 @@ class AcademicYearController extends Controller
 
             CacheService::forgetPattern("institution:{$institutionId}:academic_years*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
+            CacheService::forgetPattern("institution:{$institutionId}:all_academic_years");
 
             DB::commit();
 
@@ -199,6 +200,7 @@ class AcademicYearController extends Controller
 
             CacheService::forgetPattern("institution:{$institutionId}:academic_years*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
+            CacheService::forgetPattern("institution:{$institutionId}:all_academic_years");
 
             DB::commit();
 
@@ -242,6 +244,7 @@ class AcademicYearController extends Controller
 
             CacheService::forgetPattern("institution:{$institutionId}:academic_years*");
             CacheService::forgetPattern("institution:{$institutionId}:all_semesters");
+            CacheService::forgetPattern("institution:{$institutionId}:all_academic_years");
 
             DB::commit();
 
