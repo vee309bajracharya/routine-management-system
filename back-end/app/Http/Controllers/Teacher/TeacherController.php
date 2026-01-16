@@ -15,8 +15,7 @@ use Illuminate\Support\Facades\RateLimiter;
 class TeacherController extends Controller
 {
     private const USER_CACHE_TTL = 3600;
-    private const TODAY_CLASSES_TTL = 300;
-
+    
     /**
      * show()
      * get teacher's own profile details
