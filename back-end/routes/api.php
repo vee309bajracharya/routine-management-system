@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SemesterController;
 use App\Http\Controllers\Admin\TimeSlotController;
 use App\Http\Controllers\Teacher\TeacherController;
 use App\Http\Controllers\Admin\DepartmentController;
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -42,8 +43,14 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
     // Admin routes
     Route::middleware(['check.role:admin'])->prefix('admin')->group(function () {
 
-        // Admin dashboard route
+        // dashboard route
         Route::get('/dashboard', [AdminDashboardController::class, 'index']);
+
+        // activity log route
+        Route::prefix('activity-log')->group(function () {
+            Route::get('/index', [ActivityLogController::class, 'index']);
+            Route::get('/show/{id}', [ActivityLogController::class, 'show']);
+        });
 
         // ===== Academic Details Components Routes ======
 

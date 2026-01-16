@@ -9,10 +9,21 @@ use App\Models\CourseAssignment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class RoutineEntry extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['day_of_week', 'shift', 'entry_type', 'notes'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('routineEntry');
+    }
 
     protected $fillable = [
         'routine_id',
@@ -70,7 +81,8 @@ class RoutineEntry extends Model
     }
 
     // by shift
-    public function scopeByShift($query, string $shift){
+    public function scopeByShift($query, string $shift)
+    {
         return $query->where('shift', $shift);
     }
 

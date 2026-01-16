@@ -13,10 +13,21 @@ use App\Models\AcademicYear;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Institution extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['institution_name', 'type', 'address','contact_email','contact_phone','logo'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('institution');
+    }
 
     protected $fillable = [
         'institution_name',
@@ -84,17 +95,20 @@ class Institution extends Model
     // ===== Scopes ======
 
     // filter institution type
-    public function scopeType($query, string $type){
-        return $query->where('type',$type);
+    public function scopeType($query, string $type)
+    {
+        return $query->where('type', $type);
     }
 
     // filter active institutions
-    public function scopeActive($query){
-        return $query->where('status','active');
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 
     // get the active academic years of this institution
-    public function activeAcademicYears(){
+    public function activeAcademicYears()
+    {
         return $this->hasMany(AcademicYear::class)->where('is_active');
     }
 }

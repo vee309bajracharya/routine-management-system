@@ -8,10 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class SavedRoutine extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['label', 'description', 'routine_snapshot'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('savedRoutine');
+    }
 
     protected $fillable = [
         'routine_id',
@@ -27,11 +38,13 @@ class SavedRoutine extends Model
         'saved_date' => 'date',
     ];
 
-    public function routine(): BelongsTo{
+    public function routine(): BelongsTo
+    {
         return $this->belongsTo(Routine::class);
     }
 
-    public function createdBy(): BelongsTo{
+    public function createdBy(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
 }
