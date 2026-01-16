@@ -34,6 +34,7 @@ class RoutineDetailResource extends JsonResource
             'batch' => [
                 'id' => $this->batch->id,
                 'name' => $this->batch->batch_name,
+                'shift' => $this->batch->shift,
             ],
 
             'generated_by' => [

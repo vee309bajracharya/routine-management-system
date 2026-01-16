@@ -17,9 +17,13 @@ class RoutineExportController extends Controller
         // fetch Routine with basic relations
         $routine = Routine::with(['institution', 'semester', 'batch'])->findOrFail($routineId);
 
+        // shift from batch model
+        $shift = $request->query('shift', $routine->batch->shift ?? 'Morning');
+
         // fetch all TimeSlots for this specific batch/semester/shift  - ensures Break column
         $timeSlots = TimeSlot::where('batch_id', $routine->batch_id)
             ->where('semester_id', $routine->semester_id)
+            ->where('shift', $shift)
             ->where('is_active', true)
             ->select('start_time', 'end_time', 'slot_type')
             ->distinct()
@@ -31,8 +35,12 @@ class RoutineExportController extends Controller
             'courseAssignment.course',
             'courseAssignment.teacher.user',
             'room',
+            'timeSlot'
         ])
             ->where('routine_id', $routineId)
+            ->whereHas('timeSlot', function ($query) use ($shift) {
+                $query->where('shift', $shift);
+            })
             ->whereNull('deleted_at')
             ->get();
 
@@ -49,7 +57,6 @@ class RoutineExportController extends Controller
         }
 
         $status = $request->query('status', $routine->status ?? 'draft');
-        $shift = $request->query('shift', $routine->shift ?? 'Morning');
 
         // PDF
         $pdf = Pdf::loadView('routines.pdf.routine', [

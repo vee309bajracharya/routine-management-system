@@ -35,6 +35,7 @@ class RoutineListResource extends JsonResource
             'batch' => [
                 'id' => $this->batch->id ?? null,
                 'name' => $this->batch->batch_name ?? null,
+                'shift' => $this->batch->shift ?? null,
             ],
 
             'generated_by' => [
