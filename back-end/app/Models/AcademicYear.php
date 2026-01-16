@@ -9,10 +9,21 @@ use App\Models\Institution;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class AcademicYear extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['department_id', 'year_name', 'start_date','end_date'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('academicYear');
+    }
 
     protected $fillable = [
         'institution_id',
@@ -36,7 +47,8 @@ class AcademicYear extends Model
     }
 
     // academic year belongs to a department
-    public function department(){
+    public function department()
+    {
         return $this->belongsTo(Department::class);
     }
 
@@ -53,7 +65,8 @@ class AcademicYear extends Model
     }
 
     // to check if academic year is currently active
-    public function isCurrentlyActive(): bool{
+    public function isCurrentlyActive(): bool
+    {
         $today = now()->toDateString();
         $startDate = Carbon::parse($this->start_date)->toDateString();
         $endDate = Carbon::parse($this->end_date)->toDateString();
@@ -65,12 +78,14 @@ class AcademicYear extends Model
     // ===== Scopes ======
 
     // filter active academic year
-    public function scopeActive($query){
-        return $query->where('is_active',true);
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 
     // filter by institution
-    public function scopeByInstitution($query, $institutionId){
-        return $query->where('institution_id',$institutionId);
+    public function scopeByInstitution($query, $institutionId)
+    {
+        return $query->where('institution_id', $institutionId);
     }
 }

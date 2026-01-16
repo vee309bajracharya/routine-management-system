@@ -13,10 +13,21 @@ use App\Models\RoutineNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Routine extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title','description','status','effective_from','effective_to']) // fields to track
+            ->logOnlyDirty() // Only log if something actually changed
+            ->dontSubmitEmptyLogs() // Don't save a log if no tracked fields changed
+            ->useLogName('routine');
+    }
 
     protected $fillable = [
         'institution_id',

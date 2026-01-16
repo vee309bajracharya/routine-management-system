@@ -6,10 +6,21 @@ use App\Models\Teacher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class TeacherAvailability extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['day_of_week', 'available_from', 'available_to', 'notes'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('teacherAvailability');
+    }
 
     protected $table = 'teacher_availability'; // default: 'teacher_availabilities' but used 'teacher_availability' as migration 
 
