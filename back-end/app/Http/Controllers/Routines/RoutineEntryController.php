@@ -25,7 +25,7 @@ class RoutineEntryController extends Controller
             'course_assignment_id' => 'required|exists:course_assignments,id',
             'room_id' => 'required|exists:rooms,id',
             'time_slot_id' => 'required|exists:time_slots,id',
-            'day_of_week' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            'day_of_week' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
             'shift' => 'required|in:Morning,Day',
             'entry_type' => 'required|in:Lecture,Practical,Break',
             'notes' => 'nullable|string',

@@ -34,7 +34,7 @@ class RoutineCRUDController extends Controller
                 $query = Routine::with([
                     'institution:id,institution_name',
                     'semester:id,semester_name',
-                    'batch:id,batch_name',
+                    'batch:id,batch_name,shift',
                     'generatedBy:id,name'
                 ])
                     ->orderBy('created_at', 'desc');
@@ -151,7 +151,7 @@ class RoutineCRUDController extends Controller
                     $routine = Routine::with([
                         'institution:id,institution_name',
                         'semester:id,semester_name',
-                        'batch:id,batch_name',
+                        'batch:id,batch_name,shift',
                         'generatedBy:id,name'
                     ])->findOrFail($id);
 
