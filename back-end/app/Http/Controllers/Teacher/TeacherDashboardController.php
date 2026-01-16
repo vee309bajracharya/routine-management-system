@@ -9,29 +9,21 @@ use App\Services\CacheService;
 
 class TeacherDashboardController extends Controller
 {
-    private const DASHBOARD_CACHE_TTL = 300;
 
     public function index(Request $request)
     {
         try {
             $teacherId = auth()->user()->teacher->id;
 
-            // cache key for all list and search/filter parameters
-            $cacheKey = "teacher:{$teacherId}:dashboard:" . md5(json_encode($request->all()));
-
-            $dashboardData = CacheService::remember($cacheKey, function () use ($teacherId, $request) {
-                return [
-                    'today_classes' => $this->fetchTodayClasses($teacherId),
-                    'full_schedule' => $this->fetchFullSchedule($teacherId, $request)
-                ];
-            }, self::DASHBOARD_CACHE_TTL);
+            $todayClasses = $this->fetchTodayClasses($teacherId);
+            $fullSchedule = $this->fetchFullSchedule($teacherId, $request);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Teacher dashboard data fetched successfully',
-                'data' => $dashboardData['today_classes'],
-                'schedule' => $dashboardData['full_schedule']['list'],
-                'pagination' => $dashboardData['full_schedule']['meta']
+                'message' => 'Teacher dashboard fetched successfully',
+                'data' => $todayClasses,
+                'schedule' => $fullSchedule['list'],
+                'pagination' => $fullSchedule['meta']
             ], 200);
 
         } catch (\Exception $e) {
