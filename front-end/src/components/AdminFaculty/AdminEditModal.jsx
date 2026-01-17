@@ -103,7 +103,6 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
         updateData.password_confirmation = cleanValues.password_confirmation;
       }
 
-      // No changes
       if (Object.keys(updateData).length === 0) {
         toast.info("No changes to update");
         setIsLoading(false);
