@@ -1,100 +1,191 @@
-import React, { useState } from "react";
-import { ChevronDown } from "lucide-react";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
+import { useFormik } from "formik";
+import axiosClient from "../../../../services/api/axiosClient";
+import { toast } from "react-toastify";
+import {
+  AcademicYearValidationSchema,
+  AcademicYearInitialValues,
+} from "../../../../validations/AcademicYearValidationSchema";
 
 const AcademicYears = () => {
-  const [department, setDepartment] = useState("");
-  const [academicYearName, setAcademicYearName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [departments, setDepartments] = useState([]);
 
-  const departments = [
-    { value: "", label: "Select Department" },
-    { value: "bca", label: "BCA" },
-    { value: "csit", label: "CSIT" },
-  ];
+  // Fetch departments for dropdown
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const institutionId = 1; // Get from auth context if available
+        const response = await axiosClient.get(
+          `/admin/dropdowns/departments/${institutionId}`
+        );
+        if (response.data.success) {
+          setDepartments(response.data.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch departments:", error);
+        toast.error("Failed to load departments");
+      }
+    };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({ department, academicYearName, startDate, endDate });
-  };
+    fetchDepartments();
+  }, []);
+
+  const formik = useFormik({
+    initialValues: AcademicYearInitialValues,
+    validationSchema: AcademicYearValidationSchema,
+    onSubmit: handleSubmit,
+  });
+
+  const { values, errors, touched, handleChange, handleBlur } = formik;
+
+  async function handleSubmit(values, { resetForm, setSubmitting }) {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.post("/admin/academic-years", {
+        department_id: values.department_id,
+        year_name: values.year_name,
+        start_date: values.start_date,
+        end_date: values.end_date,
+        
+      });
+
+      if (response.data.success) {
+        toast.success(
+          response.data.message || "Academic year created successfully"
+        );
+        resetForm();
+      }
+    } catch (error) {
+      console.error("Failed to create academic year:", error);
+
+      if (error.response?.status === 422) {
+        const errors = error.response.data.errors || error.response.data.error;
+        const firstError = Object.values(errors)[0]?.[0];
+        toast.error(firstError || "Validation failed");
+      } else {
+        toast.error(error.userMessage || "Failed to create academic year");
+      }
+    } finally {
+      setIsLoading(false);
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="mt-5 flex justify-center font-general-sans">
       <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
-        {/* Title */}
-        <h2 className="form-header">
-          Academic Year
-        </h2>
+        <h2 className="form-header">Create Academic Year</h2>
         <p className="form-subtext">
-          Create login identities for admins and teachers to access the system.
+          Define academic year periods for organizing semesters and courses.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Department */}
           <div>
-            <label className="form-title">Department</label>
-            <div className="relative">
-              <select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className={`dropdown-select`}
-              >
-                {departments.map((dept) => (
-                  <option
-                    key={dept.value}
-                    value={dept.value}
-                    disabled={dept.value === ""}
-                    className="bg-white dark:bg-dark-overlay text-black dark:text-white"
-                  >
-                    {dept.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <label className="form-title">
+              Department <span className="text-error-red">*</span>
+            </label>
+            <select
+              name="department_id"
+              value={values.department_id}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className="dropdown-select"
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.display_label || dept.department_name}
+                </option>
+              ))}
+            </select>
+            {touched.department_id && errors.department_id && (
+              <p className="showError">{errors.department_id}</p>
+            )}
           </div>
 
           {/* Academic Year Name */}
           <div>
-            <label className="form-title">Academic Year Name</label>
+            <label className="form-title">
+              Academic Year Name <span className="text-error-red">*</span>
+            </label>
             <input
               type="text"
-              placeholder="Enter Academic Year Name"
-              value={academicYearName}
-              onChange={(e) => setAcademicYearName(e.target.value)}
+              name="year_name"
+              placeholder="e.g., 2023-2024, Year 1"
+              value={values.year_name}
+              onChange={handleChange}
+              onBlur={handleBlur}
               className="dropdown-select"
             />
+            {touched.year_name && errors.year_name && (
+              <p className="showError">{errors.year_name}</p>
+            )}
           </div>
 
           {/* Start Date and End Date */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-title">Start Date</label>
+              <label className="form-title">
+                Start Date <span className="text-error-red">*</span>
+              </label>
               <input
                 type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                name="start_date"
+                value={values.start_date}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 className="dropdown-select"
               />
+              {touched.start_date && errors.start_date && (
+                <p className="showError">{errors.start_date}</p>
+              )}
             </div>
 
             <div>
-              <label className="form-title">End Date</label>
+              <label className="form-title">
+                End Date <span className="text-error-red">*</span>
+              </label>
               <input
                 type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                name="end_date"
+                value={values.end_date}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 className="dropdown-select"
               />
+              {touched.end_date && errors.end_date && (
+                <p className="showError">{errors.end_date}</p>
+              )}
             </div>
           </div>
 
           {/* Buttons */}
           <div className="grid grid-cols-2 gap-4 mt-8">
-            <button type="button" className="cancel-btn">
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={() => formik.resetForm()}
+              disabled={formik.isSubmitting || isLoading}
+            >
               Cancel
             </button>
-            <button type="submit" className="auth-btn">
-                Create
+            <button
+              type="submit"
+              className="auth-btn flex items-center justify-center"
+              disabled={formik.isSubmitting || isLoading}
+            >
+              {formik.isSubmitting || isLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : (
+                "Create Academic Year"
+              )}
             </button>
           </div>
         </form>
