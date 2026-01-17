@@ -1,9 +1,7 @@
-import React from 'react'
+import BaseLayout from "./BaseLayout";
 
 const TeacherLayout = () => {
-  return (
-    <div>TeacherLayout</div>
-  )
-}
+  return <BaseLayout role="teacher" />;
+};
 
-export default TeacherLayout
+export default TeacherLayout;

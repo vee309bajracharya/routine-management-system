@@ -29,6 +29,7 @@ const sidebarItems = [
         items: [
             { to: 'time-slots', label: 'Time Slots' },
             { to: 'course-assignments', label: 'Course Assignments' },
+            { to: 'teacher-availability', label: 'Teacher Availability' },
         ]
     },
 ];
