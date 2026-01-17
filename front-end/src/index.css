@@ -23,7 +23,7 @@
   --color-warning-orange: oklch(0.6872 0.1468 62.72);
   --color-blue-gradient: oklch(0.8665 0.0651 265.84);
   --color-warning-faidorange: oklch(0.9246 0.0845 86.39);
-  --color-dark-overlay: hsl(228, 28%, 20%);
+ --color-dark-overlay: rgb(34, 40, 49);
   --color-dark-hover: hsl(230, 17%, 14%);
   --color-dark-box-outline: hsl(228, 28%, 35%);
   /*Dark*/
@@ -238,4 +238,49 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 .background-blur{
   @apply absolute inset-0 bg-black/40 backdrop-blur-sm
+}
+.status-btn-active{
+  @apply bg-green-100 text-green-600 px-3 py-1 rounded-sm text-sm uppercase
+}
+.drawer-info-header{
+  @apply text-lg font-semibold text-black dark:text-white
+}
+.drawer-info-title{
+  @apply text-primary-text dark:text-white
+}
+.academic-common-bg{
+  @apply bg-white dark:bg-dark-overlay min-h-screen font-general-sans 
+}
+.search-icon{
+  @apply absolute left-3 top-2.5 w-4 h-4 text-sub-text pointer-events-none;
+}
+.table-thead{
+ @apply bg-gray-100 border-b border-box-outline dark:bg-dark-hover
+}
+.table-tbody-tr{
+ @apply hover:bg-gray-50 dark:hover:bg-dark-hover dark:text-white transition-colors text-sm
+}
+.table-active{
+ @apply bg-green-100 text-green-600 px-3 py-1 rounded-sm text-sm uppercase
+}
+.table-inactive{
+ @apply bg-red-100 text-red-600 px-3 py-1 rounded-sm text-sm uppercase
+}
+.table-th{
+ @apply p-4 text-left font-semibold text-sm dark:text-white
+}
+.drawer-background{
+  @apply fixed right-0 top-0 h-full w-full max-w-[500px] border-l border-box-outline bg-white dark:bg-dark-overlay shadow-2xl z-[80] overflow-y-auto p-6 font-general-sans
+}
+.drawer-box-background{
+  @apply dark:bg-dark-hover p-5 rounded-xl border border-box-outline mb-8 relative
+}
+.drawer-sub-title{
+  @apply text-xs uppercase text-gray-400 font-semibold mb-1
+}
+.dashboard-btn-link{
+  @apply bg-white border border-box-outline px-4 py-2 rounded-md text-sm font-semibold text-primary-text dark:bg-dark-overlay dark:text-white dark:hover:bg-dark-hover hover:bg-gray-100 shadow-sm transition-all
+}
+.dashboard-box{
+  @apply bg-white p-6 rounded-xl shadow-sm border border-box-outline flex flex-col justify-between hover:bg-primary6-blue dark:bg-dark-overlay dark:hover:bg-dark-hover
 }
