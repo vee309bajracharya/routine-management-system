@@ -12,7 +12,7 @@ import { useAuth } from "../../contexts/AuthContext";
 const TeacherEditValidationSchema = Yup.object({
   department_id: Yup.string().required("Department is required"),
   employment_type: Yup.string()
-    .oneOf(["Full Time", "Part Time", "Guest"])
+    .oneOf(["Full Time", "Part Time"])
     .required("Employment type is required"),
 });
 
