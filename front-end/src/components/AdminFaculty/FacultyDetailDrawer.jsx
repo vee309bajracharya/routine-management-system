@@ -33,7 +33,7 @@ const FacultyDetailsDrawer = ({ selectedUser, closeDrawer, openEditModal }) => {
       >
         {/* Backdrop */}
         <motion.div
-          className="absolute inset-0"
+          className="absolute inset-0 bg-black/50"
           onClick={closeDrawer}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -54,11 +54,11 @@ const FacultyDetailsDrawer = ({ selectedUser, closeDrawer, openEditModal }) => {
               <h2 className="form-header">Faculty Details</h2>
               <motion.button
                 onClick={closeDrawer}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-dark-hover rounded-full transition-colors"
+                className="x-btn"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <X size={20} className="text-primary-text dark:text-white" />
+                <X size={20} />
               </motion.button>
             </div>
           </div>
@@ -237,7 +237,7 @@ const FacultyDetailsDrawer = ({ selectedUser, closeDrawer, openEditModal }) => {
             )}
           </div>
 
-          {/* Action Buttons (Fixed at bottom) */}
+          {/* Action Buttons */}
           <motion.div
             className="sticky bottom-0 bg-white dark:bg-dark-overlay p-6 border-t border-box-outline"
             initial={{ opacity: 0, y: 20 }}

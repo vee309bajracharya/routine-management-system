@@ -199,14 +199,12 @@ const AdminFaculty = () => {
     ]);
   };
 
-  // Pagination handler - FIXED: Just update page state
+  // Pagination handler 
   const loadPage = (page) => {
     setCurrentPage(page);
   };
 
-  // Reset to page 1 ONLY when filters change - FIXED
   const handleFilterChange = (filterType, value) => {
-    // Reset to page 1 when filters change
     if (filterType === "role") {
     if (value === selectedRole) return; 
     setSelectedRole(value);
