@@ -1,341 +1,533 @@
-import React, { useState } from "react";
-import { ChevronDown, X } from "lucide-react";
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from "react";
+import { Loader2, ChevronDown, X } from "lucide-react";
+import { useFormik } from "formik";
+import axiosClient from "../../../../services/api/axiosClient";
+import { toast } from "react-toastify";
+import {
+  TimeSlotValidationSchema,
+  TimeSlotInitialValues,
+} from "../../../../validations/TimeSlotValidationSchema";
 
 const TimeSlots = () => {
-  const [slotType, setSlotType] = useState("Lecture");
-  const [shift, setShift] = useState("Morning");
-  const [department, setDepartment] = useState("BCA");
-  const [semester, setSemester] = useState("First Semester (7)");
-  const [batch,setBatch]= useState("BCA2022");
-  const [name, setName] = useState("Cyber Law(first period)");
-  const [startTime, setStartTime] = useState("06:35");
-  const [endTime, setEndTime] = useState("07:35");
-  const [duration, setDuration] = useState("60");
-  const [selectedDays, setSelectedDays] = useState(""); // selected days
+  const [isLoading, setIsLoading] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  const [batches, setBatches] = useState([]);
+  const [isLoadingDepartments, setIsLoadingDepartments] = useState(false);
+  const [isLoadingSemesters, setIsLoadingSemesters] = useState(false);
+  const [isLoadingBatches, setIsLoadingBatches] = useState(false);
   const [applicableDaysOpen, setApplicableDaysOpen] = useState(false);
 
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const departments = [
-    { value: "", label: "Select Department" },
-    { value: "bca", label: "BCA" },
-    { value: "csit", label: "CSIT" },
-  ];
-  const batches = [
-    { value: "", label: "Select Batch" },
-    { value: "bca2022", label: "BCA 2022" },
-    { value: "csit2022", label: "CSIT 2022" },
-  ];
-  const nameslist = [
-    { value: "", label: "Select Name" },
-    { value: "first Period/cyber law(first period)", label: "Cyber Law(first period)" },
-    { value: "second Period/software project management(second period)", label: "SPM(second period)" },
-    { value: "first Period/cloud computing(first period)", label: "Cloud Computing(first period)" },
-    { value: "second Period/e-governance(second period)", label: "E-Governance(second period)" },
+  const days = [
+    { value: "Sunday", label: "Sun" },
+    { value: "Monday", label: "Mon" },
+    { value: "Tuesday", label: "Tue" },
+    { value: "Wednesday", label: "Wed" },
+    { value: "Thursday", label: "Thu" },
+    { value: "Friday", label: "Fri" },
   ];
 
-  const semestersList = [
-    { value: "", label: "Select Semester" },
-    { value: "first-semester-7", label: "Seventh Semester" },
-  ];
+  const formik = useFormik({
+    initialValues: TimeSlotInitialValues,
+    validationSchema: TimeSlotValidationSchema,
+    onSubmit: handleSubmit,
+  });
 
+  const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
+    formik;
+
+  // Fetch departments on mount
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      setIsLoadingDepartments(true);
+      try {
+        const response = await axiosClient.get(`/admin/dropdowns/departments/1`);
+        if (response.data.success) {
+          setDepartments(response.data.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch departments:", error);
+        toast.error(error.userMessage || "Failed to load departments");
+      } finally {
+        setIsLoadingDepartments(false);
+      }
+    };
+    fetchDepartments();
+  }, []);
+
+  // Fetch semesters when department changes
+  useEffect(() => {
+    const fetchSemesters = async () => {
+      if (!values.department_id) {
+        setSemesters([]);
+        setFieldValue("semester_id", "");
+        return;
+      }
+
+      setIsLoadingSemesters(true);
+      try {
+        const response = await axiosClient.get(
+          "/admin/dropdowns/semesters-by-department",
+          { params: { department_id: values.department_id } }
+        );
+        if (response.data.success) {
+          setSemesters(response.data.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch semesters:", error);
+        toast.error(error.userMessage || "Failed to load semesters");
+        setSemesters([]);
+      } finally {
+        setIsLoadingSemesters(false);
+      }
+    };
+    fetchSemesters();
+  }, [values.department_id, setFieldValue]);
+
+  // Fetch batches when semester changes
+  useEffect(() => {
+    const fetchBatches = async () => {
+      if (!values.semester_id) {
+        setBatches([]);
+        setFieldValue("batch_id", "");
+        return;
+      }
+
+      setIsLoadingBatches(true);
+      try {
+        const response = await axiosClient.get(
+          "/admin/dropdowns/batches-by-semester",
+          { params: { semester_id: values.semester_id } }
+        );
+        if (response.data.success) {
+          setBatches(response.data.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch batches:", error);
+        toast.error(error.userMessage || "Failed to load batches");
+        setBatches([]);
+      } finally {
+        setIsLoadingBatches(false);
+      }
+    };
+    fetchBatches();
+  }, [values.semester_id, setFieldValue]);
+
+  async function handleSubmit(values, { resetForm, setSubmitting }) {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.post("/admin/time-slots", {
+        department_id: values.department_id,
+        semester_id: values.semester_id,
+        batch_id: values.batch_id,
+        name: values.name,
+        start_time: values.start_time,
+        end_time: values.end_time,
+        duration_minutes: values.duration_minutes,
+        shift: values.shift,
+        slot_type: values.slot_type,
+        applicable_days: values.applicable_days,
+        is_active: values.is_active,
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message || "Time slot created successfully");
+        resetForm();
+        setSemesters([]);
+        setBatches([]);
+      }
+    } catch (error) {
+      console.error("Failed to create time slot:", error);
+      toast.error(error.userMessage || "Failed to create time slot");
+
+      if (error.response?.status === 422) {
+        const errors = error.response.data.errors || error.response.data.error;
+        const firstError = Object.values(errors)[0]?.[0];
+        toast.error(firstError || "Validation failed");
+      } else {
+        toast.error(error.userMessage || "Failed to create time slot");
+      }
+    } finally {
+      setIsLoading(false);
+      setSubmitting(false);
+    }
+  }
 
   const toggleDay = (day) => {
-    setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
-    );
+    const currentDays = values.applicable_days;
+    if (currentDays.includes(day)) {
+      setFieldValue(
+        "applicable_days",
+        currentDays.filter((d) => d !== day)
+      );
+    } else {
+      setFieldValue("applicable_days", [...currentDays, day]);
+    }
   };
 
   const selectAllDays = () => {
-    setSelectedDays(days);
+    setFieldValue(
+      "applicable_days",
+      days.map((d) => d.value)
+    );
   };
 
   const removeSelectedDay = (day) => {
-    setSelectedDays((prev) => prev.filter((d) => d !== day));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({
-      slotType,
-      shift,
-      department,
-      semester,
-      batch,
-      startTime,
-      endTime,
-      duration,
-      selectedDays,
-    });
+    setFieldValue(
+      "applicable_days",
+      values.applicable_days.filter((d) => d !== day)
+    );
   };
 
   return (
     <div className="mt-5 flex justify-center font-general-sans">
       <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
-        {/* Title */}
-        <h2 className="form-header">
-          Time Slots
-        </h2>
+        <h2 className="form-header">Create Time Slot</h2>
         <p className="form-subtext">
-          Create time slots for admins and teachers to access the system.
+          Define time slots for scheduling classes, breaks, and practical sessions.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          {/* Slot Type and Shift */}
+        <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
+          {/* Department and Semester */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Slot Type */}
             <div>
-              <label className="form-title">Slot Type</label>
-              <div className="flex items-center gap-6 mt-2">
-                <label className="form-radio-title">
-                  <input
-                    type="radio"
-                    name="slotType"
-                    value="Lecture"
-                    checked={slotType === "Lecture"}
-                    onChange={(e) => setSlotType(e.target.value)}
-                    className="form-radio"
-                  />
-                  Lecture
-                </label>
-                <label className="form-radio-title">
-                  <input
-                    type="radio"
-                    name="slotType"
-                    value="Practical"
-                    checked={slotType === "Practical"}
-                    onChange={(e) => setSlotType(e.target.value)}
-                    className="form-radio"
-                  />
-                  Practical
-                </label>
-                <label className="form-radio-title">
-                  <input
-                    type="radio"
-                    name="slotType"
-                    value="Break"
-                    checked={slotType === "Break"}
-                    onChange={(e) => setSlotType(e.target.value)}
-                    className="form-radio"
-                  />
-                  Break
-                </label>
-              </div>
+              <label className="form-title">
+                Department <span className="text-error-red">*</span>
+              </label>
+              <select
+                name="department_id"
+                value={values.department_id}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldValue("semester_id", "");
+                  setFieldValue("batch_id", "");
+                }}
+                onBlur={handleBlur}
+                className="dropdown-select"
+                disabled={isLoadingDepartments}
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.display_label}
+                  </option>
+                ))}
+              </select>
+              {touched.department_id && errors.department_id && (
+                <p className="showError">{errors.department_id}</p>
+              )}
             </div>
-            {/* Shift */}
-            <div>
-              <label className="form-title">Shift</label>
-              <div className="flex items-center gap-6 mt-2">
-                <label className="form-radio-title">
-                  <input
-                    type="radio"
-                    name="shift"
-                    value="Morning"
-                    checked={shift === "Morning"}
-                    onChange={(e) => setShift(e.target.value)}
-                    className="form-radio"
-                  />
-                  Morning
-                </label>
-                <label className="form-radio-title">
-                  <input
-                    type="radio"
-                    name="shift"
-                    value="Day"
-                    checked={shift === "Day"}
-                    onChange={(e) => setShift(e.target.value)}
-                    className="form-radio"
-                  />
-                  Day
-                </label>
-              </div>
-            </div>
-          </div>
 
-          {/* Department Name and Semester Name */}
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-title">Department Name</label>
-              <div className="relative">
-                <select
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  className="dropdown-select"
-                >
-                  {departments.map((dept) => (
-                    <option key={dept.value} value={dept.value}>
-                      {dept.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div>
-              <label className="form-title">Semester Name</label>
-              <div className="relative">
-                <select
-                  value={semester}
-                  onChange={(e) => setSemester(e.target.value)}
-                  className="dropdown-select"
-                >
-                  {semestersList.map((sem) => (
-                    <option key={sem.value} value={sem.value}>
-                      {sem.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <label className="form-title">
+                Semester <span className="text-error-red">*</span>
+              </label>
+              <select
+                name="semester_id"
+                value={values.semester_id}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldValue("batch_id", "");
+                }}
+                onBlur={handleBlur}
+                className="dropdown-select"
+                disabled={!values.department_id || isLoadingSemesters}
+              >
+                <option value="">
+                  {!values.department_id
+                    ? "Select Department First"
+                    : isLoadingSemesters
+                    ? "Loading..."
+                    : "Select Semester"}
+                </option>
+                {semesters.map((sem) => (
+                  <option key={sem.id} value={sem.id}>
+                    {sem.semester_name} - {sem.academic_year}
+                  </option>
+                ))}
+              </select>
+              {touched.semester_id && errors.semester_id && (
+                <p className="showError">{errors.semester_id}</p>
+              )}
             </div>
           </div>
 
           {/* Batch and Name */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-title">Batch</label>
-              <div className="relative">
-                <select
-                  value={batch}
-                  onChange={(e) => setBatch(e.target.value)}
-                  className="dropdown-select"
-                >
-                  {batches.map((batch) => (
-                    <option key={batch.value} value={batch.value}>
-                      {batch.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div>
-              <label className="form-title">Name</label>
-              <div className="relative">
-                <select
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="dropdown-select"
-                >
-                  {nameslist.map((name) => (
-                    <option key={name.value} value={name.value}>
-                      {name.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-          
-          
-
-          {/* Start Time and End Time */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="form-title">Start Time</label>
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+              <label className="form-title">
+                Batch <span className="text-error-red">*</span>
+              </label>
+              <select
+                name="batch_id"
+                value={values.batch_id}
+                onChange={handleChange}
+                onBlur={handleBlur}
                 className="dropdown-select"
-              />
-            </div>
-            <div>
-              <label className="form-title">End Time</label>
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="dropdown-select"
-              />
-            </div>
-          </div>
-
-          {/* Duration in minutes */}
-          <div>
-            <label className="form-title">Duration in minutes</label>
-            <input
-              type="number"
-              placeholder="Enter Duration"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              className="dropdown-select"
-            />
-          </div>
-
-          {/* Applicable Days */}
-          <div>
-            <label className="form-title">Applicable Days</label>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setApplicableDaysOpen(!applicableDaysOpen)}
-                className="dropdown-select w-full flex items-center"
+                disabled={!values.semester_id || isLoadingBatches}
               >
-                {selectedDays.length > 0 ? (
-                  selectedDays.map((day) => (
-                    <span
-                      key={day}
-                      className="inline-flex items-center bg-main-blue text-white text-xs px-2 py-1 rounded-full"
-                    >
-                      {day}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeSelectedDay(day);
-                        }}
-                        className="ml-1 hover:bg-blue-600 rounded-full p-0.5"
-                      >
-                        <X size={12} />
-                      </button>
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-sub-text">Select Applicable Days</span>
-                )}
-                <ChevronDown
-                  size={18}
-                  className={`ml-auto text-black dark:text-white transition-transform ${applicableDaysOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-              {applicableDaysOpen && (
-                <div className="dropdown-select">
-                  {/* Weeks Section */}
-                  <div className="p-3">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-primary-text dark:text-white">Weeks</span>
-                      <button
-                        type="button"
-                        onClick={selectAllDays}
-                        className="px-3 py-1 bg-box-outline rounded text-xs text-primary-text hover:bg-gray-300"
-                      >
-                        All
-                      </button>
-                    </div>
-                    <div className="flex gap-1 flex-wrap">
-                      {days.map((day) => (
-                        <label key={day} className="flex items-center gap-1 cursor-pointer text-xs">
-                          <input
-                            type="checkbox"
-                            checked={selectedDays.includes(day)}
-                            onChange={() => toggleDay(day)}
-                            className="form-radio h-3 w-3"
-                          />
-                          {day}
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <option value="">
+                  {!values.semester_id
+                    ? "Select Semester First"
+                    : isLoadingBatches
+                    ? "Loading..."
+                    : "Select Batch"}
+                </option>
+                {batches.map((batch) => (
+                  <option key={batch.id} value={batch.id}>
+                    {batch.display_label}
+                  </option>
+                ))}
+              </select>
+              {touched.batch_id && errors.batch_id && (
+                <p className="showError">{errors.batch_id}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="form-title">
+                Time Slot Name <span className="text-error-red">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                placeholder="e.g., BCA Class 1"
+                value={values.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="dropdown-select"
+              />
+              {touched.name && errors.name && (
+                <p className="showError">{errors.name}</p>
               )}
             </div>
           </div>
 
+          {/* Slot Type and Shift */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="form-title">
+                Slot Type <span className="text-error-red">*</span>
+              </label>
+              <div className="flex items-center gap-6 mt-2">
+                {["Lecture", "Practical", "Break"].map((type) => (
+                  <label
+                    key={type}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="slot_type"
+                      value={type}
+                      checked={values.slot_type === type}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="form-radio"
+                    />
+                    <span className="form-radio-title">{type}</span>
+                  </label>
+                ))}
+              </div>
+              {touched.slot_type && errors.slot_type && (
+                <p className="showError">{errors.slot_type}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="form-title">
+                Shift <span className="text-error-red">*</span>
+              </label>
+              <div className="flex items-center gap-6 mt-2">
+                {["Morning", "Day"].map((shift) => (
+                  <label
+                    key={shift}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="shift"
+                      value={shift}
+                      checked={values.shift === shift}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className="form-radio"
+                    />
+                    <span className="form-radio-title">{shift}</span>
+                  </label>
+                ))}
+              </div>
+              {touched.shift && errors.shift && (
+                <p className="showError">{errors.shift}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Start Time, End Time, Duration */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="form-title">
+                Start Time <span className="text-error-red">*</span>
+              </label>
+              <input
+                type="time"
+                name="start_time"
+                value={values.start_time}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="dropdown-select"
+              />
+              {touched.start_time && errors.start_time && (
+                <p className="showError">{errors.start_time}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="form-title">
+                End Time <span className="text-error-red">*</span>
+              </label>
+              <input
+                type="time"
+                name="end_time"
+                value={values.end_time}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="dropdown-select"
+              />
+              {touched.end_time && errors.end_time && (
+                <p className="showError">{errors.end_time}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="form-title">
+                Duration (min) <span className="text-error-red">*</span>
+              </label>
+              <input
+                type="number"
+                name="duration_minutes"
+                placeholder="e.g., 60"
+                value={values.duration_minutes}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="dropdown-select"
+              />
+              {touched.duration_minutes && errors.duration_minutes && (
+                <p className="showError">{errors.duration_minutes}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Applicable Days */}
+          <div>
+            <label className="form-title">
+              Applicable Days <span className="text-error-red">*</span>
+            </label>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setApplicableDaysOpen(!applicableDaysOpen)}
+                className="dropdown-select w-full flex items-center justify-between"
+              >
+                <div className="flex gap-2 flex-wrap flex-1">
+                  {values.applicable_days.length > 0 ? (
+                    values.applicable_days.map((day) => (
+                      <span
+                        key={day}
+                        className="inline-flex items-center gap-1 bg-main-blue text-white text-xs px-2 py-1 rounded-full"
+                      >
+                        {days.find((d) => d.value === day)?.label || day}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeSelectedDay(day);
+                          }}
+                          className="hover:bg-blue-600 rounded-full p-0.5"
+                        >
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sub-text">Select Days</span>
+                  )}
+                </div>
+                <ChevronDown
+                  size={18}
+                  className={`text-black dark:text-white transition-transform ${
+                    applicableDaysOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {applicableDaysOpen && (
+                <div className="absolute z-10 w-full mt-2 bg-white dark:bg-dark-overlay border border-box-outline rounded-lg shadow-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-primary-text dark:text-white">
+                      Working Days
+                    </span>
+                    <button
+                      type="button"
+                      onClick={selectAllDays}
+                      className="px-3 py-1 bg-main-blue text-white rounded text-xs hover:bg-hover-blue"
+                    >
+                      Select All
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {days.map((day) => (
+                      <label
+                        key={day.value}
+                        className="flex items-center gap-2 cursor-pointer text-sm"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={values.applicable_days.includes(day.value)}
+                          onChange={() => toggleDay(day.value)}
+                          className="form-radio"
+                        />
+                        <span className="text-primary-text dark:text-white">
+                          {day.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            {touched.applicable_days && errors.applicable_days && (
+              <p className="showError">{errors.applicable_days}</p>
+            )}
+          </div>
+
           {/* Buttons */}
           <div className="grid grid-cols-2 gap-4 mt-8">
-            <button type="button" className="cancel-btn">
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={() => {
+                formik.resetForm();
+                setSemesters([]);
+                setBatches([]);
+              }}
+              disabled={formik.isSubmitting || isLoading}
+            >
               Cancel
             </button>
-            <button type="submit" className="auth-btn">
-              Create
+            <button
+              type="submit"
+              className="auth-btn flex items-center justify-center"
+              disabled={formik.isSubmitting || isLoading}
+            >
+              {formik.isSubmitting || isLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : (
+                "Create Time Slot"
+              )}
             </button>
           </div>
         </form>
