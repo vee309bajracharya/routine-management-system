@@ -197,7 +197,7 @@
         </table>
 
         <div class="footer">
-            Generated on: {{ now()->format('d M Y, h:i A') }}
+            Generated on: {{ now()->format('d M Y') }}
         </div>
     </section>
 

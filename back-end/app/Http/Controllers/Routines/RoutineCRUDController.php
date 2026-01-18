@@ -112,22 +112,22 @@ class RoutineCRUDController extends Controller
                 'effective_to' => $request->effective_to,
             ]);
 
+            $routine->load([
+                'institution:id,institution_name',
+                'semester:id,semester_name',
+                'batch:id,batch_name,shift',
+                'generatedBy:id,name'
+            ]);
+
             (new RoutineHelperController())->clearRoutineCaches($routine); //clear cache as new routine affects listing
 
             DB::commit();
 
-            return response()->json([
+            return (new RoutineDetailResource($routine))->additional([
                 'success' => true,
                 'message' => 'Routine created successfully',
-                'data' => [
-                    'id' => $routine->id,
-                    'title' => $routine->title,
-                    'description' => $routine->description,
-                    'status' => $routine->status,
-                    'effective_from' => $routine->effective_from,
-                    'effective_to' => $routine->effective_to,
-                ]
-            ], 201);
+            ])->response()->setStatusCode(201);
+
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -205,14 +205,16 @@ class RoutineCRUDController extends Controller
                 'status'
             ])); //only provided fields update
 
+            $routine->load(['institution', 'semester', 'batch', 'generatedBy']);
+
             // after update, clear cache
             (new RoutineHelperController())->clearRoutineCaches($routine); //clear cache as new routine affects listing
 
-            return response()->json([
+            return (new RoutineDetailResource($routine))->additional([
                 'success' => true,
                 'message' => 'Routine updated successfully',
-                'data' => $routine->fresh() // reload from db
-            ], 200);
+            ])->setStatusCode(200);
+            
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
