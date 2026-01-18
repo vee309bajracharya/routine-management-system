@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useRoutineEntry } from "../../../hooks/useRoutineEntry";
+import { useSearchParams } from "react-router-dom";
 import axiosClient from "../../../services/api/axiosClient";
 import RoutineCreation from "../../../components/AdminSchedule/ActionButton/RoutineCreation";
 import SaveSchedule from "../../../components/AdminSchedule/ActionButton/SaveSchedule";
 import RoutineGrid from "../../../components/AdminSchedule/RoutinePlanningFunctions/RoutineGrid";
 import RoutineStatusManager from "../../../components/AdminSchedule/RoutinePlanningFunctions/RoutineStatusManager";
 import CopyEntries from "../../../components/AdminSchedule/ActionButton/CopyEntries";
-
 
 /**
  * Purpose:
@@ -42,6 +42,9 @@ const RoutinePlanning = () => {
 
   const [showCreateRoutineModal, setShowCreateRoutineModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const hasIdInUrl = !!searchParams.get('id');
 
   // download pdf
   const handleDownloadPdf = async () => {
@@ -49,6 +52,8 @@ const RoutinePlanning = () => {
       toast.error('Routine not found');
       return;
     }
+
+    setIsDownloading(true);
 
     try {
       const response = await axiosClient.get(`/admin/routines/export/pdf/${currentRoutine?.id}`, {
@@ -75,8 +80,20 @@ const RoutinePlanning = () => {
     } catch (error) {
       console.error("PDF download failed", error);
       toast.error("Failed to download routine PDF");
+    } finally {
+      setIsDownloading(false);
     }
   };
+
+  // if id is in the URL , but the routine hasn't loaded yet
+  if (isLoading && hasIdInUrl && !currentRoutine?.institution) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="animate-spin text-main-blue" size={40} />
+        <p className="mt-2 text-primary-blue">Loading Routine Details...</p>
+      </div>
+    );
+  }
 
   // Empty Routine state
   if (!currentRoutine) {
@@ -155,9 +172,22 @@ const RoutinePlanning = () => {
           </button>
 
           {/* Export */}
-          <button className="export-btn" onClick={handleDownloadPdf}>
-            <Download size={16} />
-            Download
+          <button
+            className={`export-btn flex items-center gap-2 ${isDownloading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            onClick={handleDownloadPdf}
+            disabled={isDownloading}
+          >
+            {isDownloading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Downloading...
+              </>
+            ) : (
+              <>
+                <Download size={16} />
+                Download
+              </>
+            )}
           </button>
         </div>
       </section>

@@ -1,7 +1,7 @@
 import { useRoutineEntryModal } from "../../../contexts/RoutineEntryContext";
 
 const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
-  const {openCreateModal, openUpdateModal} = useRoutineEntryModal();
+  const { openCreateModal, openUpdateModal } = useRoutineEntryModal();
 
   const isBreakTime = () => {
     if (slotType === 'Break') return true;
@@ -30,10 +30,12 @@ const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
     }, entry);
   };
 
+  const cellClasses = "border-r border-gray-300 last:border-r-0 p-2 min-h-[110px] flex items-center justify-center transition-all cursor-pointer group";
+
   // Case 1: Break Time Slot (empty cell during break time) → Show BREAK
   if (!entry && isBreak) {
     return (
-      <div className="border-r border-gray-300 flex items-center justify-center p-2 min-h-[100px] min-w-[200px] dark:bg-dark-hover">
+      <div className={`${cellClasses} bg-gray-50/50 dark:bg-dark-overlay/20 pointer-events-none`}>
         <div className="text-center">
           <span className="font-semibold text-[14px] px-4 py-2 font-general-sans uppercase text-primary-text dark:text-white">
             Break
@@ -47,13 +49,13 @@ const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
   if (entry) {
     return (
       <section
-        className="grid-container"
+        className={`${cellClasses} bg-white dark:bg-transparent hover:bg-blue-50/30 dark:hover:bg-blue-900/10`}
         onDoubleClick={handleDoubleClick}
         title="Double click to edit entry">
-        <div className="flex flex-col justify-center items-center px-2 h-full text-[11px] text-center w-full">
+        <div className="flex flex-col items-center text-center w-full space-y-1 dark:text-white">
 
           {/* Course Name */}
-          <span className="font-semibold line-clamp-2 text-[14px]">
+          <span className="font-semibold line-clamp-2 text-[13px]">
             {entry.course_assignment?.course?.name || "N/A"}
           </span>
 
@@ -101,7 +103,7 @@ const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
   // CASE 3: Empty Cell (no entry, NOT break time) → Show "Click to add entry"
   return (
     <div
-      className="grid-container"
+      className={`${cellClasses} hover:bg-gray-100 dark:hover:bg-dark-hover`}
       onClick={handleSingleClick}
       title="Click to add entry"
     >
