@@ -18,7 +18,7 @@ class SavedRoutine extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['label', 'description', 'routine_snapshot'])
+            ->logOnly(['label', 'description'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('savedRoutine');
