@@ -1,108 +1,84 @@
-import { Link } from "react-router-dom";
-import Arch from "../../../assets/svg/Architecture.svg";
-import Science from "../../../assets/svg/Science.svg";
-import CivilEng from "../../../assets/svg/CivilEng.svg";
-import Electric from "../../../assets/svg/Electric.svg";
-import ElectroniComp from "../../../assets/svg/ElectronicComp.svg";
-import Mechanical from "../../../assets/svg/Mechanical.svg";
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from 'react';
+import axiosClient from "../../../services/api/axiosClient";
+import { toast } from "react-toastify";
+import { Loader2 } from "lucide-react";
+import RoutineSelectionModal from "./RoutineSelectionModal";
+import { motion } from "framer-motion";
 
+const INSTITUTION_ID = import.meta.env.VITE_INSTITUTION_ID;
 
 const Department = () => {
-  const departments = [
-    {
-      id: 1,
-      icon: Arch,
-      name: "Architecure",
-      description:
-        "Design, planning, and construction of buildings and spaces; combines creativity with technical skills.",
-      routine_link: "#",
-    },
-    {
-      id: 2,
-      icon: Science,
-      name: "Applied Science and Chemical",
-      description:
-        "Design, planning, and construction of buildings and spaces; combines creativity with technical skills.",
-      routine_link: "#",
-    },
-    {
-      id: 3,
-      icon: CivilEng,
-      name: "Civil Engineering",
-      description:
-        "Design, planning, and construction of buildings and spaces; combines creativity with technical skills.",
-      routine_link: "#",
-    },
-    {
-      id: 4,
-      icon: Electric,
-      name: "Electrical Engineering",
-      description:
-        "Design, planning, and construction of buildings and spaces; combines creativity with technical skills.",
-      routine_link: "#",
-    },
-    {
-      id: 5,
-      icon: ElectroniComp,
-      name: "Electronics and Computer",
-      description:
-        "Design, planning, and construction of buildings and spaces; combines creativity with technical skills.",
-      routine_link: "#",
-    },
-    {
-      id: 6,
-      icon: Mechanical,
-      name: "Mechanical and Aerospace",
-      description:
-        "Design, planning, and construction of buildings and spaces; combines creativity with technical skills.",
-      routine_link: "#",
-    },
-  ];
+
+  const [departments, setDepartments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedDept, setSelectedDept] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchDepts = async () => {
+      try {
+        const response = await axiosClient.get(`/public/${INSTITUTION_ID}/departments`);
+        setDepartments(response.data.data);
+      } catch (error) {
+        toast.error(error.userMessage || 'Failed to load departments');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchDepts();
+  }, []);
+
+  const handleOpenSelection = (dept) => {
+    setSelectedDept(dept);
+    setIsModalOpen(true);
+  }
+
+  if (isLoading) 
+    return (
+    <div className="text-center py-20">
+      <Loader2 size={16} className="animate-spin text-main-blue" />
+      <p className="mt-2 text-primary-blue">Loading Departments</p>
+    </div>
+  );
+
+
   return (
     <section className="mb-16 mt-9 font-general-sans">
-      <section>
-        {/* Title */}
-        <div
-          className="text-center mb-8"
-          data-aos="fade-down"
-          data-aos-duration="4000">
-          <h3
-            className="xs:text-2xl md:text-4xl font-bold text-primary-text my-4"
-          >Choose a department</h3>
-          <p
-            className="text-primary-text text-sm  text-center mx-auto">
-            Select a department to view schedules and stay organized with all
-            your classes, labs, and events in one place.
-          </p>
-        </div>
+      <div className="text-center mb-8">
+        <h3 className="xs:text-2xl md:text-4xl font-bold text-primary-text my-4">Choose a department</h3>
+        <p className="text-primary-text text-sm text-center mx-auto max-w-2xl">
+          Select a department to view your schedule and stay organized with all your classes, labs, and routines in one place.
+        </p>
+      </div>
 
-        {/* Department cards */}
-        <section
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          data-aos="zoom-out"
-          data-aos-duration="4000">
-          {departments.map((dept) => (
-            <div
-              key={dept.id}
-              className="bg-white transition-shadow py-4 px-6 rounded">
-              <img
-                className="w-8 h-8 bg-primary5-blue px-1 py-2 rounded-lg mb-6"
-                src={dept.icon}
-                alt={dept.name} />
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {departments.map((dept) => (
+          <div key={dept.id} className="bg-white transition-shadow py-6 px-6 rounded-md text-left">
+            <h3 className="text-lg font-bold">{dept.code}</h3>
+            <p className="text-sm mt-6 h-12 overflow-hidden">
+              View schedules and stay organized with all your classes in one place.
+            </p>
 
-              <h3
-                className="text-xl font-bold text-primary-text">{dept.name}</h3>
-
-              <p
-                className="text-primary-text mb-6">{dept.description}</p>
-
-              <Link
-                to={dept.routine_link}
-                className="bg-main-blue text-white py-1 px-4 rounded w-full text-center block active:scale-95">View Routine</Link>
-            </div>
-          ))}
-        </section>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleOpenSelection(dept)}
+              className="bg-main-blue text-white py-2 px-4 rounded w-full text-center block active:scale-95 transition-all hover:bg-blue-700 cursor-pointer"
+            >
+              View Routine
+            </motion.button>
+          </div>
+        ))}
       </section>
+
+      {selectedDept && (
+        <RoutineSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          department={selectedDept}
+        />
+      )}
     </section>
   );
 };

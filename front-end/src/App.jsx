@@ -10,6 +10,7 @@ const Home = lazy(() => import("./pages/Home/Home"));
 const AdminLogin = lazy(() => import("./pages/features/auth/AdminLogin"));
 const TeacherLogin = lazy(() => import("./pages/features/auth/TeacherLogin"));
 const PageNotFound = lazy(() => import("./components/common/PageNotFound"));
+const PublicRoutineView = lazy(() => import("./pages/features/public-routine-view/PublicRoutineView"));
 
 //Layouts
 const AdminLayout = lazy(() => import("./layout/AdminLayout"));
@@ -113,6 +114,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/teacher-login" element={<TeacherLogin />} />
         <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/routine/view" element={<PublicRoutineView />} />
 
         {/* auth routes  */}
 
