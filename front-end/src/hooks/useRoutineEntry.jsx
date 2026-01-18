@@ -1,27 +1,48 @@
 import { useCallback, useEffect } from "react";
 import { useRoutine } from "../contexts/RoutineContext";
 import { toast } from "react-toastify";
+import { useSearchParams } from "react-router-dom";
 
 export const useRoutineEntry = () => {
+
+    const [searchParams] = useSearchParams();
+    const routineIdFromUrl = searchParams.get('id');
 
     // RoutineContext
     const {
         currentRoutine,
         routineGrid,
         currentShift,
+        setCurrentShift,
         isLoading,
         slotMetadata,
         fetchRoutineGrid,
+        fetchRoutineById,
         updateRoutine,
         clearRoutine,
     } = useRoutine();
 
+    useEffect(() => {
+        const numericId = parseInt(routineIdFromUrl);
+
+        // URL has ID AND (state is empty OR state ID doesn't match URL)
+        if (numericId && (!currentRoutine || currentRoutine.id !== numericId)) {
+            fetchRoutineById(numericId);
+        }
+    }, [routineIdFromUrl, currentRoutine?.id, fetchRoutineById, currentRoutine]);
+
     // load grid when routine or shift changes    
     useEffect(() => {
         if (currentRoutine?.id) {
-            fetchRoutineGrid(currentRoutine.id, currentShift);
+            const targetShift = currentRoutine.batch?.shift || 'Morning'; // shift for this current routine
+
+            // if the context shift doesn't match the routine shift, update it first
+            if (currentShift !== targetShift) {
+                setCurrentShift(targetShift);
+            }
+            fetchRoutineGrid(currentRoutine.id, targetShift); //fetch routine grid details based on correct shift
         }
-    }, [currentRoutine?.id, currentShift, fetchRoutineGrid]);
+    }, [currentRoutine?.id, currentRoutine?.batch?.shift, fetchRoutineGrid, setCurrentShift, currentShift]);
 
     // CRUDs
     const handleClearRoutine = useCallback(() => {
@@ -74,17 +95,23 @@ export const useRoutineEntry = () => {
         }
     }, [updateRoutine]);
 
-
     // routine grid utilities
-
-    // extract timeslots from grid
     const getTimeSlots = useCallback(() => {
+        // keys from metadata
+        const metadataKeys = Object.keys(slotMetadata);
+        if (metadataKeys.length > 0) {
+            // sort keys by their start_time from metadata response
+            return metadataKeys.sort((a, b) => {
+                return (slotMetadata[a].start_time || "").localeCompare(slotMetadata[b].start_time || "");
+            });
+        }
+
+        // fallback: if metadata is empty, look at the grid
         if (!routineGrid) return [];
         const days = Object.keys(routineGrid);
         if (days.length === 0) return [];
         return Object.keys(routineGrid[days[0]] || {});
-    }, [routineGrid]);
-
+    }, [slotMetadata, routineGrid]);
 
     // get all working days
     const getDays = useCallback(() => {
@@ -107,12 +134,17 @@ export const useRoutineEntry = () => {
         currentRoutine,
         routineGrid,
         currentShift,
+        setCurrentShift,
         isLoading,
         slotMetadata,
 
         // CRUD operations
         handleClearRoutine,
         handleUpdateRoutineStatus,
+        fetchRoutineGrid,
+        fetchRoutineById,
+        updateRoutine,
+        clearRoutine,
 
         // Utilities
         getTimeSlots,

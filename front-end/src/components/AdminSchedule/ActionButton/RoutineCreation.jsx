@@ -7,10 +7,12 @@ import { useRoutine } from "../../../contexts/RoutineContext";
 import axiosClient from "../../../services/api/axiosClient";
 import { toast } from "react-toastify";
 import { RoutineCreationValidationSchema, RoutineCreationInitialValues } from "../../../validations/RoutineCreationValidationSchema";
+import { useNavigate } from "react-router-dom";
 
 const RoutineCreation = ({ isOpen, onClose }) => {
 
   const { createRoutine } = useRoutine();
+  const navigate = useNavigate();
 
   // dropdown data
   const [semesters, setSemesters] = useState([]);
@@ -27,9 +29,14 @@ const RoutineCreation = ({ isOpen, onClose }) => {
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        await createRoutine(values);
+        const newRoutine = await createRoutine(values);
         formik.resetForm();
         onClose();
+
+        // redirect to Routine Planning page with new routine_id
+        if(newRoutine?.id){
+          navigate(`/admin/schedule/routine?id=${newRoutine.id}`);
+        }
       } catch (error) {
         console.error('Failed to create routine : ', error);
       } finally {

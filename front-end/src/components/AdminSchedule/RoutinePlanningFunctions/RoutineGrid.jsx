@@ -8,15 +8,21 @@ const RoutineGrid = ({
   routine,
   grid,
   isLoading,
-  timeSlots,
+  timeSlots: initialTimeSlots, //rename
   days,
   slotMetadata,
-  formatDate,
 }) => {
-
   const { modalMode } = useRoutineEntryModal();
 
-  // loading state
+  // determine the "Active" columns from metadata to ensure when shift changes, the columns refresh immediately
+  const activeTimeSlots = Object.keys(slotMetadata).sort((a, b) => {
+    return (slotMetadata[a].start_time || "").localeCompare(slotMetadata[b].start_time || "");
+  });
+
+  // fallback to initial slots if metadata response hasn't loaded yet
+  const displaySlots = activeTimeSlots.length > 0 ? activeTimeSlots : initialTimeSlots;
+
+  // initial fetch loading
   if (isLoading && !grid) {
     return (
       <div className="flex justify-center items-center py-20 bg-white dark:bg-dark-overlay rounded-md mt-4">
@@ -25,45 +31,37 @@ const RoutineGrid = ({
     );
   }
 
-  // Empty grid state - No time slots configured
-  if (!grid || timeSlots.length === 0) {
+  // Empty grid state
+  if (!grid || displaySlots.length === 0) {
     return (
       <div className="text-center py-10 bg-white dark:bg-dark-overlay rounded-md mt-4">
         <p className="text-sub-text dark:text-white">
-          No time slots configured. Please add time slots to create the routine grid.
+          No time slots configured for the current shift.
         </p>
       </div>
     );
   }
 
-  // get shift from routine/batch
-  const currentShift = routine.batch?.shift || 'Morning';
+  // get routine's actual batch shift
+  const displayedShift = routine.batch?.shift || 'Morning';
+
+  const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
 
   return (
-    <section className="mt-9">
-
-      {/* routine header section */}
+    <section className="mt-9 relative">
+      {/* Routine header section */}
       <section className="flex flex-col justify-center items-center text-primary-text dark:text-white font-general-sans my-5 leading-6">
-
-        {/* Institution Name */}
-        <h3 className="font-bold text-3xl text-primary-blue dark:text-main-blue">{routine.institution?.name || 'Institution'}</h3>
-
-        {/* Routine Title */}
+        <h3 className="font-bold text-3xl text-primary-blue dark:text-main-blue">
+          {routine.institution?.name || 'Institution'}
+        </h3>
         <h3 className="font-semibold text-2xl">{routine.title}</h3>
-
-        {/* Description */}
-        <p className="text-lg text-center px-4">
+        <p className="text-lg text-center px-4 max-w-2xl">
           {routine.description || "No description provided"}
         </p>
-
-        {/* Effective Date Range */}
-        <div className="flex justify-between gap-5 text-sm">
-          <p>Effective From: {formatDate(routine.effective_from)}</p>
-          <p>Effective To: {formatDate(routine.effective_to)}</p>
+        <div className="flex items-center gap-4 text-sm mt-2 font-medium">
+          <p>Effective From: {fmt(routine.effective_from)} | Effective To: {fmt(routine.effective_to)}</p>
         </div>
-
-        {/* Semester and Batch Info */}
-        <div className="flex items-center gap-4 text-sm mt-1">
+        <div className="flex items-center gap-4 text-sm mt-1 font-medium">
           <p>
             Semester: {routine.semester?.name || "N/A"} |
             Batch: {routine.batch?.name || "All Batches"}
@@ -71,74 +69,66 @@ const RoutineGrid = ({
         </div>
       </section>
 
-      {/* shift */}
-      <section className="text-right">
-        <span className={`px-3 py-1 rounded-md font-medium text-xs
-          ${currentShift === 'Morning' ? 'text-blue-700 dark:text-blue-200' : 'text-orange-700 dark:text-orange-200'}`}>
-          {currentShift} Shift
+      {/* shift display before routine grid */}
+      <section className="text-right mb-2">
+        <span className={`font-semibold text-xs
+          ${displayedShift.toLowerCase() === 'morning' // case-insensitive
+            ? 'text-main-blue'
+            : 'text-information-purple'}`}>
+          {displayedShift} Shift
         </span>
       </section>
 
-      {/* routine grid header */}
-
       {/* Header row - Time slots */}
-      <section className="grid grid-cols-[150px_repeat(auto-fit,minmax(200px,1fr))] border border-gray-300">
-
-        {/* First column - "Day/Period" label */}
-        <div className="border-r border-gray-300 p-2 font-semibold text-md text-center text-primary-text dark:text-white bg-gray-50 dark:bg-dark-hover flex items-center justify-center sticky left-0 z-10">
-          Day/Period
-        </div>
-
-        {/* Time slot headers */}
-        {timeSlots.map((slot, idx) => (
-          <div
-            key={idx}
-            className="border-r border-gray-300 p-2 font-semibold text-md text-center text-primary-text dark:text-white bg-gray-50 dark:bg-dark-hover flex items-center justify-center"
-          >
-            <div className="font-semibold">
-              {typeof slot === 'object' ? slot.display_label : slot}
+      <section className="mt-4 overflow-x-auto border border-gray-300 custom-scrollbar bg-white dark:bg-dark-overlay">
+        <div className="min-w-[1000px]">
+          <section className="grid grid-cols-[120px_repeat(auto-fit,minmax(180px,1fr))]">
+            <div className="border-gray-300 border-r p-2 font-semibold text-md text-center text-primary-text dark:text-white bg-gray-100 dark:bg-dark-hover flex items-center justify-center sticky left-0 z-10">
+              Day/Period
             </div>
-          </div>
-        ))}
+            {displaySlots.map((slot, idx) => (
+              <div key={idx} className="border-gray-300 border-r p-2 font-semibold text-center bg-gray-100 dark:bg-dark-hover text-primary-text dark:text-white">
+                {slot}
+              </div>
+            ))}
+          </section>
+        </div>
       </section>
 
-      {/* grid rows */}
+      {/* Grid rows */}
       {days.map((day, dayIdx) => (
         <div
           key={dayIdx}
-          className="grid grid-cols-[150px_repeat(auto-fit,minmax(200px,1fr))] border-b border-gray-300 last:border-b"
+          className="grid grid-cols-[120px_repeat(auto-fit,minmax(150px,1fr))] border border-b border-gray-300 hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors"
         >
-          {/* Day Name Column (sticky on left) */}
-          <div className="border-l border-r border-gray-300 p-2 text-md font-medium bg-gray-50 dark:bg-dark-hover text-primary-text dark:text-white flex items-center justify-center sticky left-0 z-10">
+          {/* Day Name Column */}
+          <div className="sticky left-0 z-10 bg-gray-50 dark:bg-dark-hover border-r border-gray-300 p-2 font-bold text-sm flex items-center justify-center dark:text-white">
             {day}
           </div>
 
-          {/* Time slot cells for each day */}
-          {timeSlots.map((timeSlot, slotIdx) => {
-            const slotType = slotMetadata[timeSlot]?.slot_type || 'Lecture';
-            const entry = grid[day]?.[timeSlot];
-
-            return (
-              <RoutineCell
-                key={slotIdx}
-                day={day}
-                timeSlot={timeSlot}
-                slotType={slotType}
-                entry={entry}
-              />
-            );
-          })}
+          {/* Time slot cells */}
+          {displaySlots.map((timeSlot, slotIdx) => (
+            <RoutineCell
+              key={`${day}-${timeSlot}-${slotIdx}`}
+              day={day}
+              timeSlot={timeSlot}
+              slotType={slotMetadata[timeSlot]?.slot_type || 'Lecture'}
+              entry={grid[day]?.[timeSlot]}
+            />
+          ))}
         </div>
       ))}
 
-      {/* loading while refreshing grid */}
+      {/* during shift switch, overlay loading */}
       {isLoading && grid && (
-        <div className="absolute inset-0 bg-white/50 dark:bg-dark-hover/50 flex items-center justify-center z-20">
-          <Loader2 className="animate-spin dark:invert" size={40} />
+        <div className="absolute inset-0 bg-white/40 dark:bg-dark-overlay/40 flex items-center justify-center z-20 backdrop-blur-[1px]">
+          <div className="p-4">
+            <Loader2 className="animate-spin text-primary-blue" size={32} />
+          </div>
         </div>
       )}
 
-      {/* Routine Entry and Edit Modal */}
+      {/* Modals */}
       {modalMode === 'create' && <RoutineEntryModal />}
       {modalMode === 'update' && <RoutineEntryEditModal />}
     </section>
