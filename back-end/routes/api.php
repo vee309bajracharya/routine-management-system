@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Student\PublicMetadataController;
+use App\Http\Controllers\Student\PublicRoutineController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -24,10 +26,23 @@ use App\Http\Controllers\Api\TeacherAvailabilityController;
 use App\Http\Controllers\Routines\RoutineVersionController;
 use App\Http\Controllers\Teacher\TeacherDashboardController;
 
-// No Auth required (Public Routes)
+// public routes for students
+Route::prefix('public')->group(function () {
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('/{institutionId}/departments', [PublicMetadataController::class, 'getDepartments']);
+        Route::get('/department/{deptId}/academic-structure', [PublicMetadataController::class, 'getDeptAcademicStructure']);
+        Route::get('/view-routine', [PublicRoutineController::class, 'getPublishedRoutine'])->name('public.routine.view')->middleware('signed');
+        Route::post('/generate-link', [PublicRoutineController::class, 'generateSecureLink'])->middleware('throttle:10,1');
+    });
+});
+
+
+// public auth routes for admin and teacher
 Route::prefix('auth')->group(function () {
-    Route::post('/teacher-login', [AuthController::class, 'login']);
-    Route::post('/admin-login', [AuthController::class, 'login']);
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::post('/teacher-login', [AuthController::class, 'login']);
+        Route::post('/admin-login', [AuthController::class, 'login']);
+    });
 });
 
 // Protected routes (Auth required)
