@@ -23,10 +23,9 @@
   --color-warning-orange: oklch(0.6872 0.1468 62.72);
   --color-blue-gradient: oklch(0.8665 0.0651 265.84);
   --color-warning-faidorange: oklch(0.9246 0.0845 86.39);
- --color-dark-overlay: rgb(34, 40, 49);
+  --color-dark-overlay: hsl(216, 18.07%, 16.27%);
   --color-dark-hover: hsl(230, 17%, 14%);
   --color-dark-box-outline: hsl(228, 28%, 35%);
-  /*Dark*/
 
   /* font */
   --font-general-sans: "General Sans", sans-serif;
@@ -34,6 +33,7 @@
   /* responsive */
   --breakpoint-xs: 12.5rem; /* 200px */
 }
+
 /* Date picker indicator */
 input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.6;
@@ -53,6 +53,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 
+/* custom scrollbar */
+
 ::-webkit-scrollbar {
   width: 0.1rem;
   height: 0.5rem;
@@ -61,9 +63,22 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 ::-webkit-scrollbar-track {
   background-color: transparent;
 }
-/* ::-webkit-scrollbar-thumb {
-  background-color: var(--color-main-blue);
-} */
+
+.custom-scrollbar::-webkit-scrollbar {
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-dark-hover rounded-b-lg;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full border-2 border-transparent bg-clip-padding;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
 
 /* custom styling */
 

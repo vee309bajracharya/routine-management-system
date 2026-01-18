@@ -1,4 +1,4 @@
-import { Calendar, ChevronDown, ChevronUp, Search, X, Download } from "lucide-react";
+import { Calendar, ChevronDown, ChevronUp, Search, X, History } from "lucide-react";
 
 const OverviewFilters = ({
   searchTerm, setSearchTerm, statusFilter, setStatusFilter, dateFilter, setDateFilter, dateRange, setDateRange,
@@ -11,6 +11,7 @@ const OverviewFilters = ({
         {/* last 7 days  */}
         <div className="relative">
           <button onClick={onToggleLast7} className={`overview-btn ${dateFilter === 'last7' ? 'bg-hover-blue text-white' : ''}`}>
+            <History size={16} />
             Last 7 days
             {dateFilter === 'last7' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
@@ -22,7 +23,7 @@ const OverviewFilters = ({
             <Calendar size={16} />
             {dateFilter === 'custom' && dateRange.start && dateRange.end
               ? `${new Date(dateRange.start).toLocaleDateString()} - ${new Date(dateRange.end).toLocaleDateString()}`
-              : 'Date Range'}
+              : 'Routine Date Range'}
             <ChevronDown size={16} />
           </button>
 
@@ -30,7 +31,7 @@ const OverviewFilters = ({
             <div className="absolute top-full mt-2 left-0 bg-white dark:bg-dark-overlay border border-box-outline rounded-md shadow-lg p-4 z-10 min-w-[300px]">
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-sub-text dark:text-white mb-1 block">Start Date</label>
+                  <label className="text-xs text-sub-text dark:text-white mb-1 block">Effective From</label>
                   <input
                     type="date"
                     value={dateRange.start}
@@ -38,7 +39,7 @@ const OverviewFilters = ({
                     className="w-full px-2 py-1 border border-box-outline rounded text-sm text-primary-text dark:text-white" />
                 </div>
                 <div>
-                  <label className="text-xs text-sub-text dark:text-white mb-1 block">End Date</label>
+                  <label className="text-xs text-sub-text dark:text-white mb-1 block">Effective To</label>
                   <input
                     type="date"
                     value={dateRange.end}

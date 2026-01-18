@@ -54,13 +54,13 @@ const AdminDashboard = () => {
   // Get counts for filter buttons
   const getCounts = () => {
     if (!dashboardData?.routine_section) {
-      return { draft: 0, published: 0, archived: 0 };
+      return { draft: 0, published: 0, archieved: 0 };
     }
 
     return {
       draft: dashboardData.routine_section.draft,
       published: dashboardData.routine_section.published,
-      archived: dashboardData.routine_section.archived,
+      archieved: dashboardData.routine_section.archived,
     };
   };
 
@@ -118,7 +118,7 @@ const AdminDashboard = () => {
     <div className="flex min-h-screen academic-common-bg">
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto h-screen">
-        <div className="p-8 max-w-[1200px]">
+        <div className="max-w-[1200px] mr-4">
           {/* Header Section */}
           <div className="flex justify-between items-end mb-8">
             <div>
@@ -129,17 +129,6 @@ const AdminDashboard = () => {
             </div>
 
             <div className="flex gap-3">
-              <button
-                onClick={() => fetchDashboardData(currentPage)}
-                className="dashboard-btn-link cursor-pointer flex items-center gap-2"
-                disabled={loading}
-              >
-                <RefreshCw
-                  size={16}
-                  className={loading ? "animate-spin" : ""}
-                />
-                Refresh
-              </button>
               <button
                 onClick={() => navigate("/admin/schedule/routine")}
                 className="dashboard-btn-link cursor-pointer"
@@ -176,7 +165,7 @@ const AdminDashboard = () => {
               <h3 className="text-3xl dark:text-white my-4 text-left">
                 {routineStats?.total || 0}
               </h3>
-              <div className="flex w-full h-10 text-[10px] font-bold uppercase overflow-hidden rounded-xl mt-4">
+              <div className="flex w-full h-10 text-[12px] font-semibold overflow-hidden rounded-md mt-4">
                 <div className="bg-yellow-200 text-yellow-800 flex-1 flex flex-col items-center justify-center min-w-0">
                   <span>Draft</span>
                   <span>{routineStats?.draft || 0}</span>
@@ -280,30 +269,50 @@ const AdminDashboard = () => {
               details.
             </p>
 
-            <div className="bg-white dark:bg-dark-overlay rounded-xl shadow-sm overflow-hidden">
-              {/* Filter Tabs */}
-              <div className="flex items-center gap-2 p-4 border-b border-box-outline flex-wrap">
-                {["draft", "published", "archived"].map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => setActiveTab(status)}
-                    className={`filter-btn transition-all ${
-                      activeTab === status
-                        ? "bg-main-blue text-white shadow-sm"
-                        : "bg-gray-100 text-primary-text hover:bg-gray-200 dark:bg-dark-hover dark:text-white"
-                    }`}
-                  >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                    <span
-                      className={`ml-1 opacity-70 font-normal ${
-                        activeTab === status ? "text-blue-100" : ""
-                      }`}
+            <section>
+
+            </section>
+
+            <div className="bg-white dark:bg-dark-overlay overflow-hidden">
+
+              <section className="flex justify-between items-center mb-5">
+                {/* Filter Tabs */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {["draft", "published", "archieved"].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setActiveTab(status)}
+                      className={`filter-btn transition-all ${activeTab === status
+                          ? "bg-main-blue text-white"
+                          : "bg-gray-100 text-primary-text hover:bg-gray-200 dark:bg-dark-hover dark:text-white"
+                        }`}
                     >
-                      {counts[status]}
-                    </span>
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
+                      <span
+                        className={`ml-1 opacity-70 font-normal ${activeTab === status ? "text-blue-100" : ""
+                          }`}
+                      >
+                        {counts[status]}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <div>
+                  <button
+                    onClick={() => fetchDashboardData(currentPage)}
+                    className="dashboard-btn-link cursor-pointer flex items-center gap-2"
+                    disabled={loading}
+                  >
+                    <RefreshCw
+                      size={16}
+                      className={loading ? "animate-spin" : ""}
+                    />
+                    Refresh
                   </button>
-                ))}
-              </div>
+                </div>
+              </section>
+
 
               {/* Data Table */}
               <div className="w-full overflow-x-auto">
@@ -313,7 +322,7 @@ const AdminDashboard = () => {
                       size={32}
                       className="animate-spin text-main-blue mb-2"
                     />
-                    <p className="text-sub-text text-sm">Loading...</p>{" "}
+                    <p className="text-sub-text text-sm"></p>{" "}
                   </div>
                 ) : (
                   <table className="w-full text-left">
@@ -356,13 +365,12 @@ const AdminDashboard = () => {
                             </td>
                             <td className="p-4 text-center">
                               <span
-                                className={`px-2 py-1 rounded text-xs uppercase ${
-                                  routine.status === "published"
+                                className={`px-2 py-1 rounded text-xs uppercase ${routine.status === "published"
                                     ? "table-active"
                                     : routine.status === "draft"
-                                    ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-500"
-                                    : "table-inactive"
-                                }`}
+                                      ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-500"
+                                      : "table-inactive"
+                                  }`}
                               >
                                 {routine.status}
                               </span>
@@ -410,11 +418,10 @@ const AdminDashboard = () => {
                         key={page}
                         onClick={() => handlePageChange(page)}
                         disabled={loading}
-                        className={`px-3 py-1 rounded border border-box-outline ${
-                          page === currentPage
+                        className={`px-3 py-1 rounded border border-box-outline ${page === currentPage
                             ? "bg-main-blue text-white"
                             : "hover:bg-gray-100 dark:hover:bg-dark-hover"
-                        }`}
+                          }`}
                       >
                         {page}
                       </button>
@@ -439,10 +446,10 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-center mb-1">
           <h2 className="form-header">Recent Activity</h2>
           <div className="relative">
-            <button 
-            onClick={()=>navigate("/admin/activitylog")}
-            className="dropdown-select flex items-center gap-1 hover:!bg-gray-100">
-              All 
+            <button
+              onClick={() => navigate("/admin/activitylog")}
+              className="dropdown-select flex items-center gap-1 hover:!bg-gray-100">
+              All
             </button>
           </div>
         </div>
@@ -456,13 +463,12 @@ const AdminDashboard = () => {
                 className="flex gap-4 relative z-10 text-left"
               >
                 <div
-                  className={`w-3 h-3 rounded-full mt-1.5 shrink-0 ${
-                    activity.display_text.includes("created")
+                  className={`w-3 h-3 rounded-full mt-1.5 shrink-0 ${activity.display_text.includes("created")
                       ? "bg-green-400"
                       : activity.display_text.includes("deleted")
-                      ? "bg-red-400"
-                      : "bg-amber-400"
-                  } ring-4 ring-white dark:ring-dark-overlay`}
+                        ? "bg-red-400"
+                        : "bg-amber-400"
+                    } ring-4 ring-white dark:ring-dark-overlay`}
                 ></div>
                 <div>
                   <h4 className="text-[14px] font-bold text-primary-text leading-tight dark:text-white">
