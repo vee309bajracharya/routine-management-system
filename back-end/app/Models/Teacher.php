@@ -21,7 +21,7 @@ class Teacher extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['user_id', 'department_id', 'employment_type'])
+            ->logOnly(['department_id', 'employment_type'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('teacher');

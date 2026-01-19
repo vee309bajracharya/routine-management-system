@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Routines;
 
 use App\Models\Routine;
 use App\Models\RoutineEntry;
+use App\Services\RoutinePublishService;
 use Illuminate\Http\Request;
 use App\Services\CacheService;
 use Illuminate\Support\Facades\DB;
@@ -214,7 +215,7 @@ class RoutineCRUDController extends Controller
                 'success' => true,
                 'message' => 'Routine updated successfully',
             ])->setStatusCode(200);
-            
+
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
@@ -379,6 +380,44 @@ class RoutineCRUDController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to archive routine',
+            ], 500);
+        }
+    }
+
+    // publish a routine and notify all assigned teachers
+    public function publish(int $id, RoutinePublishService $publishService)
+    {
+        try {
+            $routine = Routine::withCount('routineEntries')->findOrFail($id);
+
+            // if routine_entries are empty
+            if ($routine->routine_entries_count === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot publish an empty routine. Please add some class entries first.'
+                ], 422);
+            }
+
+            // if routine is already published, don't publish it
+            if ($routine->status === 'published') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This routine is already published'
+                ], 422);
+            }
+
+            $publishedRoutine = $publishService->publish($id); //execution via Service
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Routine published successfully and teachers are being notified via email and app',
+                'data' => new RoutineDetailResource($publishedRoutine)
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to publish routine. Please check if mail settings are correct',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

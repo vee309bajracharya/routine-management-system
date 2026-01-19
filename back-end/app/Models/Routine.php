@@ -6,15 +6,16 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Batch;
 use App\Models\Semester;
+use App\Models\TimeSlot;
 use App\Models\Institution;
 use App\Models\RoutineEntry;
 use App\Models\SavedRoutine;
+use Spatie\Activitylog\LogOptions;
 use App\Models\RoutineNotification;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\LogOptions;
 
 class Routine extends Model
 {
@@ -23,7 +24,7 @@ class Routine extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['title','description','status','effective_from','effective_to']) // fields to track
+            ->logOnly(['title', 'description', 'status', 'effective_from', 'effective_to']) // fields to track
             ->logOnlyDirty() // Only log if something actually changed
             ->dontSubmitEmptyLogs() // Don't save a log if no tracked fields changed
             ->useLogName('routine');
@@ -168,5 +169,49 @@ class Routine extends Model
         return $query->where('status', 'published')
             ->where('effective_from', '<=', now())
             ->where('effective_to', '>=', now());
+    }
+
+    // data prep. logic for pdf to be sent in mail
+    public function getPdfData()
+    {
+        $shift = $this->batch->shift ?? 'Morning';
+
+        $timeSlots = TimeSlot::where('batch_id', $this->batch_id)
+            ->where('semester_id', $this->semester_id)
+            ->where('shift', $shift)
+            ->where('is_active', true)
+            ->orderBy('start_time', 'asc')
+            ->get();
+
+        $entries = RoutineEntry::with([
+            'courseAssignment.course',
+            'courseAssignment.teacher.user',
+            'room',
+            'timeSlot'
+        ])
+            ->where('routine_id', $this->id)
+            ->whereHas('timeSlot', function ($query) use ($shift) {
+                $query->where('shift', $shift);
+            })
+            ->get();
+
+        $grid = [];
+        foreach ($entries as $entry) {
+            $timeKey = $entry->timeSlot->start_time->format('H:i');
+            $grid[$entry->day_of_week][$timeKey] = [
+                'course_name' => $entry->courseAssignment?->course?->course_name,
+                'teacher_name' => $entry->courseAssignment?->teacher?->user?->name,
+                'room_label' => $entry->room?->display_label ?? $entry->room?->name,
+                'entry_type' => $entry->entry_type,
+            ];
+        }
+
+        return [
+            'routine' => $this,
+            'grid' => $grid,
+            'timeSlots' => $timeSlots,
+            'status' => $this->status,
+            'shift' => $shift,
+        ];
     }
 }
