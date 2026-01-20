@@ -52,10 +52,8 @@ class CourseController extends Controller
                     });
                 }
 
-                return $query
-                    ->orderBy('semester_id')
-                    ->orderBy('course_name')
-                    ->paginate(10);
+                return $query->orderBy('created_at', 'desc')->paginate(10);
+
             }, self::COURSE_CACHE_TTL);
 
             return response()->json([
@@ -159,7 +157,7 @@ class CourseController extends Controller
                 ]
             ], 200);
         } catch (\Exception $e) {
-           return $this->errorResponse('Course not found', $e->getMessage(), 404);
+            return $this->errorResponse('Course not found', $e->getMessage(), 404);
         }
     }
 

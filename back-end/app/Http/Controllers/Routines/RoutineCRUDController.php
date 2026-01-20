@@ -61,7 +61,7 @@ class RoutineCRUDController extends Controller
                     $query->whereDate('effective_to', '<=', $request->date_to);
 
                 return $query->paginate(15);
-            }, 1800);
+            }, 300);
 
             return RoutineListResource::collection($routines)->additional([
                 'success' => true

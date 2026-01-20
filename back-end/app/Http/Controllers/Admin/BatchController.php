@@ -66,8 +66,7 @@ class BatchController extends Controller
                     });
                 }
 
-                return $query->orderBy('year_level', 'desc')
-                    ->orderBy('shift', 'asc')->paginate(10);
+                return $query->orderBy('created_at', 'desc')->paginate(10);
 
             }, self::BATCHES_CACHE_TTL);
 

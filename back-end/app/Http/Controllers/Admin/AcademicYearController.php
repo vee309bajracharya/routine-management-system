@@ -50,7 +50,7 @@ class AcademicYearController extends Controller
                     });
                 }
 
-                return $query->orderBy('start_date', 'desc')->paginate(10);
+                return $query->orderBy('created_at', 'desc')->paginate(10);
             }, self::ACADEMIC_YEAR_CACHE_TTL);
 
             return response()->json([
