@@ -44,7 +44,7 @@ class RoutinePublishedNotificiation extends Notification implements ShouldQueue
         $routine = Routine::with([
             'institution',
             'semester',
-            'batch'
+            'batch',
         ])->findOrFail($this->routine->id);
 
         // get the prep. data for pdf
@@ -56,16 +56,20 @@ class RoutinePublishedNotificiation extends Notification implements ShouldQueue
 
         $pdfContent = $pdf->output();
 
+        $targetUrl = url('/teacher/routine?id=' . $this->routine->id);
+
         return (new MailMessage)
             ->subject('New Routine Published : ' . $routine->title)
             ->greeting('Hello ' . $notifiable->name . ',')
             ->line('A new academic routine has been published that includes your scheduled classes.')
             ->line('Routine Title : ' . $routine->title)
+            ->line('Please find the attached PDF for your offline reference.')
             ->attachData($pdfContent, 'routine_' . now()->format('Y_m_d') . '.pdf', [
                 'mime' => 'application/pdf',
             ])
-            ->action('View My Schedule', url('/teacher/routine'))
-            ->line('Please find the attached PDF for your offline reference.')
+            ->action('View My Schedule', $targetUrl)
+            ->line('You can also access your schedule by clicking the link below:')
+            ->line("[Click Here to View Routine]({$targetUrl})")
             ->line('Thank you for using our application!');
     }
 

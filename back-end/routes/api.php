@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\Student\PublicMetadataController;
-use App\Http\Controllers\Student\PublicRoutineController;
+use App\Http\Controllers\Common\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -20,8 +19,11 @@ use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Routines\RoutineCRUDController;
 use App\Http\Controllers\Routines\RoutineEntryController;
+use App\Http\Controllers\Student\PublicRoutineController;
 use App\Http\Controllers\Admin\CourseAssignmentController;
 use App\Http\Controllers\Routines\RoutineExportController;
+use App\Http\Controllers\Student\PublicMetadataController;
+use App\Http\Controllers\Teacher\TeacherRoutineController;
 use App\Http\Controllers\Api\TeacherAvailabilityController;
 use App\Http\Controllers\Routines\RoutineVersionController;
 use App\Http\Controllers\Teacher\TeacherDashboardController;
@@ -35,7 +37,6 @@ Route::prefix('public')->group(function () {
         Route::post('/generate-link', [PublicRoutineController::class, 'generateSecureLink'])->middleware('throttle:10,1');
     });
 });
-
 
 // public auth routes for admin and teacher
 Route::prefix('auth')->group(function () {
@@ -53,6 +54,14 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
         Route::get('/user', [AuthController::class, 'user']);
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/refresh', [AuthController::class, 'refreshCache']);
+    });
+
+    // Notifications routes
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
+        Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+        Route::post('/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
     });
 
     // Admin routes
@@ -231,6 +240,8 @@ Route::middleware(['auth:sanctum', 'prevent.back.history'])->group(function () {
     Route::middleware(['check.role:teacher'])->prefix('teacher')->group(function () {
 
         Route::get('/dashboard', [TeacherDashboardController::class, 'index']); //dashboard with todayClasses and getSchedule functionality
+        Route::get('/my-schedule', [TeacherRoutineController::class, 'getMySchedule']); //to get teacher's weekly schedule
+        Route::get('/routine/{id}', [TeacherRoutineController::class, 'getRoutineView']); //to view alloted entry in routine
         Route::get('/profile', [TeacherController::class, 'show']); //show profile details
         Route::put('/update-profile', [TeacherController::class, 'update']); //update profile details
     });
