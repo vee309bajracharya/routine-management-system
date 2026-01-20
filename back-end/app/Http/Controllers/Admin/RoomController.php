@@ -45,8 +45,7 @@ class RoomController extends Controller
                             ->orWhere('room_number', 'like', "%{$search}%");
                     });
                 }
-
-                return $query->orderBy('room_number', 'asc')->paginate(10);
+                return $query->orderBy('created_at', 'desc')->paginate(10);
             }, self::ROOM_CACHE_TTL);
 
             return response()->json([

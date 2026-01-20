@@ -60,7 +60,7 @@ class TimeSlotController extends Controller
                     });
                 }
 
-                return $query->orderBy('start_time', 'asc')->paginate(10);
+                return $query->orderBy('created_at', 'desc')->paginate(10);
             }, self::TIMESLOT_CACHE_TTL);
 
             return response()->json([

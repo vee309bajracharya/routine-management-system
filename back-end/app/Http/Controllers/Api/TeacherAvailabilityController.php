@@ -39,7 +39,7 @@ class TeacherAvailabilityController extends Controller
                 if ($request->filled('search'))
                     $query->where('users.name', 'like', "%{$request->search}%");
 
-                return $query->orderBy('users.name', 'asc')->paginate(10);
+                return $query->orderBy('created_at', 'desc')->paginate(10);
             }, self::AVAILABILITY_CACHE_TTL);
 
             return response()->json([

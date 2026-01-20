@@ -47,7 +47,7 @@ class DepartmentController extends Controller
                 }
 
                 // pagination
-                return $query->orderBy('department_name', 'asc')->paginate(10);
+                return $query->orderBy('created_at', 'desc')->paginate(10);
             }, self::DEPARTMENT_CACHE_TTL);
 
             return response()->json([
