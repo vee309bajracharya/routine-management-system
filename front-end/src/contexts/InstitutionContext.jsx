@@ -2,16 +2,19 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axiosClient from "../services/api/axiosClient";
 import { toast } from "react-toastify";
+import { useAuth } from "./AuthContext";
 
 const InstitutionContext = createContext();
 
 export const InstitutionProvider = ({ children }) => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [institution, setInstitution] = useState(null);
 
   // Fetch institution details from backend
   // Memoized with useCallback to prevent unnecessary re-renders
   const fetchInstitution = useCallback(async () => {
+    if (!user || user.role !== 'admin') return;
     setLoading(true);
     try {
       const response = await axiosClient.get("/admin/institution");
@@ -23,7 +26,7 @@ export const InstitutionProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   // Update institution details (text and logo)
   const updateInstitution = async (formData) => {
@@ -43,7 +46,7 @@ export const InstitutionProvider = ({ children }) => {
     } catch (error) {
       console.error("Update failed:", error);
       toast.error("Failed to update institution details");
-    } 
+    }
     return false;
   };
 
@@ -61,14 +64,14 @@ export const InstitutionProvider = ({ children }) => {
     }
   };
 
-  // Initial fetch on app load if token exists
+  // load only if token exists with user being admin
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token") || localStorage.getItem('auth_token');
-    if (token) {
+    if (token && user?.role === 'admin') {
       fetchInstitution();
     }
-  }, [fetchInstitution]);
-
+  }, [fetchInstitution, user]);
+  
   const contextValue = {
     institution,
     loading,
