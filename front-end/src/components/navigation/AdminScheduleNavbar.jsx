@@ -1,14 +1,17 @@
 import Frame from "../../assets/svg/Frame.svg";
-import notification from "../../assets/svg/notification.svg";
+import notificationIcon from "../../assets/svg/notification.svg";
 import { Sun, Moon } from "lucide-react";
 import AdminDefaultImage from "../../assets/images/adminDefaultLogo.png";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useAuth } from "../../contexts/AuthContext";
+import { Link } from "react-router-dom";
+import { useNotifications } from "../../contexts/NotificationContext";
 
-const AdminScheduleNavbar = ({ setCollapsed, collapsed }) => {
+const AdminScheduleNavbar = ({ setCollapsed, collapsed, role }) => {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
 
   return (
     <nav className="bg-white dark:bg-dark-overlay text-DesaturatedBlueText font-general-sans">
@@ -23,13 +26,24 @@ const AdminScheduleNavbar = ({ setCollapsed, collapsed }) => {
 
         {/* Right icons & profile */}
         <div className="flex items-center gap-4">
-          <button className="cursor-pointer px-2 py-1">
+          {/* Notification bell - guarded by role */}
+          <Link to={role === 'admin' ? "/admin/notifications" : "/teacher/notifications"}
+            className="relative p-2 cursor-pointer group"
+          >
             <img
-              src={notification}
+              src={notificationIcon}
               alt="notification"
-              className="w-4 h-4 dark:invert"
+              className="w-4 h-4 dark:invert opacity-80 group-hover:opacity-100"
             />
-          </button>
+
+            {/* Notification red dot */}
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-error-red border border-white dark:border-dark-overlay"></span>
+              </span>
+            )}
+          </Link>
 
           <button
             onClick={toggleTheme}
@@ -46,7 +60,7 @@ const AdminScheduleNavbar = ({ setCollapsed, collapsed }) => {
             />
             <div className="flex flex-col leading-tight">
               <span className="text-sm font-medium dark:text-white">
-                {user?.name}
+                {user?.name || "System User"}
               </span>
               <span className="text-xs text-sub-text capitalize">
                 {user?.role}
