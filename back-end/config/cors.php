@@ -21,7 +21,6 @@ return [
 
     'allowed_origins' => [
         'http://localhost:5173', //vite
-        'https://routine-management-system-chi.vercel.app/', //vercel
     ],
 
     'allowed_origins_patterns' => [],
