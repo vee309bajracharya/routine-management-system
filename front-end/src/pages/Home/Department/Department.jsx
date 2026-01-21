@@ -36,9 +36,9 @@ const Department = () => {
 
   if (isLoading) 
     return (
-    <div className="text-center py-20">
-      <Loader2 size={16} className="animate-spin text-main-blue" />
-      <p className="mt-2 text-primary-blue">Loading Departments</p>
+    <div className="text-center my-20">
+      <Loader2 size={20} className="animate-spin text-main-blue mx-auto" />
+      <p className="mt-2 text-primary-blue font-semibold text-lg">Loading Departments</p>
     </div>
   );
 

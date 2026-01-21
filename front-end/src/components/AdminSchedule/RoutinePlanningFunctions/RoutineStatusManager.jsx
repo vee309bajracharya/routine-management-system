@@ -1,16 +1,10 @@
 import { toast } from "react-toastify"
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
-/**
- * to manage routine status
- *  - show current routine status
- *  - handle change status via toast
- * 
- * Props : routine, onStatusUpdate
- *  - routine : current routine object
- *  - onStatusUpdate - callback after status change
- */
+const RoutineStatusManager = ({ routine, onPublish }) => {
 
-const RoutineStatusManager = ({ routine, onStatusUpdate }) => {
+    const [isPublishing, setIsPublishing] = useState(false);
 
     // status badge
     const getStatusStyles = (status) => {
@@ -31,7 +25,7 @@ const RoutineStatusManager = ({ routine, onStatusUpdate }) => {
     };
 
     // custom confirmation toast
-    const handlePublish = () => {
+    const handlePublishClick = () => {
         toast(
             ({ closeToast }) => (
                 <section className="font-general-sans">
@@ -42,8 +36,9 @@ const RoutineStatusManager = ({ routine, onStatusUpdate }) => {
 
                     {/* Description */}
                     <p className="text-sm mb-3 text-sub-text">
-                        This will change the status from Draft to Published.
-                        Published routines can be archived later.
+                        This will set the status to Published.
+                        Published routines can be archived later. It also
+                        notifies all assigned teachers via email and attach the routine PDF.
                     </p>
 
                     {/* Action Buttons */}
@@ -55,17 +50,19 @@ const RoutineStatusManager = ({ routine, onStatusUpdate }) => {
                         </button>
                         <button
                             onClick={async () => {
+                                closeToast();
+                                setIsPublishing(true);
                                 try {
-                                    await onStatusUpdate(routine.id, 'published');
-                                    closeToast();
-                                    toast.success('Routine published successfully');
+                                    await onPublish(routine.id);
+                                    toast.success('Routine published and emails sent');
                                 } catch (error) {
                                     console.error('Failed to publish routine : ', error);
-                                    toast.error('Failed to publish routine');
+                                } finally {
+                                    setIsPublishing(false);
                                 }
                             }}
                             className="px-3 py-1 cursor-pointer rounded-md bg-green-600 text-white transition">
-                            Publish
+                            Confirm Publish
                         </button>
                     </div>
                 </section>
@@ -80,9 +77,15 @@ const RoutineStatusManager = ({ routine, onStatusUpdate }) => {
             {routine.status === 'draft' ? (
                 // to show Publish Routine btn only on Draft status
                 <button
-                    onClick={handlePublish}
+                    onClick={handlePublishClick}
                     className="status-btn border border-success-green text-success-green hover:bg-success-green hover:text-white transition-all">
-                    Publish Routine
+                    {isPublishing ? (
+                        <>
+                            Publishing...
+                        </>
+                    ) : (
+                        'Publish Routine'
+                    )}
                 </button>
             ) : (
                 // status badge for Published and Archived status
