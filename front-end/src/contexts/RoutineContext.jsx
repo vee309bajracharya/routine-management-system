@@ -23,6 +23,7 @@ const RoutineContext = createContext({
   deleteRoutine: () => { },
   archiveRoutine: () => { },
   setCurrentRoutine: () => { },
+  publishRoutine: () => { },
 
   // Routine entry functions
   fetchRoutineGrid: () => { },
@@ -241,6 +242,27 @@ export const RoutineProvider = ({ children }) => {
       setIsLoading(false);
     }
   }, [currentRoutine, fetchRoutines]);
+
+  // Publish routine
+  const publishRoutine = useCallback(async (id) => {
+    setIsLoading(true);
+    try {
+      const response = await axiosClient.post(`/admin/routines/${id}/publish`);
+      if (response.data.success) {
+        startTransition(() => {
+          setCurrentRoutine(prev => prev ? { ...prev, status: 'published' } : null);
+        });
+        await fetchRoutines();
+        return response.data.data;
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || error.userMessage || "Failed to publish routine";
+      toast.error(errorMsg);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchRoutines]);
 
 
   //  ========= Routine entry functions ===========
@@ -483,6 +505,7 @@ export const RoutineProvider = ({ children }) => {
     deleteRoutine,
     archiveRoutine,
     setCurrentRoutine,
+    publishRoutine,
 
     // routine entry functions
     fetchRoutineGrid,

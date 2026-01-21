@@ -20,6 +20,7 @@ export const useRoutineEntry = () => {
         fetchRoutineById,
         updateRoutine,
         clearRoutine,
+        publishRoutine,
     } = useRoutine();
 
     useEffect(() => {
@@ -85,15 +86,15 @@ export const useRoutineEntry = () => {
     }, [currentRoutine, currentShift, clearRoutine]);
 
     // routine status mgmt
-    const handleUpdateRoutineStatus = useCallback(async (routineGrid, newStatus) => {
+    const handlePublishRoutine = useCallback(async (id) => {
         try {
-            await updateRoutine(routineGrid, { status: newStatus });
+            await publishRoutine(id);
             return true;
         } catch (error) {
-            console.error("Failed to update routine status : ", error);
+            console.error("Failed to publish routine:", error);
             throw error;
         }
-    }, [updateRoutine]);
+    }, [publishRoutine]);
 
     // routine grid utilities
     const getTimeSlots = useCallback(() => {
@@ -140,11 +141,11 @@ export const useRoutineEntry = () => {
 
         // CRUD operations
         handleClearRoutine,
-        handleUpdateRoutineStatus,
         fetchRoutineGrid,
         fetchRoutineById,
         updateRoutine,
         clearRoutine,
+        handlePublishRoutine,
 
         // Utilities
         getTimeSlots,

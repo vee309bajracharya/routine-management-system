@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import { useState } from "react";
 import MainLogo from "../../assets/svg/default_logo.svg";
-import University from "../../assets/svg/University.svg";
 import logOut from "../../assets/svg/logout.svg";
 import CollapsedLogo from "../../assets/svg/CollapsedLogo.svg";
 import Downarrow from "../../assets/svg/Downarrow.svg";
@@ -71,30 +70,6 @@ const AdminSidebar = ({ collapsed, sidebarItems, role }) => {
               className="h-8 w-auto object-contain dark:invert-25"
             />
           </Link>
-        </div>
-
-        {/* INSTITUTION */}
-        <div
-          className={`flex items-center mb-2 border border-box-outline rounded-md py-3 transition-all duration-300 ${
-            collapsed
-              ? "justify-center w-12"
-              : "justify-start px-3 gap-3 w-full"
-          }`}
-        >
-          <img
-            src={University}
-            alt="Icon"
-            className="w-5 h-5 flex-shrink-0 dark:invert"
-          />
-          {!collapsed && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-sm font-semibold whitespace-nowrap"
-            >
-              {institution?.type || "University"}
-            </motion.span>
-          )}
         </div>
 
         {/* SIDEBAR ITEMS */}

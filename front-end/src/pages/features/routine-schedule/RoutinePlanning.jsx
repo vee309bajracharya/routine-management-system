@@ -32,7 +32,7 @@ const RoutinePlanning = () => {
 
     // CRUD actions
     handleClearRoutine,
-    handleUpdateRoutineStatus,
+    handlePublishRoutine,
 
     // Grid utilities
     getTimeSlots,
@@ -159,7 +159,7 @@ const RoutinePlanning = () => {
           <section className="bg-white dark:bg-dark-overlay rounded-md float-end">
             <RoutineStatusManager
               routine={currentRoutine}
-              onStatusUpdate={handleUpdateRoutineStatus}
+              onPublish={handlePublishRoutine}
             />
           </section>
 
