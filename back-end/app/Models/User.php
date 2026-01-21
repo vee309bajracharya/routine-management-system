@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Auth\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -122,5 +123,26 @@ class User extends Authenticatable
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $baseUrl = config('app.frontend_url');
+
+        $url = $baseUrl . '/reset-password/' . $token . '?email=' . urlencode($this->email);
+
+        $this->notify(new class ($url) extends ResetPasswordNotification {
+            protected $resetUrl;
+
+            public function __construct($url)
+            {
+                $this->resetUrl = $url;
+            }
+
+            protected function resetUrl($notifiable)
+            {
+                return $this->resetUrl;
+            }
+        });
     }
 }

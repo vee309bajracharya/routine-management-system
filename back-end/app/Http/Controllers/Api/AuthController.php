@@ -252,10 +252,10 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // using Laravel Broker
         $status = Password::broker()->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                // Laravel Broker ensures $user is found before calling this closure
                 $user->password = Hash::make($password);
                 $user->setRememberToken(Str::random(60));
                 $user->save();

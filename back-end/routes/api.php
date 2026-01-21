@@ -43,6 +43,8 @@ Route::prefix('auth')->group(function () {
     Route::middleware('throttle:60,1')->group(function () {
         Route::post('/teacher-login', [AuthController::class, 'login']);
         Route::post('/admin-login', [AuthController::class, 'login']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     });
 });
 
