@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
-use App\Services\CacheService;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -145,18 +149,22 @@ class AuthController extends Controller
      */
     private function getUserData(User $user): array
     {
-        return [
+        // common data
+        $data = [
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'role'=> $user->role,
-            'status'=> $user->status,
-            'institution_id'=> auth()->user()->id,
-            'teacher' => $user->teacher()->first(['id', 'institution_id', 'department_id',]),
-            'created_at' => $user->created_at,
-            'updated_at' => $user->updated_at,
-            'deleted_at' => $user->deleted_at,
+            'role' => $user->role,
+            'status' => $user->status,
+            'institution_id' => $user->institution_id,
         ];
+        // additional data for teachers
+        if ($user->role === 'teacher') {
+            $data['teacher_id'] = $user->teacher?->id;
+            $data['department_id'] = $user->teacher?->department_id;
+        }
+
+        return $data;
     }
 
     /**
@@ -195,4 +203,78 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * forgot password
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email not found',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $status = Password::sendResetLink(
+            $request->only('email'),
+            function ($user, $token) {
+                $user->sendPasswordResetNotification($token);
+            }
+        );
+
+        return $status === Password::RESET_LINK_SENT ?
+            response()->json(['success' => true, 'message' => 'Password reset link sent to your mail'], 200)
+            : response()->json(['success' => false, 'message' => 'Failed to send Password reset link'], 500);
+    }
+
+    /**
+     * resetPassword
+     */
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|min:8|confirmed',
+            'password_confirmation' => 'required|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $status = Password::broker()->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                // Laravel Broker ensures $user is found before calling this closure
+                $user->password = Hash::make($password);
+                $user->setRememberToken(Str::random(60));
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Password has been reset successfully.'
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => __($status)
+        ], 400);
+    }
+
 }
