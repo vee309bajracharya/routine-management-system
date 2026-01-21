@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Log;
 class CacheService
 {
     /**
-     * Default cache duration in seconds (1 hour)
+     * Default cache duration in seconds (15mins)
      */
-    private const DEFAULT_TTL = 3600;
+    private const DEFAULT_TTL = 900;
 
     /**
      * Cache key prefix for the application
