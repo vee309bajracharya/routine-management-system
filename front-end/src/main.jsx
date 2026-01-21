@@ -6,6 +6,7 @@ import { ThemeProvider } from "./contexts/ThemeContext.jsx";
 import { RoutineProvider } from "./contexts/RoutineContext.jsx";
 import { RoutineEntryProvider } from "./contexts/RoutineEntryContext.jsx";
 import { InstitutionProvider } from "./contexts/InstitutionContext.jsx";
+import { NotificationProvider } from "./contexts/NotificationContext.jsx";
 import "./index.css";
 import App from "./App.jsx";
 
@@ -13,15 +14,17 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <InstitutionProvider>
-          <RoutineProvider>
-            <RoutineEntryProvider>
-              <ThemeProvider>
-                <App />
-              </ThemeProvider>
-            </RoutineEntryProvider>
-          </RoutineProvider>
-        </InstitutionProvider>
+        <NotificationProvider>
+          <InstitutionProvider>
+            <RoutineProvider>
+              <RoutineEntryProvider>
+                <ThemeProvider>
+                  <App />
+                </ThemeProvider>
+              </RoutineEntryProvider>
+            </RoutineProvider>
+          </InstitutionProvider>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>

@@ -81,7 +81,7 @@ const AdminLogin = () => {
               <input
                 type="email"
                 id="email"
-                placeholder="Email"
+                placeholder="Enter your email"
                 className="inputbox"
                 value={values.email}
                 onChange={handleChange}
@@ -103,7 +103,7 @@ const AdminLogin = () => {
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
-                placeholder="Password"
+                placeholder="Enter your password"
                 className="inputbox"
                 value={values.password}
                 onChange={handleChange}
@@ -120,6 +120,12 @@ const AdminLogin = () => {
               {errors.password && touched.password && (
                 <p className='showError'>{errors.password}</p>
               )}
+            </div>
+
+            <div className="flex justify-end mbt-2">
+              <Link to='/forgot-password' size={14} className="text-sm text-main-blue hover:text-hover-blue">
+                Forgot Password ?
+              </Link>
             </div>
 
             {/* Remember Me */}
