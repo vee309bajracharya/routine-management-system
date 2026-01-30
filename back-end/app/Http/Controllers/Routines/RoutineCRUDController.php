@@ -205,16 +205,15 @@ class RoutineCRUDController extends Controller
                 'effective_to',
                 'status'
             ])); //only provided fields update
-
-            $routine->load(['institution', 'semester', 'batch', 'generatedBy']);
-
+            
             // after update, clear cache
             (new RoutineHelperController())->clearRoutineCaches($routine); //clear cache as new routine affects listing
 
-            return (new RoutineDetailResource($routine))->additional([
+            return response()->json([
                 'success' => true,
                 'message' => 'Routine updated successfully',
-            ])->setStatusCode(200);
+                'data' => $routine->fresh() // reload from db
+            ], 200);
 
         } catch (ModelNotFoundException $e) {
             return response()->json([
