@@ -96,8 +96,12 @@ const Courses = () => {
 
       if (response.data.success) {
         toast.success(response.data.message || "Course created successfully");
+       // Preserve department and semester, reset other fields
+        const preservedDepartmentId = values.department_id;
+        const preservedSemesterId = values.semester_id;
         resetForm();
-        setSemesters([]);
+        setFieldValue("department_id", preservedDepartmentId);
+        setFieldValue("semester_id", preservedSemesterId);
       }
     } catch (error) {
       console.error("Failed to create course:", error);
@@ -116,8 +120,8 @@ const Courses = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Course</h2>
         <p className="form-subtext">
           Add new courses to your institution's academic structure and assign
@@ -126,7 +130,7 @@ const Courses = () => {
 
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Department and Semester */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Department <span className="text-error-red">*</span>
@@ -188,7 +192,7 @@ const Courses = () => {
           </div>
 
           {/* Course Name and Code */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Course Name <span className="text-error-red">*</span>
@@ -196,7 +200,7 @@ const Courses = () => {
               <input
                 type="text"
                 name="course_name"
-                placeholder="e.g., Cyber Law and Professional Ethics"
+                placeholder="Cybersecurity"
                 value={values.course_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -214,7 +218,7 @@ const Courses = () => {
               <input
                 type="text"
                 name="code"
-                placeholder="e.g., CACS-401"
+                placeholder="CACS-401"
                 value={values.code}
                 onChange={(e) => {
                   const upperValue = e.target.value.toUpperCase();
@@ -234,7 +238,7 @@ const Courses = () => {
             <label className="form-title">
               Course Type <span className="text-error-red">*</span>
             </label>
-            <div className="flex items-center gap-6 mt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
               {["Theory", "Practical", "Theory and Practical"].map((type) => (
                 <label
                   key={type}
@@ -279,7 +283,7 @@ const Courses = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -302,7 +306,7 @@ const Courses = () => {
                   Creating...
                 </>
               ) : (
-                "Create Course"
+                "Create"
               )}
             </button>
           </div>

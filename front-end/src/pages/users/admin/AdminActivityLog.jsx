@@ -1,46 +1,58 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   X,
   Eye,
   ChevronLeft,
   ChevronRight,
-  RefreshCw,
   Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axiosClient from "../../../services/api/axiosClient";
-// import Loader from "../../../components/common/Loader";
 
 const AdminActivityLog = () => {
-  // State Management
+  // DEBOUNCE HOOK
+  const useDebounce = (value, delay = 450) => {
+    const [debounced, setDebounced] = useState(value);
+
+    useEffect(() => {
+      const timer = setTimeout(() => setDebounced(value), delay);
+      return () => clearTimeout(timer);
+    }, [value, delay]);
+
+    return debounced;
+  };
+
+  // STATE MANAGEMENT
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activityLogs, setActivityLogs] = useState([]);
   const [paginationMeta, setPaginationMeta] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Search States
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 450);
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
-  // Fetch Activity Logs
-  const fetchActivityLogs = async (page = 1, search = "") => {
+  // FETCHING LOGIC
+  const fetchActivityLogs = useCallback(async (page = 1, search = "") => {
     try {
       setLoading(true);
       setError(null);
-      
-      const params = new URLSearchParams();
-      params.append("page", page);
-      if (search) {
-        params.append("search", search);
-      }
 
-      const response = await axiosClient.get(
-        `/admin/activity-log/index?${params.toString()}`
-      );
+      const params = {
+        page,
+        ...(search.trim() && { search: search.trim() }),
+      };
+
+      const response = await axiosClient.get("/admin/activity-log/index", {
+        params,
+      });
 
       if (response.data.success) {
         setActivityLogs(response.data.data.data);
@@ -61,14 +73,12 @@ const AdminActivityLog = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Fetch Activity Log Details
   const fetchActivityDetails = async (id) => {
     try {
       setLoadingDetails(true);
       const response = await axiosClient.get(`/admin/activity-log/show/${id}`);
-
       if (response.data.success) {
         setSelectedLog(response.data.data);
       }
@@ -81,104 +91,69 @@ const AdminActivityLog = () => {
   };
 
   useEffect(() => {
-    fetchActivityLogs(currentPage, searchQuery);
-  }, [currentPage, searchQuery]);
+    fetchActivityLogs(currentPage, debouncedSearch);
+  }, [currentPage, debouncedSearch, fetchActivityLogs]);
 
-  // Handle Search
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSearchQuery(searchTerm);
+  // HANDLERS
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
 
-  // Handle Clear Search
   const handleClearSearch = () => {
     setSearchTerm("");
-    setSearchQuery("");
     setCurrentPage(1);
   };
 
-  // Handle View Details
   const handleViewDetails = async (log) => {
     setIsDrawerOpen(true);
     await fetchActivityDetails(log.id);
   };
 
-  // Handle Page Change
   const handlePageChange = (page) => {
     if (page >= 1 && page <= paginationMeta.last_page) {
       setCurrentPage(page);
     }
   };
 
-  // Get Event Badge Class
   const getEventBadgeClass = (event) => {
     switch (event.toLowerCase()) {
       case "created":
-        return "bg-green-100 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-500";
+        return "create";
       case "deleted":
-        return "bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-500";
+        return "delete";
       case "updated":
-        return "bg-orange-100 text-orange-700 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-500";
+        return "update";
       default:
-        return "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-500";
+        return "default";
     }
   };
 
-  // Loading State
   if (loading && activityLogs.length === 0) {
     return (
-      <div className="academic-common-bg min-h-screen flex items-center justify-center">
+      <div className="academic-common-bg flex items-center justify-center">
         <Loader2 size={32} className="animate-spin text-main-blue mb-2" />
       </div>
     );
   }
 
-  // Error State
-  if (error && activityLogs.length === 0) {
-    return (
-      <div className="academic-common-bg min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 mb-4">{error}</p>
-          <button
-            onClick={() => fetchActivityLogs(currentPage, searchQuery)}
-            className="dashboard-btn-link cursor-pointer"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="academic-common-bg min-h-screen">
+    <div className="academic-common-bg">
       {/* HEADER SECTION */}
-      <div className="mb-8">
+      <div className="mb-6 md:mb-8">
         <div className="flex justify-between items-end">
           <div>
-            <h1 className="form-header text-2xl font-bold">Activity Log</h1>
+            <h1 className="form-header">Activity Log</h1>
             <p className="form-subtext">
               Track and monitor all administrative actions and system changes.
             </p>
           </div>
-          <button
-            onClick={() => fetchActivityLogs(currentPage, searchQuery)}
-            className="dashboard-btn-link cursor-pointer flex items-center gap-2"
-            disabled={loading}
-          >
-            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-            Refresh
-          </button>
         </div>
       </div>
 
       {/* SEARCH SECTION */}
       <div className="flex justify-between items-center gap-4 mb-6 flex-wrap">
-        <form
-          onSubmit={handleSearch}
-          className="flex items-center gap-3 flex-1 max-w-md"
-        >
+        <div className="flex items-center gap-3 flex-1 w-full sm:max-w-md">
           <div className="relative w-full">
             <span className="search-icon">
               <Search size={18} />
@@ -186,9 +161,9 @@ const AdminActivityLog = () => {
             <input
               type="text"
               placeholder="Search by Event / Subject..."
-              className="search-btn w-full pl-10"
+              className="search-btn"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
             />
             {searchTerm && (
               <button
@@ -200,67 +175,58 @@ const AdminActivityLog = () => {
               </button>
             )}
           </div>
-          <button
-            type="submit"
-            className="dashboard-btn-link cursor-pointer whitespace-nowrap"
-          >
-            Search
-          </button>
-        </form>
+        </div>
       </div>
 
-      {/* TABLE SECTION */}
-      <div className="w-full overflow-hidden bg-white dark:bg-dark-overlay rounded-xl shadow-sm">
-        <div className="overflow-x-auto">
-          {loading ? (
-            <div className="flex justify-center items-center p-12">
-              <Loader2 size={32} className="animate-spin text-main-blue mb-2" />
-            </div>
-          ) : (
-            <table className="w-full text-left">
-              <thead className="table-thead">
-                <tr className="text-left text-primary-text dark:text-white">
-                  <th className="table-th">Activity Log ID</th>
-                  <th className="table-th">Event</th>
-                  <th className="table-th">Subject</th>
-                  <th className="table-th">Activity Title</th>
-                  <th className="table-th">User</th>
-                  <th className="table-th">Timestamp</th>
-                  <th className="table-th">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-box-outline">
-                {activityLogs.length > 0 ? (
-                  activityLogs.map((log) => (
-                    <tr
-                      key={log.id}
-                      className="table-tbody-tr hover:bg-gray-50/50 dark:hover:bg-dark-hover transition-colors"
-                    >
-                      <td className="p-4 font-semibold text-sm text-primary-text dark:text-white">
+      {/* MAIN CONTENT */}
+      {loading && activityLogs.length === 0 ? (
+        <div className="state-container">
+          <Loader2 size={32} className="animate-spin text-main-blue mb-2" />
+        </div>
+      ) : activityLogs.length === 0 ? (
+        <div className="state-empty-bg">
+          <p className="state-text">
+            {debouncedSearch
+              ? `No activity logs found for "${debouncedSearch}"`
+              : "No activity logs available"}
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden lg:block w-full overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="table-thead">
+                  <tr className="text-left text-primary-text dark:text-white">
+                    <th className="table-th">Activity Log ID</th>
+                    <th className="table-th">Event</th>
+                    <th className="table-th">Subject</th>
+                    <th className="table-th">Activity Title</th>
+                    <th className="table-th">User</th>
+                    <th className="table-th">Timestamp</th>
+                    <th className="table-th">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-box-outline">
+                  {activityLogs.map((log) => (
+                    <tr key={log.id} className="table-tbody-tr">
+                      <td className="p-4">
                         AL-{String(log.id).padStart(3, "0")}
                       </td>
                       <td className="p-4">
                         <span
-                          className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase ${getEventBadgeClass(
-                            log.event
-                          )}`}
+                          className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase ${getEventBadgeClass(log.event)}`}
                         >
                           {log.event}
                         </span>
                       </td>
-                      <td className="p-4 text-sm font-medium text-primary-text dark:text-white">
-                        {log.subject_type}
-                      </td>
-                      <td className="p-4 text-sm text-primary-text dark:text-white">
-                        {log.display_title}
-                      </td>
-                      <td className="p-4 text-sm text-primary-text dark:text-white">
-                        {log.user}
-                      </td>
-                      <td className="p-4 text-[11px]">
-                        <div className="font-bold text-primary-text dark:text-white">
-                          {log.date}
-                        </div>
+                      <td className="p-4">{log.subject_type}</td>
+                      <td className="p-4">{log.display_title}</td>
+                      <td className="p-4">{log.user}</td>
+                      <td className="p-4 text-xs">
+                        <div className="font-semibold">{log.date}</div>
                         <div className="text-sub-text">{log.time_ago}</div>
                       </td>
                       <td className="p-4">
@@ -272,223 +238,308 @@ const AdminActivityLog = () => {
                         </button>
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="7"
-                      className="p-12 text-center text-sub-text"
-                    >
-                      {searchQuery
-                        ? `No activity logs found for "${searchQuery}"`
-                        : "No activity logs available"}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-
-        {/* PAGINATION UI */}
-        {paginationMeta && paginationMeta.total > 0 && (
-          <div className="flex items-center justify-between px-4 py-4 border-t border-box-outline">
-            <div className="text-sm text-sub-text">
-              Showing <span className="font-semibold">{paginationMeta.from}</span> to{" "}
-              <span className="font-semibold">{paginationMeta.to}</span> of{" "}
-              <span className="font-semibold">{paginationMeta.total}</span> results
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={!paginationMeta.prev_page_url || loading}
-                className="px-3 py-1.5 border border-box-outline rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-dark-hover transition-colors"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              
-              {/* Page Numbers */}
-              <div className="flex gap-1">
-                {Array.from(
-                  { length: Math.min(5, paginationMeta.last_page) },
-                  (_, i) => {
-                    let pageNum;
-                    if (paginationMeta.last_page <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= paginationMeta.last_page - 2) {
-                      pageNum = paginationMeta.last_page - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    return pageNum;
-                  }
-                ).map((pageNum) => (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    disabled={loading}
-                    className={`px-3 py-1.5 border border-box-outline rounded-md transition-colors ${
-                      pageNum === currentPage
-                        ? "bg-main-blue text-white"
-                        : "hover:bg-gray-100 dark:hover:bg-dark-hover"
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={!paginationMeta.next_page_url || loading}
-                className="px-3 py-1.5 border border-box-outline rounded-md disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-dark-hover transition-colors"
-              >
-                <ChevronRight size={18} />
-              </button>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-card-list">
+            {activityLogs.map((log) => (
+              <div key={log.id} className="mobile-card-container">
+                {/* Header Row */}
+                <div className="mobile-header">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-sub-text">
+                        AL-{String(log.id).padStart(3, "0")}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${getEventBadgeClass(log.event)}`}
+                      >
+                        {log.event}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-semibold text-primary-text dark:text-white">
+                      {log.display_title}
+                    </h3>
+                    <p className="text-sm text-sub-text mt-1">
+                      {log.subject_type}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Activity Info */}
+                <div className="space-y-2 pt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="info-label">User:</span>
+                    <span className="info-value text-right">{log.user}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="info-label">Date:</span>
+                    <span className="text-sm text-primary-text dark:text-white font-medium">
+                      {log.date}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="info-label">Time:</span>
+                    <span className="text-sm text-sub-text">
+                      {log.time_ago}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Button */}
+                <div className="pt-2">
+                  <button
+                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm border border-main-blue text-main-blue rounded-md hover:bg-main-blue hover:text-white transition-colors"
+                    onClick={() => handleViewDetails(log)}
+                  >
+                    <Eye size={16} /> View Details
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* PAGINATION */}
+          {paginationMeta && paginationMeta.total > 0 && (
+            <div className="pagination-container flex-col sm:flex-row gap-4">
+              <div className="pagination-text text-center sm:text-left">
+                Showing{" "}
+                <span className="font-semibold">{paginationMeta.from}</span> to{" "}
+                <span className="font-semibold">{paginationMeta.to}</span> of{" "}
+                <span className="font-semibold">{paginationMeta.total}</span>{" "}
+                results
+              </div>
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={!paginationMeta.prev_page_url || loading}
+                  className="pagination-prev-btn"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+
+                <div className="flex gap-1">
+                  {Array.from(
+                    { length: Math.min(5, paginationMeta.last_page) },
+                    (_, i) => {
+                      let pageNum;
+                      if (paginationMeta.last_page <= 5) pageNum = i + 1;
+                      else if (currentPage <= 3) pageNum = i + 1;
+                      else if (currentPage >= paginationMeta.last_page - 2)
+                        pageNum = paginationMeta.last_page - 4 + i;
+                      else pageNum = currentPage - 2 + i;
+                      return pageNum;
+                    },
+                  ).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1.5 rounded-md text-sm ${
+                        pageNum === currentPage
+                          ? "bg-main-blue text-white"
+                          : "border dark:text-white"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={!paginationMeta.next_page_url || loading}
+                  className="pagination-prev-btn"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* DRAWER SECTION */}
       <AnimatePresence>
         {isDrawerOpen && (
           <motion.div
-            className="fixed inset-0 z-50 overflow-hidden"
+            className="fixed inset-0 z-50 font-general-sans"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
             <motion.div
               className="absolute inset-0 bg-black/50"
               onClick={() => setIsDrawerOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             />
+
             <motion.div
-              className="drawer-background"
+              className="drawer-container"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <div className="p-6 border-b border-box-outline flex justify-between items-center bg-white dark:bg-dark-overlay sticky top-0 z-10">
-                <h2 className="form-header text-xl">
-                  View Activity Log Details
-                </h2>
-                <button
-                  onClick={() => setIsDrawerOpen(false)}
-                  className="x-btn"
-                >
-                  <X size={20} />
-                </button>
+              {/* Sticky Header */}
+              <div className="drawer-sticky-header">
+                <div className="flex justify-between items-center">
+                  <h2 className="drawer-title">View Activity Log Details</h2>
+                  <button
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="x-btn"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
 
-              <div className="p-8 overflow-y-auto space-y-8">
+              {/* Content Area */}
+              <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 overflow-y-auto max-h-[700px]">
                 {loadingDetails ? (
-                  <div className="flex justify-center items-center p-12">
-                   <Loader2 size={32} className="animate-spin text-main-blue mb-2" />
+                  <div className="state-container">
+                    <Loader2
+                      size={40}
+                      className="animate-spin text-main-blue mb-3"
+                    />
+                    <p className="state-loading">Loading details...</p>
                   </div>
                 ) : selectedLog ? (
                   <>
-                    {/* Information Card */}
-                    <div className="drawer-box-background p-6 rounded-xl space-y-4">
-                      <div className="flex justify-between items-center pb-3 border-b border-box-outline">
-                        <span className="text-primary-text dark:text-white">
-                          Activity ID
-                        </span>
-                        <span className="drawer-info-title text-xs font-semibold">
+                    {/* Top Info Box */}
+                    <div className="drawer-box-background">
+                      {/* Activity */}
+                      <div className="drawer-items-seprator mb-3">
+                        <p className="drawer-row-label">Activity ID</p>
+                        <p className="text-primary-text dark:text-white text-sm sm:text-base">
                           AL-{String(selectedLog.id).padStart(3, "0")}
-                        </span>
+                        </p>
                       </div>
-                      <div className="flex justify-between items-center pb-3 border-b border-box-outline/50">
-                        <span className="text-primary-text dark:text-white">
-                          Event Type
-                        </span>
+
+                      {/* Event Type */}
+                      <div className="drawer-items-seprator mb-3">
+                        <p className="drawer-row-label">Event Type</p>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getEventBadgeClass(
-                            selectedLog.event
-                          )}`}
+                          className={`px-2 py-1 rounded text-xs font-bold uppercase tracking-wider ${getEventBadgeClass(selectedLog.event)}`}
                         >
                           {selectedLog.event}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center pb-3 border-b border-box-outline/50">
-                        <span className="text-primary-text dark:text-white">
-                          Subject
-                        </span>
-                        <span className="drawer-info-title text-xs font-semibold">
+
+                      {/* Subject */}
+                      <div className="drawer-items-seprator mb-3">
+                        <p className="drawer-row-label">Subject</p>
+                        <p className="drawer-row-value">
                           {selectedLog.subject}
-                        </span>
+                        </p>
                       </div>
-                      <div className="flex justify-between items-center pb-3 border-b border-box-outline/50">
-                        <span className="text-primary-text dark:text-white">
-                          Performed By
-                        </span>
-                        <span className="drawer-info-title text-xs font-semibold">
+
+                      {/* Performed */}
+                      <div className="drawer-items-seprator mb-3">
+                        <p className="drawer-row-label">Performed By</p>
+                        <p className="drawer-row-value">
                           {selectedLog.performer}
-                        </span>
+                        </p>
                       </div>
+
+                      {/* Date & Time */}
                       <div className="flex justify-between items-center">
-                        <span className="text-primary-text dark:text-white">
-                          Date & Time
-                        </span>
-                        <span className="drawer-info-title text-xs font-semibold">
-                          {selectedLog.date}
-                        </span>
+                        <p className="drawer-row-label">Date & Time</p>
+                        <p className="drawer-row-value">{selectedLog.date}</p>
                       </div>
                     </div>
 
-                    {/* Changes Table if applicable */}
-                    {selectedLog.changes && selectedLog.changes.length > 0 ? (
-                      <div className="space-y-4">
-                        <h3 className="drawer-info-header text-lg">
-                          Changes Made
-                        </h3>
-                        <div className="rounded-xl border border-box-outline overflow-hidden">
-                          <table className="w-full text-left text-sm">
-                            <thead className="table-thead">
-                              <tr>
-                                <th className="table-th">Field</th>
-                                <th className="table-th">Previous Value</th>
-                                <th className="table-th">New Value</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-box-outline">
-                              {selectedLog.changes.map((change, index) => (
-                                <tr
-                                  key={index}
-                                  className="table-tbody-tr"
-                                >
-                                  <td className="p-4 font-semibold text-primary-text dark:text-white">
-                                    {change.field}
-                                  </td>
-                                  <td className="p-4 text-red-600 dark:text-red-400">
-                                    {change.old || "N/A"}
-                                  </td>
-                                  <td className="p-4 text-green-600 dark:text-green-400">
-                                    {change.new || "N/A"}
-                                  </td>
+                    {/* Changes Made Section */}
+                    <div className="space-y-4">
+                      <h4 className="drawer-section-title">Changes Made</h4>
+                      {selectedLog.changes && selectedLog.changes.length > 0 ? (
+                        <>
+                          {/* Desktop Table View */}
+                          <div className="hidden sm:block overflow-x-auto rounded-lg border border-box-outline">
+                            <table className="min-w-full">
+                              <thead className="table-thead">
+                                <tr>
+                                  <th className="drawer-table-th">Field</th>
+                                  <th className="drawer-table-th">
+                                    Previous Value
+                                  </th>
+                                  <th className="drawer-table-th">New Value</th>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                              </thead>
+
+                              <tbody className="divide-y divide-box-outline">
+                                {selectedLog.changes.map((change, index) => (
+                                  <tr key={index} className="table-tbody-tr">
+                                    <td className="p-3 md:p-4 text-xs md:text-sm text-primary-text dark:text-white">
+                                      {change.field}
+                                    </td>
+                                    <td className="p-3 md:p-4 text-xs md:text-sm text-error-red font-medium">
+                                      {change.old || "N/A"}
+                                    </td>
+                                    <td className="p-3 md:p-4 text-xs md:text-sm text-success-green font-medium">
+                                      {change.new || "N/A"}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+
+                          {/* Mobile Card View */}
+                          <div className="block sm:hidden space-y-3">
+                            {selectedLog.changes.map((change, index) => (
+                              <div
+                                key={index}
+                                className="bg-hover-gray dark:bg-dark-hover p-3 rounded-lg border border-box-outline space-y-2"
+                              >
+                                <div className="flex justify-between items-center pb-2 border-b border-box-outline">
+                                  <span className="text-xs font-semibold text-sub-text uppercase">
+                                    Field
+                                  </span>
+                                  <span className="text-sm font-bold text-primary-text dark:text-white">
+                                    {change.field}
+                                  </span>
+                                </div>
+                                <div className="mobile-data-row">
+                                  <span className="text-xs text-sub-text">
+                                    Previous:
+                                  </span>
+                                  <span className="text-sm text-error-red font-medium text-right">
+                                    {change.old || "N/A"}
+                                  </span>
+                                </div>
+                                <div className="mobile-data-row">
+                                  <span className="text-xs text-sub-text">
+                                    New:
+                                  </span>
+                                  <span className="text-sm text-success-green font-medium text-right">
+                                    {change.new || "N/A"}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="p-6 sm:p-10 text-center text-sub-text bg-hover-gray dark:bg-dark-hover rounded-2xl border border-dashed border-box-outline">
+                          <p className="text-sm sm:text-base">
+                            No detailed changes available
+                          </p>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <h3 className="drawer-info-header text-lg">
-                          Changes Made
-                        </h3>
-                        <div className="p-6 text-center text-sub-text bg-gray-50 dark:bg-dark-hover rounded-xl">
-                          No detailed changes available for this activity
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </>
                 ) : (
-                  <div className="text-center text-sub-text p-12">
-                    Failed to load activity details
+                  <div className="empty-state-wrapper">
+                    <p className="text-sub-text text-sm sm:text-base">
+                      Activity data not found
+                    </p>
                   </div>
                 )}
               </div>

@@ -138,8 +138,8 @@ const TeacherAvailability = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Teacher Availability</h2>
         <p className="form-subtext">
           Set weekly time slots and availability for faculty members.
@@ -176,7 +176,7 @@ const TeacherAvailability = () => {
             <label className="form-title">
               Days of Week <span className="text-error-red">*</span>
             </label>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
               {daysOfWeek.map((day) => (
                 <label
                   key={day.short}
@@ -221,21 +221,21 @@ const TeacherAvailability = () => {
                 return (
                   <div
                     key={dayShort}
-                    className="flex items-center gap-3 p-3 border border-box-outline rounded-lg dark:text-white bg-white dark:bg-dark-card"
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border border-box-outline rounded-lg dark:text-white bg-white dark:bg-dark-hover"
                   >
                     <Clock size={16} className="text-sub-text" />
                     <span className="font-medium text-sm min-w-[80px]">
                       {dayObj.full}
                     </span>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
                       <input
                         type="time"
                         name={`timeSlots.${dayKey}.from`}
                         value={values.timeSlots?.[dayKey]?.from || ""}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        className="dropdown-select w-28"
+                        className="dropdown-select w-full sm:w-28"
                       />
                       <span className="text-sub-text">-</span>
                       <input
@@ -244,15 +244,13 @@ const TeacherAvailability = () => {
                         value={values.timeSlots?.[dayKey]?.to || ""}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        className="dropdown-select w-28"
+                        className="dropdown-select w-full sm:w-28"
                       />
                     </div>
 
-                    
-
                     <Info
                       size={16}
-                      className="text-sub-text cursor-pointer ml-auto hover:text-main-blue"
+                      className="text-sub-text cursor-pointer sm:ml-auto hover:text-main-blue"
                     />
                   </div>
                 );
@@ -280,7 +278,7 @@ const TeacherAvailability = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -300,7 +298,7 @@ const TeacherAvailability = () => {
                   Creating...
                 </>
               ) : (
-                "Create Availability"
+                "Create"
               )}
             </button>
           </div>

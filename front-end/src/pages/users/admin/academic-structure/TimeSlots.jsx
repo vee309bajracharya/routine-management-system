@@ -36,13 +36,24 @@ const TimeSlots = () => {
 
   const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
     formik;
+  useEffect(() => {
+    const duration = calculateDuration(values.start_time, values.end_time);
+
+    if (duration) {
+      setFieldValue("duration_minutes", duration);
+    } else {
+      setFieldValue("duration_minutes", "");
+    }
+  }, [values.start_time, values.end_time]);
 
   // Fetch departments on mount
   useEffect(() => {
     const fetchDepartments = async () => {
       setIsLoadingDepartments(true);
       try {
-        const response = await axiosClient.get(`/admin/dropdowns/departments/1`);
+        const response = await axiosClient.get(
+          `/admin/dropdowns/departments/1`,
+        );
         if (response.data.success) {
           setDepartments(response.data.data || []);
         }
@@ -69,7 +80,7 @@ const TimeSlots = () => {
       try {
         const response = await axiosClient.get(
           "/admin/dropdowns/semesters-by-department",
-          { params: { department_id: values.department_id } }
+          { params: { department_id: values.department_id } },
         );
         if (response.data.success) {
           setSemesters(response.data.data || []);
@@ -98,7 +109,7 @@ const TimeSlots = () => {
       try {
         const response = await axiosClient.get(
           "/admin/dropdowns/batches-by-semester",
-          { params: { semester_id: values.semester_id } }
+          { params: { semester_id: values.semester_id } },
         );
         if (response.data.success) {
           setBatches(response.data.data || []);
@@ -132,10 +143,17 @@ const TimeSlots = () => {
       });
 
       if (response.data.success) {
-        toast.success(response.data.message || "Time slot created successfully");
+        toast.success(
+          response.data.message || "Time slot created successfully",
+        );
+        // Preserve department, semester, and batch while resetting other fields
+        const preservedDepartmentId = values.department_id;
+        const preservedSemesterId = values.semester_id;
+        const preservedBatchId = values.batch_id;
         resetForm();
-        setSemesters([]);
-        setBatches([]);
+        setFieldValue("department_id", preservedDepartmentId);
+        setFieldValue("semester_id", preservedSemesterId);
+        setFieldValue("batch_id", preservedBatchId);
       }
     } catch (error) {
       console.error("Failed to create time slot:", error);
@@ -159,7 +177,7 @@ const TimeSlots = () => {
     if (currentDays.includes(day)) {
       setFieldValue(
         "applicable_days",
-        currentDays.filter((d) => d !== day)
+        currentDays.filter((d) => d !== day),
       );
     } else {
       setFieldValue("applicable_days", [...currentDays, day]);
@@ -169,28 +187,42 @@ const TimeSlots = () => {
   const selectAllDays = () => {
     setFieldValue(
       "applicable_days",
-      days.map((d) => d.value)
+      days.map((d) => d.value),
     );
   };
 
   const removeSelectedDay = (day) => {
     setFieldValue(
       "applicable_days",
-      values.applicable_days.filter((d) => d !== day)
+      values.applicable_days.filter((d) => d !== day),
     );
+  };
+  const calculateDuration = (start, end) => {
+    if (!start || !end) return "";
+
+    const [startH, startM] = start.split(":").map(Number);
+    const [endH, endM] = end.split(":").map(Number);
+
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+
+    if (endMinutes <= startMinutes) return "";
+
+    return endMinutes - startMinutes;
   };
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Time Slot</h2>
         <p className="form-subtext">
-          Define time slots for scheduling classes, breaks, and practical sessions.
+          Define time slots for scheduling classes, breaks, and practical
+          sessions.
         </p>
 
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Department and Semester */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Department <span className="text-error-red">*</span>
@@ -238,8 +270,8 @@ const TimeSlots = () => {
                   {!values.department_id
                     ? "Select Department First"
                     : isLoadingSemesters
-                    ? "Loading..."
-                    : "Select Semester"}
+                      ? "Loading..."
+                      : "Select Semester"}
                 </option>
                 {semesters.map((sem) => (
                   <option key={sem.id} value={sem.id}>
@@ -254,7 +286,7 @@ const TimeSlots = () => {
           </div>
 
           {/* Batch and Name */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Batch <span className="text-error-red">*</span>
@@ -271,8 +303,8 @@ const TimeSlots = () => {
                   {!values.semester_id
                     ? "Select Semester First"
                     : isLoadingBatches
-                    ? "Loading..."
-                    : "Select Batch"}
+                      ? "Loading..."
+                      : "Select Batch"}
                 </option>
                 {batches.map((batch) => (
                   <option key={batch.id} value={batch.id}>
@@ -292,7 +324,7 @@ const TimeSlots = () => {
               <input
                 type="text"
                 name="name"
-                placeholder="e.g., BCA Class 1"
+                placeholder="BCA Morning/Day Class 1/Practical"
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -305,12 +337,12 @@ const TimeSlots = () => {
           </div>
 
           {/* Slot Type and Shift */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Slot Type <span className="text-error-red">*</span>
               </label>
-              <div className="flex items-center gap-6 mt-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
                 {["Lecture", "Practical", "Break"].map((type) => (
                   <label
                     key={type}
@@ -338,7 +370,7 @@ const TimeSlots = () => {
               <label className="form-title">
                 Shift <span className="text-error-red">*</span>
               </label>
-              <div className="flex items-center gap-6 mt-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
                 {["Morning", "Day"].map((shift) => (
                   <label
                     key={shift}
@@ -363,8 +395,8 @@ const TimeSlots = () => {
             </div>
           </div>
 
-          {/* Start Time, End Time, Duration */}
-          <div className="grid grid-cols-3 gap-4">
+          {/* Start Time  End Time  Duration */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="form-title">
                 Start Time <span className="text-error-red">*</span>
@@ -406,11 +438,10 @@ const TimeSlots = () => {
               <input
                 type="number"
                 name="duration_minutes"
-                placeholder="e.g., 60"
+                placeholder="Auto calculated"
                 value={values.duration_minutes}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className="dropdown-select"
+                disabled
+                className="dropdown-select bg-gray-100 cursor-not-allowed"
               />
               {touched.duration_minutes && errors.duration_minutes && (
                 <p className="showError">{errors.duration_minutes}</p>
@@ -475,7 +506,7 @@ const TimeSlots = () => {
                       Select All
                     </button>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {days.map((day) => (
                       <label
                         key={day.value}
@@ -502,7 +533,7 @@ const TimeSlots = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -526,7 +557,7 @@ const TimeSlots = () => {
                   Creating...
                 </>
               ) : (
-                "Create Time Slot"
+                "Create"
               )}
             </button>
           </div>

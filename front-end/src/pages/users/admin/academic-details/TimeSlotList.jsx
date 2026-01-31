@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, useCallback } from "react";
-import { Pencil, Trash2, Plus, Search, Eye, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Edit, Trash2, Plus, Search, Eye, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "../../../../services/api/axiosClient";
 import { toast } from "react-toastify";
@@ -136,7 +136,7 @@ const TimeSlotList = () => {
           <div className="flex gap-2 justify-end">
             <button
               onClick={closeToast}
-              className="px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors"
+              className="toast-cancel"
             >
               Cancel
             </button>
@@ -145,7 +145,7 @@ const TimeSlotList = () => {
                 closeToast();
                 await deleteTimeSlot(slot.id);
               }}
-              className="px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors"
+              className="toast-delete"
             >
               Confirm Delete
             </button>
@@ -172,44 +172,48 @@ const TimeSlotList = () => {
 
   return (
     <div className="academic-common-bg">
-      <div className="mb-8">
-        <h1 className="form-header text-2xl font-bold">Time Slots</h1>
-        <p className="form-subtext">
+      {/* Header */}
+      <div className="mb-6 md:mb-8">
+        <h1 className="form-header">Time Slots</h1>
+        <p className="form-subtext text-sm">
           Manage all time slot data including creating, editing and deleting.
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
+      {/* Filters & Actions  */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+        {/* Filter Dropdowns */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1 min-w-0">
           <select
-            className="dropdown-select cursor-pointer"
+            className="dropdown-select cursor-pointer text-sm outline-none"
             value={filterShift}
             onChange={(e) => handleFilterChange("shift", e.target.value)}
           >
-            <option value="">All Shifts</option>
+            <option value="">Shifts</option>
             <option value="Morning">Morning</option>
             <option value="Day">Day</option>
           </select>
 
           <select
-            className="dropdown-select cursor-pointer"
+            className="dropdown-select cursor-pointer text-sm outline-none"
             value={filterStatus}
             onChange={(e) => handleFilterChange("status", e.target.value)}
           >
-            <option value="">All Status</option>
+            <option value="">Status</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
           </select>
         </div>
 
-        <div className="flex items-center gap-3 flex-1 md:justify-end">
-          <div className="relative w-full max-w-sm">
+        {/* Search and Add Button */}
+        <div className="action-bar-container">
+          <div className="search-input-wrapper">
             <span className="search-icon">
               <Search size={18} />
             </span>
             <input
               type="text"
-              placeholder="Search by Semester or Batch Name"
+              placeholder="Search by Semester or Batch..."
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
@@ -218,97 +222,185 @@ const TimeSlotList = () => {
 
           <button
             onClick={() => navigate("/admin/academic-structure/time-slots")}
-            className="btn-link"
+            className="btn-link justify-center font-medium"
           >
-            Add Time Slot
-            <Plus size={18} />
+            <Plus size={16} /> Add Time Slot
           </button>
         </div>
       </div>
 
+      {/* Main Content */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="text-sub-text text-sm">Loading time slots...</p>
+          <p className="state-loading">Loading time slots...</p>
         </div>
       ) : timeSlots.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 dark:bg-dark-hover rounded-lg">
-          <p className="text-sub-text text-base">No time slots found</p>
+        <div className="state-empty-bg">
+          <p className="state-text">No time slots found</p>
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="table-thead">
-                <tr>
-                  <th className="table-th">ID</th>
-                  <th className="table-th">Semester</th>
-                  <th className="table-th">Batch</th>
-                  <th className="table-th">Timeslot Name</th>
-                  <th className="table-th">Start</th>
-                  <th className="table-th">End</th>
-                  <th className="table-th">Shift</th>
-                  <th className="table-th text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-box-outline">
-                {timeSlots.map((slot) => (
-                  <tr key={slot.id} className="table-tbody-tr">
-                    <td className="p-4 font-semibold text-primary-text dark:text-white">
-                      TS-{String(slot.id).padStart(3, "0")}
-                    </td>
-                    <td className="p-4">{slot.semester?.semester_name || "N/A"}</td>
-                    <td className="p-4">{slot.batch?.name || "N/A"}</td>
-                    <td
-                      className="p-4 text-main-blue font-semibold hover:underline cursor-pointer"
-                      onClick={() => handleViewClick(slot)}
-                    >
-                      {slot.name}
-                    </td>
-                    <td className="p-4">{slot.start_time}</td>
-                    <td className="p-4">{slot.end_time}</td>
-                    <td className="p-4">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block w-full overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="table-thead">
+                  <tr>
+                    <th className="table-th">ID</th>
+                    <th className="table-th">Semester</th>
+                    <th className="table-th">Batch</th>
+                    <th className="table-th">Timeslot Name</th>
+                    <th className="table-th">Start</th>
+                    <th className="table-th">End</th>
+                    <th className="table-th">Shift</th>
+                    <th className="table-th text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-box-outline">
+                  {timeSlots.map((slot) => (
+                    <tr key={slot.id} className="table-tbody-tr">
+                      <td className="p-4">TS-{String(slot.id).padStart(3, "0")}</td>
+                      <td className="p-4">{slot.semester?.semester_name || "N/A"}</td>
+                      <td className="p-4">{slot.batch?.name || "N/A"}</td>
+                      <td
+                        className="p-4 text-main-blue font-semibold hover:underline cursor-pointer"
+                        onClick={() => handleViewClick(slot)}
+                      >
+                        {slot.name}
+                      </td>
+                      <td className="p-4">{slot.start_time}</td>
+                      <td className="p-4">{slot.end_time}</td>
+                      <td className="p-4">
+                        <span
+                          className={`px-2 py-1 rounded text-xs ${
+                            slot.shift === "Morning"
+                              ? "table-status-morning"
+                              : "table-status-day"
+                          }`}
+                        >
+                          {slot.shift}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <section className="flex justify-center gap-3">
+                          <button
+                            className="action-eye-btn"
+                            onClick={() => handleViewClick(slot)}
+                          >
+                            <Eye size={16} />
+                          </button>
+                          <button
+                            className="action-edit-btn"
+                            onClick={() => handleEditClick(slot)}
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            className="action-delete-btn"
+                            onClick={() => handleConfirmDelete(slot)}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </section>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-card-list">
+            {timeSlots.map((slot) => (
+              <div
+                key={slot.id}
+                className="mobile-card-container"
+              >
+                {/* Header Row */}
+                <div className="mobile-header">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="mobile-card-badge">
+                        TS-{String(slot.id).padStart(3, "0")}
+                      </span>
                       <span
                         className={`px-2 py-1 rounded text-xs ${
                           slot.shift === "Morning"
-                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30"
-                            : "bg-orange-100 text-orange-700 dark:bg-orange-900/30"
+                            ? "table-status-morning"
+                            : "table-status-day"
                         }`}
                       >
                         {slot.shift}
                       </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex justify-center gap-3">
-                        <button
-                          className="action-view-btn"
-                          onClick={() => handleViewClick(slot)}
-                        >
-                          <Eye size={16} />
-                        </button>
-                        <button
-                          className="action-edit-btn"
-                          onClick={() => handleEditClick(slot)}
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          className="action-delete-btn"
-                          onClick={() => handleConfirmDelete(slot)}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                    <h3
+                      className="info-title-click"
+                      onClick={() => handleViewClick(slot)}
+                    >
+                      {slot.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Details Grid */}
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div>
+                    <p className="info-label">Semester</p>
+                    <p className="info-value">
+                      {slot.semester?.semester_name || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="info-label">Batch</p>
+                    <p className="info-value">
+                      {slot.batch?.name || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="info-label">Start Time</p>
+                    <p className="text-sm font-medium text-main-blue">
+                      {slot.start_time}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="info-label">End Time</p>
+                    <p className="text-sm font-medium text-main-blue">
+                      {slot.end_time}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mobile-card-actions">
+                  <button
+                    className="btn-mobile-secondary"
+                    onClick={() => handleViewClick(slot)}
+                  >
+                    <Eye size={16} /> View
+                  </button>
+                  <button
+                    className="btn-mobile-secondary"
+                    onClick={() => handleEditClick(slot)}
+                  >
+                    <Edit size={16} /> Edit
+                  </button>
+                  <button
+                    className="delete-mobile-btn"
+                    onClick={() => handleConfirmDelete(slot)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
 
+          {/* Pagination */}
           {pagination && pagination.last_page > 1 && (
-            <div className="flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline">
-              <div className="text-sm text-primary-text dark:text-white">
+            <div className="pagination-container flex-col sm:flex-row gap-4">
+              <div className="pagination-text text-center sm:text-left">
                 Showing{" "}
                 <span className="font-semibold">
                   {(currentPage - 1) * pagination.per_page + 1}
@@ -319,11 +411,11 @@ const TimeSlotList = () => {
                 </span>{" "}
                 of <span className="font-semibold">{pagination.total}</span> results
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2 flex-wrap">
                 <button
                   onClick={() => loadPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -332,10 +424,10 @@ const TimeSlotList = () => {
                     <button
                       key={page}
                       onClick={() => loadPage(page)}
-                      className={`px-3 py-1.5 rounded-md text-sm cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-md text-sm ${
                         page === currentPage
                           ? "bg-main-blue text-white"
-                          : "border border-box-outline hover:bg-gray-50 dark:text-white"
+                          : "border dark:text-white"
                       }`}
                     >
                       {page}
@@ -345,7 +437,7 @@ const TimeSlotList = () => {
                 <button
                   onClick={() => loadPage(currentPage + 1)}
                   disabled={currentPage === pagination.last_page}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronRight size={18} />
                 </button>

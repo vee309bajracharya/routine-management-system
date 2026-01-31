@@ -83,7 +83,7 @@ const UserAccounts = () => {
     const newRole = e.target.value;
     handleChange(e);
     
-    // Reset teacher-specific fields when switching to admin
+    // Reset teacher specific fields when switching to admin
     if (newRole === "admin") {
       setFieldValue("department_id", "");
       setFieldValue("employment_type", "");
@@ -91,9 +91,9 @@ const UserAccounts = () => {
   };
 
   return (
-    <div className="mt-6 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline p-8">
-        <h2 className="form-header">User Accounts</h2>
+    <div className="wrapper mt-6 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
+        <h2 className="form-header">Create User Account</h2>
         <p className="form-subtext">
           Create login accounts for Admins and Teachers
         </p>
@@ -103,7 +103,7 @@ const UserAccounts = () => {
           <label className="form-title">
             Role <span className="text-error-red">*</span>
           </label>
-          <div className="flex gap-6 mt-2">
+          <div className="flex flex-wrap gap-4 sm:gap-6 mt-2">
             {["admin", "teacher"].map((role) => (
               <label key={role} className="form-radio-title">
                 <input
@@ -125,7 +125,7 @@ const UserAccounts = () => {
         </div>
 
         <form onSubmit={formik.handleSubmit} className="mt-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* FULL NAME */}
             <div>
               <label className="form-title">
@@ -241,7 +241,7 @@ const UserAccounts = () => {
                   <label className="form-title">
                     Employment Type <span className="text-error-red">*</span>
                   </label>
-                  <div className="flex gap-6 mt-2">
+                  <div className="flex flex-wrap gap-3 sm:gap-6 mt-2">
                     {["Full Time", "Part Time", "Guest"].map((type) => (
                       <label key={type} className="form-radio-title">
                         <input
@@ -266,7 +266,7 @@ const UserAccounts = () => {
           </div>
 
           {/* ACTION BUTTONS */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -289,7 +289,7 @@ const UserAccounts = () => {
                   Creating...
                 </>
               ) : (
-                "Create User"
+                "Create"
               )}
             </button>
           </div>

@@ -1,9 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import axiosClient from "../../../services/api/axiosClient";
+import { useAuth } from "../../../contexts/AuthContext";
 import {
   TeacherProfileValidationSchema,
   TeacherProfileInitialValues,
@@ -18,6 +20,9 @@ const TeacherSetting = () => {
   const [isFetchingProfile, setIsFetchingProfile] = useState(true);
   const [teacherData, setTeacherData] = useState(null);
 
+  // Get updateUser from AuthContext
+  const { updateUser } = useAuth();
+
   // Fetch teacher profile data on mount
   useEffect(() => {
     fetchTeacherProfile();
@@ -31,6 +36,9 @@ const TeacherSetting = () => {
       if (response.data.success) {
         const profileData = response.data.data;
         setTeacherData(profileData);
+
+        // Update AuthContext with the latest user data
+        updateUser(profileData);
         
         // Update formik values with fetched data
         formik.setValues({
@@ -116,7 +124,7 @@ const TeacherSetting = () => {
 
         toast.success(response.data.message || successMessage);
 
-        // If password changed, handle logout and redirect
+        // If password changed handle logout and redirect
         if (response.data.require_login) {
           toast.warning("Please login again with your new password", { autoClose: 3000 });
           
@@ -178,19 +186,19 @@ const TeacherSetting = () => {
   }
 
   return (
-    <div className="mt-6 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[550px] rounded-xl border border-box-outline p-8">
+    <div className="mt-6 flex justify-center font-general-sans px-4">
+      <div className="bg-white dark:bg-dark-overlay w-full max-w-[550px] rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         {/* Header */}
         <h2 className="form-header mb-2">Edit Teacher Profile</h2>
         <p className="form-subtext mb-4">Update your personal information</p>
 
         {/* Tabs */}
-        <div className="flex gap-6 mb-2 border-b border-box-outline">
+        <div className="flex flex-wrap gap-4 sm:gap-6 mb-2 border-b border-box-outline">
           {["personal", "password"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-3 text-sm font-semibold transition-all ${
+              className={`pb-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
                 activeTab === tab
                   ? "text-main-blue border-b-2 border-main-blue"
                   : "text-sub-text hover:text-primary-text dark:hover:text-white"

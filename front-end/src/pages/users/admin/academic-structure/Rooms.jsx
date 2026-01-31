@@ -50,8 +50,8 @@ const Rooms = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Room</h2>
         <p className="form-subtext">
           Add new rooms and labs to your institution's infrastructure.
@@ -63,7 +63,7 @@ const Rooms = () => {
             <label className="form-title">
               Room Type <span className="text-error-red">*</span>
             </label>
-            <div className="flex items-center gap-6 mt-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
               {["Classroom", "Lecture Hall", "Lab"].map((type) => (
                 <label key={type} className="form-radio-title">
                   <input
@@ -85,7 +85,7 @@ const Rooms = () => {
           </div>
 
           {/* Room Name and Room Number */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Room Name <span className="text-error-red">*</span>
@@ -93,7 +93,7 @@ const Rooms = () => {
               <input
                 type="text"
                 name="name"
-                placeholder="e.g., Computer Lab 1"
+                placeholder="Computer Lab 1. Room 301"
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -111,7 +111,7 @@ const Rooms = () => {
               <input
                 type="text"
                 name="room_number"
-                placeholder="e.g., 101, A-205"
+                placeholder="101, Lab-205"
                 value={values.room_number}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -124,7 +124,7 @@ const Rooms = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -144,7 +144,7 @@ const Rooms = () => {
                   Creating...
                 </>
               ) : (
-                "Create Room"
+                "Create"
               )}
             </button>
           </div>

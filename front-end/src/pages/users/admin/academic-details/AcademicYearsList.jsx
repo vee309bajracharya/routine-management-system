@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useCallback } from "react";
-import { Pencil, Trash2, Plus, Search, X, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { useFormik } from "formik";
-import axiosClient from "../../../../services/api/axiosClient";
-import { toast } from "react-toastify";
 import { AcademicYearEditValidationSchema } from "../../../../validations/AcademicYearValidationSchema";
+import { Edit, Trash2, Plus, Search, X, Loader2 } from "lucide-react";
+import axiosClient from "../../../../services/api/axiosClient";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import { toast } from "react-toastify";
 
 const AcademicYearsList = () => {
   const navigate = useNavigate();
@@ -41,30 +41,27 @@ const AcademicYearsList = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch academic years
-  const fetchAcademicYears = useCallback(
-    async (page = 1, filters = {}) => {
-      setIsLoading(true);
-      try {
-        const params = { page, ...filters };
-        const response = await axiosClient.get("/admin/academic-years", {
-          params,
-        });
+  const fetchAcademicYears = useCallback(async (page = 1, filters = {}) => {
+    setIsLoading(true);
+    try {
+      const params = { page, ...filters };
+      const response = await axiosClient.get("/admin/academic-years", {
+        params,
+      });
 
-        if (response.data.success) {
-          setAcademicYears(response.data.data || []);
-          setPagination(response.data.pagination || null);
-        }
-      } catch (error) {
-        console.error("Failed to fetch academic years:", error);
-        toast.error(error.userMessage || "Failed to fetch academic years");
-        setAcademicYears([]);
-        setPagination(null);
-      } finally {
-        setIsLoading(false);
+      if (response.data.success) {
+        setAcademicYears(response.data.data || []);
+        setPagination(response.data.pagination || null);
       }
-    },
-    []
-  );
+    } catch (error) {
+      console.error("Failed to fetch academic years:", error);
+      toast.error(error.userMessage || "Failed to fetch academic years");
+      setAcademicYears([]);
+      setPagination(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   // Initial load
   useEffect(() => {
@@ -84,12 +81,12 @@ const AcademicYearsList = () => {
   const deleteAcademicYear = async (yearId) => {
     try {
       const response = await axiosClient.delete(
-        `/admin/academic-years/${yearId}`
+        `/admin/academic-years/${yearId}`,
       );
 
       if (response.data.success) {
         toast.success(
-          response.data.message || "Academic year deleted successfully"
+          response.data.message || "Academic year deleted successfully",
         );
         await fetchAcademicYears(currentPage, {
           search: searchTerm?.trim() || null,
@@ -101,7 +98,7 @@ const AcademicYearsList = () => {
 
       if (error.response?.status === 422) {
         toast.error(
-          error.response.data.message || "Cannot delete academic year"
+          error.response.data.message || "Cannot delete academic year",
         );
       } else {
         toast.error(error.userMessage || "Failed to delete academic year");
@@ -125,10 +122,7 @@ const AcademicYearsList = () => {
             This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
-            <button
-              onClick={closeToast}
-              className="px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors"
-            >
+            <button onClick={closeToast} className="toast-cancel">
               Cancel
             </button>
             <button
@@ -136,7 +130,7 @@ const AcademicYearsList = () => {
                 closeToast();
                 await deleteAcademicYear(year.id);
               }}
-              className="px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors"
+              className="toast-delete"
             >
               Confirm Delete
             </button>
@@ -148,7 +142,7 @@ const AcademicYearsList = () => {
         closeButton: false,
         hideProgressBar: true,
         autoClose: false,
-      }
+      },
     );
   };
 
@@ -233,12 +227,12 @@ const AcademicYearsList = () => {
 
       const response = await axiosClient.put(
         `/admin/academic-years/${selectedYear.id}`,
-        updateData
+        updateData,
       );
 
       if (response.data.success) {
         toast.success(
-          response.data.message || "Academic year updated successfully"
+          response.data.message || "Academic year updated successfully",
         );
         handleCloseModal();
         await fetchAcademicYears(currentPage, {
@@ -280,19 +274,20 @@ const AcademicYearsList = () => {
   return (
     <div className="academic-common-bg">
       {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="form-header text-2xl font-bold">Academic Years</h1>
-        <p className="form-subtext">
-          Manage all academic years and semester data here, including duration,
-          status, and slot details.
+      <div className="mb-6 md:mb-8">
+        <h1 className="form-header text-xl md:text-2xl font-bold">Academic Years</h1>
+        <p className="form-subtext text-sm">
+          Manage all academic years and semester data here, including
+          duration, status, and slot details.
         </p>
       </div>
 
       {/* Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
+      <div className="actions-toolbar">
+        {/* Status Filter */}
+        <div className="w-full sm:w-auto">
           <select
-            className="dropdown-select cursor-pointer"
+            className="dropdown-select cursor-pointer text-sm outline-none sm:w-auto"
             value={statusFilter}
             onChange={(e) => handleFilterChange("status", e.target.value)}
           >
@@ -302,8 +297,9 @@ const AcademicYearsList = () => {
           </select>
         </div>
 
-        <div className="flex items-center gap-3 flex-1 md:justify-end">
-          <div className="relative w-full max-w-sm">
+        {/* Search and Add Button */}
+        <div className="action-bar-container flex-1 sm:justify-end">
+          <div className="relative flex-1 sm:max-w-sm">
             <span className="search-icon">
               <Search size={18} />
             </span>
@@ -316,82 +312,78 @@ const AcademicYearsList = () => {
             />
           </div>
           <button
-            onClick={() =>
-              navigate("/admin/academic-structure/academic-years")
-            }
-            className="btn-link"
+            onClick={() => navigate("/admin/academic-structure/academic-years")}
+            className="btn-link justify-center font-medium"
           >
-            Add Academic Year
-            <Plus size={18} />
+            <Plus size={16} /> Add Academic Year
           </button>
         </div>
       </div>
 
-      {/* Table Section */}
+      {/* Main Content */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="text-sub-text text-sm">Loading academic years...</p>
+          <p className="state-loading">Loading academic years...</p>
         </div>
       ) : academicYears.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 dark:bg-dark-hover rounded-lg">
-          <p className="text-sub-text text-base">No academic years found</p>
+        <div className="state-empty-bg">
+          <p className="state-text">No academic years found</p>
         </div>
       ) : (
         <>
-          <div className="w-full overflow-hidden">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block w-full overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="table-thead">
-                  <tr className="text-left text-primary-text dark:text-white">
+                  <tr>
                     <th className="table-th">Academic Year ID</th>
                     <th className="table-th">Department</th>
                     <th className="table-th">Academic Year Name</th>
                     <th className="table-th">Start Date</th>
                     <th className="table-th">End Date</th>
-                    <th className="table-th">Semesters</th>
+                    <th className="table-th">Status</th>
                     <th className="table-th">Actions</th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-box-outline">
                   {academicYears.map((year) => (
                     <tr key={year.id} className="table-tbody-tr">
-                      <td className="p-4 font-semibold">
+                      <td className="p-4">
                         ACA-{String(year.id).padStart(4, "0")}
                       </td>
-                      <td className="p-4 text-main-blue font-semibold hover:underline cursor-pointer">
-                        {year.department?.code || "N/A"}
-                      </td>
+                      <td className="p-4">{year.department?.code || "N/A"}</td>
                       <td className="p-4">{year.year_name}</td>
                       <td className="p-4">{year.start_date}</td>
                       <td className="p-4">{year.end_date}</td>
-                      <td className="p-4 text-center">
-                        {year.semesters_count || 0}
-                      </td>
-                      
                       <td className="p-4">
-                        <div className="flex items-center justify-center gap-3">
+                        <span
+                          className={`px-3 py-1 rounded-sm text-xs capitalize ${
+                            year.is_active ? "table-active" : "table-inactive"
+                          }`}
+                        >
+                          {year.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <section className="flex items-center gap-3">
                           <button
                             onClick={() => handleEditClick(year)}
                             className="action-edit-btn"
                             aria-label="Edit academic year"
                           >
-                            <Pencil
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Edit size={16} />
                           </button>
                           <button
                             onClick={() => handleConfirmDelete(year)}
                             className="action-delete-btn"
                             aria-label="Delete academic year"
                           >
-                            <Trash2
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Trash2 size={16} />
                           </button>
-                        </div>
+                        </section>
                       </td>
                     </tr>
                   ))}
@@ -400,10 +392,76 @@ const AcademicYearsList = () => {
             </div>
           </div>
 
+          {/* Mobile Card View */}
+          <div className="mobile-card-list">
+            {academicYears.map((year) => (
+              <div
+                key={year.id}
+                className="mobile-card-container"
+              >
+                {/* Header Row */}
+                <div className="mobile-header">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-sub-text">
+                        ACA-{String(year.id).padStart(4, "0")}
+                      </span>
+                      <span className="mobile-card-badge">
+                        {year.department?.code || "N/A"}
+                      </span>
+                    </div>
+                    <h3 className="info-title-click">
+                      {year.year_name}
+                    </h3>
+                  </div>
+                  <span
+                    className={`status-indicator ${
+                      year.is_active ? "table-active" : "table-inactive"
+                    }`}
+                  >
+                    {year.is_active ? "Active" : "Inactive"}
+                  </span>
+                </div>
+
+                {/* Year Info */}
+                <div className="space-y-2 pt-2">
+                  <div className="mobile-data-row">
+                    <span className="text-xs text-sub-text">Start Date:</span>
+                    <span className="text-sm text-primary-text dark:text-white font-medium">
+                      {year.start_date}
+                    </span>
+                  </div>
+                  <div className="mobile-data-row">
+                    <span className="text-xs text-sub-text">End Date:</span>
+                    <span className="text-sm text-primary-text dark:text-white font-medium">
+                      {year.end_date}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 pt-2">
+                  <button
+                    className="btn-mobile-secondary"
+                    onClick={() => handleEditClick(year)}
+                  >
+                    <Edit size={16} /> Edit
+                  </button>
+                  <button
+                    className="delete-mobile-btn"
+                    onClick={() => handleConfirmDelete(year)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* Pagination */}
           {pagination && pagination.last_page > 1 && (
-            <div className="flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline">
-              <div className="text-sm text-primary-text dark:text-white">
+            <div className="pagination-container flex-col sm:flex-row gap-4">
+              <div className="pagination-text text-center sm:text-left">
                 Showing{" "}
                 <span className="font-semibold">
                   {(currentPage - 1) * pagination.per_page + 1}
@@ -412,33 +470,33 @@ const AcademicYearsList = () => {
                 <span className="font-semibold">
                   {Math.min(
                     currentPage * pagination.per_page,
-                    pagination.total
+                    pagination.total,
                   )}
                 </span>{" "}
                 of <span className="font-semibold">{pagination.total}</span>{" "}
                 results
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2 flex-wrap">
                 <button
                   onClick={() => loadPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronLeft size={18} />
                 </button>
 
                 {Array.from(
                   { length: pagination.last_page },
-                  (_, i) => i + 1
+                  (_, i) => i + 1,
                 ).map((page) => (
                   <button
                     key={page}
                     onClick={() => loadPage(page)}
-                    className={`px-3 py-1.5 rounded-md text-sm cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-md text-sm ${
                       page === currentPage
                         ? "bg-main-blue text-white"
-                        : "border border-box-outline hover:bg-gray-50 dark:text-white"
+                        : "border dark:text-white"
                     }`}
                   >
                     {page}
@@ -448,7 +506,7 @@ const AcademicYearsList = () => {
                 <button
                   onClick={() => loadPage(currentPage + 1)}
                   disabled={currentPage === pagination.last_page}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -461,7 +519,7 @@ const AcademicYearsList = () => {
       {/* EDIT MODAL */}
       <AnimatePresence>
         {isEditModalOpen && selectedYear && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="editmodal-wrapper">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -474,78 +532,78 @@ const AcademicYearsList = () => {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white dark:bg-dark-overlay w-full max-w-xl rounded-2xl shadow-2xl p-8 z-10"
+              className="editmodal-container max-h-[90vh] overflow-y-auto"
             >
               <button
                 onClick={handleCloseModal}
-                className="absolute right-4 top-4 p-1 x-btn"
+                className="x-btn"
               >
                 <X size={20} />
               </button>
 
-              <h2 className="form-header">Edit Academic Year Details</h2>
-              <p className="text-sm text-main-blue font-medium mb-6">
+              <h2 className="form-header text-xl md:text-2xl pr-8">Edit Academic Year Details</h2>
+              <p className="form-subtitle-info">
                 Academic Year: {selectedYear.year_name}
               </p>
 
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 <div>
-                  <label className="form-title">Academic Year Name</label>
+                  <label className="form-title sm:text-sm">Academic Year Name</label>
                   <input
                     type="text"
                     name="year_name"
                     value={values.year_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   />
                   {touched.year_name && errors.year_name && (
-                    <p className="showError">{errors.year_name}</p>
+                    <p className="showError text-xs">{errors.year_name}</p>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="form-title">Start Date</label>
+                    <label className="form-title sm:text-sm">Start Date</label>
                     <input
                       type="date"
                       name="start_date"
                       value={values.start_date}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                     />
                     {touched.start_date && errors.start_date && (
-                      <p className="showError">{errors.start_date}</p>
+                      <p className="showError text-xs">{errors.start_date}</p>
                     )}
                   </div>
 
                   <div>
-                    <label className="form-title">End Date</label>
+                    <label className="form-title sm:text-sm">End Date</label>
                     <input
                       type="date"
                       name="end_date"
                       value={values.end_date}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                     />
                     {touched.end_date && errors.end_date && (
-                      <p className="showError">{errors.end_date}</p>
+                      <p className="showError text-xs">{errors.end_date}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <label className="form-title">Active</label>
-                  <div className="flex gap-8 mt-2">
+                  <label className="form-title sm:text-sm">Active</label>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-8 mt-2">
                     {[
                       { value: true, label: "True" },
                       { value: false, label: "False" },
                     ].map((status) => (
                       <label
                         key={String(status.value)}
-                        className="flex items-center gap-2.5 cursor-pointer"
+                        className="flex items-center gap-2 cursor-pointer"
                       >
                         <input
                           type="radio"
@@ -555,28 +613,29 @@ const AcademicYearsList = () => {
                             setFieldValue("is_active", status.value)
                           }
                           onBlur={handleBlur}
+                          className="form-radio"
                         />
-                        <span className="form-radio-title">{status.label}</span>
+                        <span className="form-radio-title text-xs sm:text-sm">{status.label}</span>
                       </label>
                     ))}
                   </div>
                   {touched.is_active && errors.is_active && (
-                    <p className="showError">{errors.is_active}</p>
+                    <p className="showError text-xs">{errors.is_active}</p>
                   )}
                 </div>
 
-                <div className="flex justify-between gap-4 items-center pt-6">
+                <div className="modal-form-actions">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4"
+                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 whitespace-nowrap flex items-center justify-center"
+                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

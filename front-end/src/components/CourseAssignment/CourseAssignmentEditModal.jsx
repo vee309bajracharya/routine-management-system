@@ -45,7 +45,6 @@ const CourseAssignmentEditModal = ({
   const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
     formik;
 
-  // Fetch courses when modal opens
   useEffect(() => {
     if (!isOpen || !assignmentDetails) return;
 
@@ -72,7 +71,6 @@ const CourseAssignmentEditModal = ({
     fetchCourses();
   }, [isOpen, assignmentDetails]);
 
-  // Fetch teachers when modal opens
   useEffect(() => {
     if (!isOpen || !assignmentDetails) return;
 
@@ -99,7 +97,6 @@ const CourseAssignmentEditModal = ({
     try {
       const updateData = {};
 
-      // Compare and add only changed fields
       if (values.course_id !== assignmentDetails.course?.id)
         updateData.course_id = values.course_id;
       if (values.teacher_id !== assignmentDetails.teacher?.id)
@@ -148,7 +145,7 @@ const CourseAssignmentEditModal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div className="editmodal-wrapper">
           <motion.div
             className="background-blur"
             initial={{ opacity: 0 }}
@@ -161,70 +158,70 @@ const CourseAssignmentEditModal = ({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative bg-white dark:bg-dark-overlay w-full max-w-3xl rounded-2xl shadow-2xl p-8 z-10 overflow-y-auto max-h-[90vh]"
+            className="editmodal-container max-w-3xl max-h-[90vh] overflow-y-auto"
           >
-            <button onClick={onClose} className="absolute right-4 top-4 x-btn">
+            <button onClick={onClose} className="x-btn">
               <X size={20} />
             </button>
 
-            <h2 className="form-header text-xl font-bold mb-2">
+            <h2 className="form-header text-xl md:text-2xl pr-8">
               Edit Course Assignment
             </h2>
-            <p className="text-sm text-main-blue font-medium mb-6">
+            <p className="form-subtitle-info">
               Assignment ID: COAS-{String(assignmentDetails.id).padStart(3, "0")}
             </p>
 
             {isLoadingDetails ? (
-              <div className="flex flex-col items-center justify-center min-h-[300px]">
+              <div className="state-container">
                 <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-                <p className="text-sub-text text-sm">Loading details...</p>
+                <p className="state-text">Loading details...</p>
               </div>
             ) : (
-              <form className="space-y-6" onSubmit={formik.handleSubmit}>
+              <form className="space-y-4 sm:space-y-6" onSubmit={formik.handleSubmit}>
                 {/* LOCKED INFO SECTION */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 border border-box-outline p-4 rounded-2xl bg-gray-50 dark:bg-gray-800">
+                <div className="read-only-grid">
                   <div>
-                    <label className="form-title">Department</label>
+                    <label className="form-title sm:text-sm">Department</label>
                     <input
                       type="text"
                       value={assignmentDetails.department?.code || "N/A"}
                       disabled
-                      className="dropdown-select cursor-not-allowed bg-white/50 dark:bg-black/20"
+                      className="dropdown-select cursor-not-allowed text-sm"
                     />
-                    <p className="mt-0.5 text-xs text-sub-text">
-                      Cannot be changed after creation
-                    </p>
                   </div>
                   <div>
-                    <label className="form-title">Semester</label>
+                    <label className="form-title sm:text-sm">Semester</label>
                     <input
                       type="text"
                       value={assignmentDetails.semester?.name || "N/A"}
                       disabled
-                      className="dropdown-select cursor-not-allowed bg-white/50 dark:bg-black/20"
+                      className="dropdown-select cursor-not-allowed text-sm"
                     />
                   </div>
                   <div>
-                    <label className="form-title">Batch</label>
+                    <label className="form-title sm:text-sm">Batch</label>
                     <input
                       type="text"
                       value={assignmentDetails.batch?.name || "N/A"}
                       disabled
-                      className="dropdown-select cursor-not-allowed bg-white/50 dark:bg-black/20"
+                      className="dropdown-select cursor-not-allowed text-sm"
                     />
                   </div>
+                  <p className="sm:col-span-3 read-only-text">
+                    Cannot be changed after creation
+                  </p>
                 </div>
 
                 {/* Editable Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                   <div>
-                    <label className="form-title">Course</label>
+                    <label className="form-title sm:text-sm">Course</label>
                     <select
                       name="course_id"
                       value={values.course_id}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                       disabled={isLoadingCourses}
                     >
                       <option value="">
@@ -237,18 +234,18 @@ const CourseAssignmentEditModal = ({
                       ))}
                     </select>
                     {touched.course_id && errors.course_id && (
-                      <p className="showError">{errors.course_id}</p>
+                      <p className="showError text-xs">{errors.course_id}</p>
                     )}
                   </div>
 
                   <div>
-                    <label className="form-title">Teacher</label>
+                    <label className="form-title sm:text-sm">Teacher</label>
                     <select
                       name="teacher_id"
                       value={values.teacher_id}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                       disabled={isLoadingTeachers}
                     >
                       <option value="">
@@ -261,17 +258,17 @@ const CourseAssignmentEditModal = ({
                       ))}
                     </select>
                     {touched.teacher_id && errors.teacher_id && (
-                      <p className="showError">{errors.teacher_id}</p>
+                      <p className="showError text-xs">{errors.teacher_id}</p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="form-title">Assignment Type</label>
-                    <div className="flex gap-4 mt-2">
+                  <div className="sm:col-span-2">
+                    <label className="form-title sm:text-sm">Assignment Type</label>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2">
                       {["Theory", "Practical", "Theory and Practical"].map((type) => (
                         <label
                           key={type}
-                          className="flex items-center gap-2 cursor-pointer form-radio-title"
+                          className="form-selection-label"
                         >
                           <input
                             type="radio"
@@ -282,25 +279,25 @@ const CourseAssignmentEditModal = ({
                             onBlur={handleBlur}
                             className="form-radio"
                           />
-                          {type}
+                          <span className="form-radio-title">{type}</span>
                         </label>
                       ))}
                     </div>
                     {touched.assignment_type && errors.assignment_type && (
-                      <p className="showError">{errors.assignment_type}</p>
+                      <p className="showError text-xs">{errors.assignment_type}</p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="form-title">Status</label>
-                    <div className="flex gap-4 mt-2">
+                  <div className="sm:col-span-2">
+                    <label className="form-title sm:text-sm">Status</label>
+                    <div className="flex gap-4 sm:gap-6 mt-2">
                       {[
                         { value: "active", label: "Active" },
                         { value: "cancelled", label: "Cancelled" },
                       ].map((statusOption) => (
                         <label
                           key={statusOption.value}
-                          className="flex items-center gap-2 cursor-pointer form-radio-title"
+                          className="form-selection-label"
                         >
                           <input
                             type="radio"
@@ -311,43 +308,43 @@ const CourseAssignmentEditModal = ({
                             onBlur={handleBlur}
                             className="form-radio"
                           />
-                          {statusOption.label}
+                          <span className="form-radio-title">{statusOption.label}</span>
                         </label>
                       ))}
                     </div>
                     {touched.status && errors.status && (
-                      <p className="showError">{errors.status}</p>
+                      <p className="showError text-xs">{errors.status}</p>
                     )}
                   </div>
 
-                  <div className="col-span-2">
-                    <label className="form-title">Notes</label>
+                  <div className="sm:col-span-2">
+                    <label className="form-title sm:text-sm">Notes</label>
                     <textarea
                       name="notes"
                       value={values.notes}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="textarea-input resize-none h-24"
+                      className="textarea-input resize-none h-20 sm:h-24 text-sm"
                       placeholder="Add additional notes..."
                     />
                     {touched.notes && errors.notes && (
-                      <p className="showError">{errors.notes}</p>
+                      <p className="showError text-xs">{errors.notes}</p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex justify-between gap-4 items-center pt-6">
+                <div className="modal-form-actions">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="cancel-btn"
+                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn flex items-center justify-center"
+                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

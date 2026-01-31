@@ -71,8 +71,8 @@ const AcademicDepartments = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Department</h2>
         <p className="form-subtext">
           Add new departments to organize your institution's academic structure.
@@ -80,7 +80,7 @@ const AcademicDepartments = () => {
 
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Department Name and Code */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Department Name <span className="text-error-red">*</span>
@@ -106,7 +106,7 @@ const AcademicDepartments = () => {
               <input
                 type="text"
                 name="code"
-                placeholder="e.g., BCA, CSE"
+                placeholder="BCA, CSE"
                 value={values.code}
                 onChange={(e) => {
                   const upperValue = e.target.value.toUpperCase();
@@ -122,7 +122,7 @@ const AcademicDepartments = () => {
             </div>
           </div>
 
-          {/* Head of Department - FIXED: Use user_id instead of teacher.id */}
+          {/* Head of Department */}
           <div>
             <label className="form-title">Head of Department (Optional)</label>
             <select
@@ -169,7 +169,7 @@ const AcademicDepartments = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -191,7 +191,7 @@ const AcademicDepartments = () => {
                   Creating...
                 </>
               ) : (
-                "Create Department"
+                "Create"
               )}
             </button>
           </div>

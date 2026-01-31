@@ -75,8 +75,8 @@ const Semesters = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Semester</h2>
         <p className="form-subtext">
           Define semester periods within academic years for organizing courses and batches.
@@ -111,7 +111,7 @@ const Semesters = () => {
           </div>
 
           {/* Semester Name and Number */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Semester Name <span className="text-error-red">*</span>
@@ -119,7 +119,7 @@ const Semesters = () => {
               <input
                 type="text"
                 name="semester_name"
-                placeholder="e.g., First Semester, 1st Sem"
+                placeholder="1st Sem BCA, First Semester"
                 value={values.semester_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -137,7 +137,7 @@ const Semesters = () => {
               <input
                 type="number"
                 name="semester_number"
-                placeholder="Enter number (1-8)"
+                placeholder="Enter number"
                 value={values.semester_number}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -152,7 +152,7 @@ const Semesters = () => {
           </div>
 
           {/* Start Date and End Date */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Start Date <span className="text-error-red">*</span>
@@ -189,7 +189,7 @@ const Semesters = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -209,7 +209,7 @@ const Semesters = () => {
                   Creating...
                 </>
               ) : (
-                "Create Semester"
+                "Create"
               )}
             </button>
           </div>

@@ -3,46 +3,9 @@ import { useState, useEffect } from "react";
 import { X, Loader2, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import axiosClient from "../../services/api/axiosClient";
 import { toast } from "react-toastify";
-
-// Validation Schema for Admin Edit
-const AdminEditValidationSchema = Yup.object({
-  name: Yup.string()
-    .min(2, "Name must be at least 2 characters")
-    .max(255, "Name must not exceed 255 characters")
-    .trim(),
-  email: Yup.string().email("Invalid email format").trim(),
-
-  phone: Yup.string()
-    .nullable()
-    .matches(/^[0-9]{10}$/, "Phone must be exactly 10 digits")
-    .transform((value) => (value === "" ? null : value)),
-
-  current_password: Yup.string().when("password", {
-    is: (val) => val && val.length > 0,
-    then: (schema) => schema.required("Current password is required to set new password"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-
-  password: Yup.string()
-    .nullable()
-    .min(8, "Password must be at least 8 characters")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(/[0-9]/, "Password must contain at least one number")
-    .matches(/[!@#$%^&*(),_>?":{}|<>]/, "Password must contain at least one symbol"),
-    
-  password_confirmation: Yup.string().when("password", {
-    is: (val) => val && val.length > 0,
-    then: (schema) =>
-      schema
-        .required("Please confirm your password")
-        .oneOf([Yup.ref("password")], "Passwords must match"),
-    otherwise: (schema) => schema.nullable(),
-  }),
-});
+import { AdminEditValidationSchema } from "../../validations/AdminEditValidationSchema";
 
 const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,9 +16,9 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
 
   const formik = useFormik({
     initialValues: {
-      name: adminData.name || "",
-      email: adminData.email || "",
-      phone: adminData.phone || "",
+      name: adminData?.name || "",
+      email: adminData?.email || "",
+      phone: adminData?.phone || "",
       current_password: "",
       password: "",
       password_confirmation: "",
@@ -70,7 +33,6 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
   async function handleSubmit(values) {
     setIsLoading(true);
     try {
-      // Normalize values to avoid sending empty strings
       const cleanValues = {
         ...values,
         phone: values.phone === "" ? null : values.phone,
@@ -82,7 +44,6 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
 
       const updateData = {};
 
-      // Check personal info changes
       const hasPersonalInfoChanges =
         cleanValues.name !== adminData.name ||
         cleanValues.email !== adminData.email ||
@@ -94,7 +55,6 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
         if (cleanValues.phone !== adminData.phone) updateData.phone = cleanValues.phone;
       }
 
-      // Check password changes
       const hasPasswordChange = cleanValues.password && cleanValues.password.length > 0;
 
       if (hasPasswordChange) {
@@ -136,7 +96,6 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
       }
     } catch (error) {
       console.error("Update failed:", error);
-
       const apiError = error.response?.data;
 
       if (error.response?.status === 422) {
@@ -170,7 +129,7 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[60] flex items-center justify-center font-general-sans"
+        className="editmodal-wrapper"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -178,84 +137,69 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
         <div className="background-blur" onClick={handleClose} />
 
         <motion.div
-          className="relative bg-white dark:bg-dark-overlay w-full max-w-lg rounded-xl shadow-2xl overflow-hidden"
+          className="faculty-edit-admin-container"
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ duration: 0.3 }}
         >
-          <button
-            onClick={handleClose}
-            className="absolute right-4 top-4 x-btn"
-          >
-            <X size={20} className="text-primary-text dark:text-white" />
+          <button onClick={handleClose} className="x-btn">
+            <X size={20} />
           </button>
 
-          <div className="p-6 pb-4">
-            <h2 className="form-header mb-1">Edit Admin Profile</h2>
-            <p className="text-sm text-main-blue font-medium">
+          <div className="p-4 sm:p-6 pb-3 sm:pb-4">
+            <h2 className="form-header text-xl md:text-2xl pr-8">Edit Admin Profile</h2>
+            <p className="form-subtitle-info">
               ID: FAC-{String(adminData.id).padStart(4, "0")}
             </p>
           </div>
 
-          <div className="flex gap-6 px-6 border-b border-box-outline">
+          <div className="tab-nav-list">
             <button
               onClick={() => setActiveTab("personal")}
-              className={`pb-3 text-sm font-semibold transition-all ${
-                activeTab === "personal"
-                  ? "text-main-blue border-b-2 border-main-blue"
-                  : "text-sub-text hover:text-primary-text dark:hover:text-white"
-              }`}
+              className={`tab-item ${activeTab === "personal" ? "tab-item-active" : "tab-item-inactive"}`}
             >
               Personal Information
             </button>
             <button
               onClick={() => setActiveTab("password")}
-              className={`pb-3 text-sm font-semibold transition-all ${
-                activeTab === "password"
-                  ? "text-main-blue border-b-2 border-main-blue"
-                  : "text-sub-text hover:text-primary-text dark:hover:text-white"
-              }`}
+              className={`tab-item ${activeTab === "password" ? "tab-item-active" : "tab-item-inactive"}`}
             >
               Change Password
             </button>
           </div>
 
-          <form onSubmit={formik.handleSubmit} className="p-6">
+          <form onSubmit={formik.handleSubmit} className="p-4 sm:p-6">
             {activeTab === "personal" ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="form-title">Full Name</label>
+                  <label className="form-title sm:text-sm">Full Name</label>
                   <input
                     type="text"
                     name="name"
                     value={values.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   />
-                  {touched.name && errors.name && (
-                    <p className="showError">{errors.name}</p>
-                  )}
+                  {touched.name && errors.name && <p className="showError text-xs">{errors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="form-title">Email</label>
+                  <label className="form-title sm:text-sm">Email</label>
                   <input
                     type="email"
                     name="email"
                     value={values.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   />
-                  {touched.email && errors.email && (
-                    <p className="showError">{errors.email}</p>
-                  )}
+                  {touched.email && errors.email && <p className="showError text-xs">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="form-title">Phone</label>
+                  <label className="form-title sm:text-sm">Phone</label>
                   <input
                     type="text"
                     name="phone"
@@ -263,21 +207,19 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     maxLength="10"
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   />
-                  {touched.phone && errors.phone && (
-                    <p className="showError">{errors.phone}</p>
-                  )}
+                  {touched.phone && errors.phone && <p className="showError text-xs">{errors.phone}</p>}
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-sub-text mb-4">
+              <div className="space-y-3 sm:space-y-4">
+                <p className="text-xs sm:text-sm text-sub-text mb-3 sm:mb-4">
                   Leave blank if you don't want to change your password
                 </p>
 
                 <div className="relative">
-                  <label className="form-title">Current Password</label>
+                  <label className="form-title sm:text-sm">Current Password</label>
                   <input
                     type={showCurrentPassword ? "text" : "password"}
                     name="current_password"
@@ -285,22 +227,22 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Enter current password"
-                    className="dropdown-select"
+                    className="dropdown-select text-sm pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-9 text-sub-text"
+                    className="absolute right-3 top-8 sm:top-9 text-sub-text"
                   >
                     {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                   {touched.current_password && errors.current_password && (
-                    <p className="showError">{errors.current_password}</p>
+                    <p className="showError text-xs">{errors.current_password}</p>
                   )}
                 </div>
 
                 <div className="relative">
-                  <label className="form-title">New Password</label>
+                  <label className="form-title sm:text-sm">New Password</label>
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -308,22 +250,20 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Enter new password"
-                    className="dropdown-select"
+                    className="dropdown-select text-sm pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-9 text-sub-text"
+                    className="absolute right-3 top-8 sm:top-9 text-sub-text"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                  {touched.password && errors.password && (
-                    <p className="showError">{errors.password}</p>
-                  )}
+                  {touched.password && errors.password && <p className="showError text-xs">{errors.password}</p>}
                 </div>
 
                 <div className="relative">
-                  <label className="form-title">Confirm New Password</label>
+                  <label className="form-title sm:text-sm">Confirm New Password</label>
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     name="password_confirmation"
@@ -331,34 +271,34 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Confirm new password"
-                    className="dropdown-select"
+                    className="dropdown-select text-sm pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-9 text-sub-text"
+                    className="absolute right-3 top-8 sm:top-9 text-sub-text"
                   >
                     {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                   {touched.password_confirmation && errors.password_confirmation && (
-                    <p className="showError">{errors.password_confirmation}</p>
+                    <p className="showError text-xs">{errors.password_confirmation}</p>
                   )}
                 </div>
               </div>
             )}
 
-            <div className="flex gap-3 mt-6">
+            <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 cancel-btn"
+                className="flex-1 cancel-btn text-sm order-2 sm:order-1"
                 disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 auth-btn flex items-center justify-center"
+                className="flex-1 auth-btn flex items-center justify-center text-sm order-1 sm:order-2"
                 disabled={isLoading || formik.isSubmitting}
               >
                 {isLoading || formik.isSubmitting ? (

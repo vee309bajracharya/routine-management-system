@@ -221,11 +221,11 @@ const AdminFaculty = () => {
   return (
     <section className="bg-white dark:bg-dark-overlay font-general-sans relative min-h-screen">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="form-header">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="form-header text-xl sm:text-2xl">
           Faculty Administration
         </h1>
-        <p className="form-subtext">
+        <p className="form-subtext text-xs sm:text-sm">
           Manage all faculty data including adding, editing, viewing profiles, and removing entries.
         </p>
       </div>

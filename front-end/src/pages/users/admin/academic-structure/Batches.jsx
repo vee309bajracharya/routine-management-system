@@ -3,10 +3,7 @@ import { Loader2 } from "lucide-react";
 import { useFormik } from "formik";
 import axiosClient from "../../../../services/api/axiosClient";
 import { toast } from "react-toastify";
-import {
-  BatchValidationSchema,
-  BatchInitialValues,
-} from "../../../../validations/BatchValidationSchema";
+import {BatchValidationSchema,BatchInitialValues,} from "../../../../validations/BatchValidationSchema";
 
 const Batches = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -110,8 +107,8 @@ const Batches = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Batch</h2>
         <p className="form-subtext">
           Create batches for organizing students by semester, department, and shift.
@@ -119,7 +116,7 @@ const Batches = () => {
 
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Department Name and Semester Name */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Department Name <span className="text-error-red">*</span>
@@ -176,7 +173,7 @@ const Batches = () => {
           </div>
 
           {/* Batch Name and Batch Code */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Batch Name <span className="text-error-red">*</span>
@@ -184,7 +181,7 @@ const Batches = () => {
               <input
                 type="text"
                 name="batch_name"
-                placeholder="e.g., 2022 BCA Batch"
+                placeholder="2022 BCA Batch"
                 value={values.batch_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -200,7 +197,7 @@ const Batches = () => {
               <input
                 type="text"
                 name="code"
-                placeholder="e.g., BCA-2022"
+                placeholder="BCA-2022"
                 value={values.code}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -213,7 +210,7 @@ const Batches = () => {
           </div>
 
           {/* Year Level and Shift */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Year Level <span className="text-error-red">*</span>
@@ -221,7 +218,7 @@ const Batches = () => {
               <input
                 type="number"
                 name="year_level"
-                placeholder="e.g., 4"
+                placeholder="4"
                 value={values.year_level}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -261,7 +258,7 @@ const Batches = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -284,7 +281,7 @@ const Batches = () => {
                   Creating...
                 </>
               ) : (
-                "Create Batch"
+                "Create"
               )}
             </button>
           </div>

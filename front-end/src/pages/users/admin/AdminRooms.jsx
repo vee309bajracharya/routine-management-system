@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, useCallback } from "react";
-import { Pencil, Trash2, Plus, Search, X, Loader2 } from "lucide-react";
+import { Edit, Trash2, Plus, Search, X, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFormik } from "formik";
@@ -119,7 +119,7 @@ const AdminRooms = () => {
           <div className="flex gap-2 justify-end">
             <button
               onClick={closeToast}
-              className="px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors"
+              className="toast-cancel"
             >
               Cancel
             </button>
@@ -128,7 +128,7 @@ const AdminRooms = () => {
                 closeToast();
                 await deleteRoom(room.id);
               }}
-              className="px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors"
+              className="toast-delete"
             >
               Confirm Delete
             </button>
@@ -164,16 +164,7 @@ const AdminRooms = () => {
     enableReinitialize: true,
   });
 
-  const {
-    values,
-    errors,
-    touched,
-    handleChange,
-    handleBlur,
-    resetForm,
-    setFieldValue,
-  } = formik;
-
+  const {values,errors,touched,handleChange,handleBlur,resetForm,} = formik;
   // Open edit modal
   const handleEditClick = (room) => {
     setSelectedRoom(room);
@@ -273,40 +264,41 @@ const AdminRooms = () => {
   return (
     <div className="academic-common-bg">
       {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="form-header text-2xl font-bold">Rooms</h1>
-        <p className="form-subtext">
-          Manage all room data here, including adding new rooms, editing
-          details, viewing, and deleting entries.
+      <div className="mb-6 md:mb-8">
+        <h1 className="form-header">Rooms</h1>
+        <p className="form-subtext text-sm">
+          Manage all room data here, including adding new rooms, editing details, viewing, and deleting entries.
         </p>
       </div>
 
       {/* Action Bar */}
-      <div className="flex justify-between items-center gap-4 mb-6 flex-wrap">
-        {/* Status + Type Filters */}
-        <div className="flex items-center gap-3">
-          <select
-            className="dropdown-select cursor-pointer text-sm w-auto min-w-[120px]"
-            value={filterStatus}
-            onChange={(e) => handleFilterChange("status", e.target.value)}
-          >
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+      <div className="filter-action-bar">
+        {/*  Status & Type Filters */}
+        <div className="filter-group">
+          <div className="w-fit">
+            <select
+              className="dropdown-select cursor-pointer text-sm outline-none"
+              value={filterStatus}
+              onChange={(e) => handleFilterChange("status", e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
 
           {/* Room Type Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="scrollable-nav-bar">
             {["All", "Lab", "Classroom", "Lecture Hall"].map((type) => (
               <button
                 key={type}
                 onClick={() =>
                   handleFilterChange("type", type === "All" ? "" : type)
                 }
-                className={`filter-btn transition-colors whitespace-nowrap ${
+                className={`filter-btn transition-colors whitespace-nowrap text-sm  ${
                   filterType === (type === "All" ? "" : type)
-                    ? "bg-main-blue text-white hover:bg-hover-blue"
-                    : "bg-gray-100 text-primary-text dark:hover:text-black hover:bg-gray-200 dark:bg-dark-hover dark:text-white"
+                    ? "bg-main-blue text-white"
+                    : "bg-gray-100 text-primary-text dark:bg-dark-hover dark:text-white"
                 }`}
               >
                 {type}
@@ -315,16 +307,16 @@ const AdminRooms = () => {
           </div>
         </div>
 
-        {/* Search + Add */}
-        <div className="flex items-center gap-3 flex-1 md:justify-end flex-wrap">
-          <div className="relative flex-1 max-w-sm">
+        {/* Search and Add Button */}
+        <div className="action-bar-container">
+          <div className="search-input-wrapper">
             <span className="search-icon">
               <Search size={18} />
             </span>
             <input
               type="text"
               placeholder="Search by Room Name / Number"
-              className="search-btn w-full pl-10"
+              className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
             />
@@ -332,26 +324,27 @@ const AdminRooms = () => {
 
           <button
             onClick={() => navigate("/admin/academic-structure/rooms")}
-            className="btn-link flex items-center gap-2 px-4 py-1"
+            className="btn-link justify-center font-medium"
           >
             <Plus size={16} /> Add Room
           </button>
         </div>
       </div>
 
-      {/* Table Section */}
+      {/* Main Content */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="text-sub-text text-sm">Loading rooms...</p>
+          <p className="state-loading">Loading rooms...</p>
         </div>
       ) : rooms.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 dark:bg-dark-hover rounded-lg">
-          <p className="text-sub-text text-base">No rooms found</p>
+        <div className="state-empty-bg">
+          <p className="state-text">No rooms found</p>
         </div>
       ) : (
         <>
-          <div className="w-full overflow-hidden">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block w-full overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="table-thead">
@@ -370,7 +363,7 @@ const AdminRooms = () => {
                       <td className="p-4 font-semibold">
                         RM-{String(room.id).padStart(4, "0")}
                       </td>
-                      <td className="p-4 text-main-blue font-semibold hover:underline cursor-pointer">
+                      <td className="p-4">
                         {room.name}
                       </td>
                       <td className="p-4">{room.room_number}</td>
@@ -387,26 +380,20 @@ const AdminRooms = () => {
                         </span>
                       </td>
                       <td className="p-4">
-                        <div className="flex items-center justify-left gap-3">
+                        <div className="mobile-card-actions">
                           <button
                             className="action-edit-btn"
                             onClick={() => handleEditClick(room)}
                             aria-label="Edit room"
                           >
-                            <Pencil
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Edit size={16}/>
                           </button>
                           <button
                             className="action-delete-btn"
                             onClick={() => handleConfirmDelete(room)}
                             aria-label="Delete room"
                           >
-                            <Trash2
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Trash2 size={16}/>
                           </button>
                         </div>
                       </td>
@@ -417,10 +404,70 @@ const AdminRooms = () => {
             </div>
           </div>
 
+          {/* Mobile Card View */}
+          <div className="mobile-card-list">
+            {rooms.map((room) => (
+              <div
+                key={room.id}
+                className="mobile-card-container"
+              >
+                {/* Header Row */}
+                <div className="mobile-header">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="mobile-card-badge">
+                        RM-{String(room.id).padStart(4, "0")}
+                      </span>
+                      <span
+                        className={`status-indicator ${
+                          room.status === "active"
+                            ? "table-active"
+                            : "table-inactive"
+                        }`}
+                      >
+                        {room.status}
+                      </span>
+                    </div>
+                    <h3 className="info-title-click">
+                      {room.name}
+                    </h3>
+                    <p className="text-sm text-main-blue font-medium mt-1">
+                      {room.room_type}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Details */}
+                <div className="pt-2">
+                  <p className="info-label">Room Number</p>
+                  <p className="info-value">
+                    {room.room_number}
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mobile-card-actions">
+                  <button
+                    className="btn-mobile-secondary"
+                    onClick={() => handleEditClick(room)}
+                  >
+                    <Edit size={16} /> Edit
+                  </button>
+                  <button
+                    className="delete-mobile-btn"
+                    onClick={() => handleConfirmDelete(room)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* Pagination */}
           {pagination && pagination.last_page > 1 && (
-            <div className="flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline">
-              <div className="text-sm text-primary-text dark:text-white">
+            <div className="pagination-container flex-col sm:flex-row gap-4">
+              <div className="pagination-text text-center sm:text-left">
                 Showing{" "}
                 <span className="font-semibold">
                   {(currentPage - 1) * pagination.per_page + 1}
@@ -436,11 +483,11 @@ const AdminRooms = () => {
                 results
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2 flex-wrap">
                 <button
                   onClick={() => loadPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -452,10 +499,10 @@ const AdminRooms = () => {
                   <button
                     key={page}
                     onClick={() => loadPage(page)}
-                    className={`px-3 py-1.5 rounded-md text-sm cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-md text-sm ${
                       page === currentPage
                         ? "bg-main-blue text-white"
-                        : "border border-box-outline hover:bg-gray-50 dark:text-white"
+                        : "border dark:text-white"
                     }`}
                   >
                     {page}
@@ -465,7 +512,7 @@ const AdminRooms = () => {
                 <button
                   onClick={() => loadPage(currentPage + 1)}
                   disabled={currentPage === pagination.last_page}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -478,7 +525,7 @@ const AdminRooms = () => {
       {/* EDIT MODAL */}
       <AnimatePresence>
         {isEditModalOpen && selectedRoom && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="editmodal-wrapper">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -490,76 +537,74 @@ const AdminRooms = () => {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white dark:bg-dark-overlay w-full max-w-lg rounded-2xl shadow-2xl p-8 z-10"
+              className="editmodal-container max-h-[90vh] overflow-y-auto"
             >
               <button
                 onClick={handleCloseModal}
-                className="absolute right-4 top-4 p-1 x-btn"
+                className="x-btn"
               >
                 <X size={20} />
               </button>
-
-              <h2 className="form-header">Edit Room Details</h2>
-              <p className="text-sm text-main-blue font-medium mb-6">
+              <h2 className="form-header text-xl md:text-2xl pr-8">Edit Room Details</h2>
+              <p className="form-subtitle-info">
                 Room: {selectedRoom.name}
               </p>
-
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 <div>
-                  <label className="form-title">Room Name</label>
+                  <label className="form-title sm:text-sm">Room Name</label>
                   <input
                     type="text"
                     name="name"
                     value={values.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   />
                   {touched.name && errors.name && (
-                    <p className="showError">{errors.name}</p>
+                    <p className="showError text-xs">{errors.name}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-title">Room Number</label>
+                  <label className="form-title sm:text-sm">Room Number</label>
                   <input
                     type="text"
                     name="room_number"
                     value={values.room_number}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   />
                   {touched.room_number && errors.room_number && (
-                    <p className="showError">{errors.room_number}</p>
+                    <p className="showError text-xs">{errors.room_number}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-title">Room Type</label>
+                  <label className="form-title sm:text-sm">Room Type</label>
                   <select
                     name="room_type"
                     value={values.room_type}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   >
                     <option value="Classroom">Classroom</option>
                     <option value="Lecture Hall">Lecture Hall</option>
                     <option value="Lab">Lab</option>
                   </select>
                   {touched.room_type && errors.room_type && (
-                    <p className="showError">{errors.room_type}</p>
+                    <p className="showError text-xs">{errors.room_type}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-title">Status</label>
-                  <div className="flex gap-6 mt-2">
+                  <label className="form-title sm:text-sm">Status</label>
+                  <div className="flex gap-4 sm:gap-6 mt-2">
                     {["active", "inactive"].map((status) => (
                       <label
                         key={status}
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="form-selection-label"
                       >
                         <input
                           type="radio"
@@ -568,30 +613,29 @@ const AdminRooms = () => {
                           checked={values.status === status}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          className="form-radio"
                         />
-                        <span className="form-radio-title">
-                          {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </span>
+                        <span className="form-radio-title text-xs sm:text-sm capitalize">{status}</span>
                       </label>
                     ))}
                   </div>
                   {touched.status && errors.status && (
-                    <p className="showError">{errors.status}</p>
+                    <p className="showError text-xs">{errors.status}</p>
                   )}
                 </div>
 
-                <div className="flex justify-between gap-4 items-center pt-6">
+                <div className="modal-form-actions">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4"
+                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 whitespace-nowrap flex items-center justify-center"
+                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
