@@ -4,31 +4,37 @@ const OverviewFilters = ({
   searchTerm, setSearchTerm, statusFilter, setStatusFilter, dateFilter, setDateFilter, dateRange, setDateRange,
   onApplyDateRange, onClearDateRange, onToggleLast7, statusCounts }) => {
   return (
-    <section className="w-full flex justify-between items-center flex-wrap gap-3">
+    <section className="w-full flex flex-col lg:flex-row lg:justify-between lg:items-center gap-3">
 
-      <div className="flex items-center flex-wrap gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center flex-wrap gap-3">
 
         {/* last 7 days  */}
-        <div className="relative">
-          <button onClick={onToggleLast7} className={`overview-btn ${dateFilter === 'last7' ? 'bg-hover-blue text-white' : ''}`}>
-            <History size={16} />
-            Last 7 days
+        <div className="relative w-full sm:w-auto">
+          <button onClick={onToggleLast7} className={`overview-btn w-full sm:w-auto justify-between sm:justify-center ${dateFilter === 'last7' ? 'bg-hover-blue text-white' : ''}`}>
+            <div className="flex items-center gap-2">
+              <History size={16} />
+              <span>Last 7 days</span>
+            </div>
             {dateFilter === 'last7' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </button>
         </div>
 
         {/* Date Range */}
-        <div className="relative">
-          <button onClick={() => setDateFilter(dateFilter === 'custom' ? 'all' : 'custom')} className={`overview-btn ${dateFilter === 'custom' ? 'bg-hover-blue text-white' : ''}`}>
-            <Calendar size={16} />
-            {dateFilter === 'custom' && dateRange.start && dateRange.end
-              ? `${new Date(dateRange.start).toLocaleDateString()} - ${new Date(dateRange.end).toLocaleDateString()}`
-              : 'Routine Date Range'}
-            <ChevronDown size={16} />
+        <div className="relative w-full sm:w-auto">
+          <button onClick={() => setDateFilter(dateFilter === 'custom' ? 'all' : 'custom')} className={`overview-btn w-full sm:w-auto justify-between sm:justify-center ${dateFilter === 'custom' ? 'bg-hover-blue text-white' : ''}`}>
+            <div className="flex items-center gap-2 min-w-0">
+              <Calendar size={16} className="flex-shrink-0" />
+              <span className="truncate">
+                {dateFilter === 'custom' && dateRange.start && dateRange.end
+                  ? `${new Date(dateRange.start).toLocaleDateString()} - ${new Date(dateRange.end).toLocaleDateString()}`
+                  : 'Routine Date Range'}
+              </span>
+            </div>
+            <ChevronDown size={16} className="flex-shrink-0" />
           </button>
 
           {dateFilter === 'custom' && (
-            <div className="absolute top-full mt-2 left-0 bg-white dark:bg-dark-overlay border border-box-outline rounded-md shadow-lg p-4 z-10 min-w-[300px]">
+            <div className="absolute top-full mt-2 left-0 right-0 sm:left-0 sm:right-auto bg-white dark:bg-dark-overlay border border-box-outline rounded-md shadow-lg p-4 z-10 sm:min-w-[300px]">
               <div className="space-y-3">
                 <div>
                   <label className="text-xs text-sub-text dark:text-white mb-1 block">Effective From</label>
@@ -50,7 +56,7 @@ const OverviewFilters = ({
                   <button
                     onClick={onApplyDateRange}
                     disabled={!dateRange.start || !dateRange.end}
-                    className="flex-1 px-3 py-1 bg-mouse-pressed-blue text-white rounded text-sm cursor-pointer">Apply</button>
+                    className="flex-1 px-3 py-1 bg-mouse-pressed-blue text-white rounded text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Apply</button>
 
                   <button
                     onClick={onClearDateRange}
@@ -62,25 +68,25 @@ const OverviewFilters = ({
         </div>
 
         {/* Status */}
-        <div className="flex items-center gap-1 overflow-x-auto">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0 w-full sm:w-auto">
           {['all', 'draft', 'published', 'archieved'].map(s => (
-            <button key={s} onClick={() => setStatusFilter(s)} className={`overview-status-btn ${statusFilter === s ? 'bg-hover-blue text-primary-text' : ''}`}>
+            <button key={s} onClick={() => setStatusFilter(s)} className={`overview-status-btn flex-shrink-0 ${statusFilter === s ? 'bg-hover-blue text-primary-text' : ''}`}>
               {s.charAt(0).toUpperCase() + s.slice(1)} <span className={statusFilter === s ? 'text-primary-text' : 'text-sub-text'}>{statusCounts?.[s] ?? 0}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Search and Download */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-2 border border-box-outline rounded-md px-3 py-1 bg-white dark:bg-dark-overlay">
-          <Search size={16} className="text-sub-text dark:text-white" />
+      {/* Search */}
+      <div className="flex items-center gap-3 flex-wrap w-full lg:w-auto">
+        <div className="flex items-center gap-2 border border-box-outline rounded-md px-3 py-2 bg-white dark:bg-dark-overlay w-full sm:w-auto">
+          <Search size={16} className="text-sub-text dark:text-white flex-shrink-0" />
           <input
             type="text"
             placeholder="Search Routine"
             value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            className="outline-none text-sm text-primary-text dark:text-white bg-transparent w-48" />
-          {searchTerm && <button onClick={() => setSearchTerm('')} className="text-sub-text dark:text-white"><X size={14} className="cursor-pointer" /></button>}
+            className="outline-none text-sm text-primary-text dark:text-white bg-transparent flex-1 sm:w-48" />
+          {searchTerm && <button onClick={() => setSearchTerm('')} className="text-sub-text dark:text-white flex-shrink-0"><X size={14} className="cursor-pointer" /></button>}
         </div>
       </div>
 

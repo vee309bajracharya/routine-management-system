@@ -36,7 +36,9 @@ const CourseAssignments = () => {
     const fetchDepartments = async () => {
       setIsLoadingDepartments(true);
       try {
-        const response = await axiosClient.get(`/admin/dropdowns/departments/1`);
+        const response = await axiosClient.get(
+          `/admin/dropdowns/departments/1`,
+        );
         if (response.data.success) {
           setDepartments(response.data.data || []);
         }
@@ -63,7 +65,7 @@ const CourseAssignments = () => {
       try {
         const response = await axiosClient.get(
           "/admin/dropdowns/semesters-by-department",
-          { params: { department_id: values.department_id } }
+          { params: { department_id: values.department_id } },
         );
         if (response.data.success) {
           setSemesters(response.data.data || []);
@@ -92,7 +94,7 @@ const CourseAssignments = () => {
       try {
         const response = await axiosClient.get(
           "/admin/dropdowns/batches-by-semester",
-          { params: { semester_id: values.semester_id } }
+          { params: { semester_id: values.semester_id } },
         );
         if (response.data.success) {
           setBatches(response.data.data || []);
@@ -181,13 +183,16 @@ const CourseAssignments = () => {
 
       if (response.data.success) {
         toast.success(
-          response.data.message || "Course assignment created successfully"
+          response.data.message || "Course assignment created successfully",
         );
+        // Preserve department, semester, and batch, reset other fields
+        const preservedDepartmentId = values.department_id;
+        const preservedSemesterId = values.semester_id;
+        const preservedBatchId = values.batch_id;
         resetForm();
-        setSemesters([]);
-        setBatches([]);
-        setCourses([]);
-        setTeachers([]);
+        setFieldValue("department_id", preservedDepartmentId);
+        setFieldValue("semester_id", preservedSemesterId);
+        setFieldValue("batch_id", preservedBatchId);
       }
     } catch (error) {
       console.error("Failed to create course assignment:", error);
@@ -205,8 +210,8 @@ const CourseAssignments = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Course Assignment</h2>
         <p className="form-subtext">
           Assign courses to teachers for specific batches and semesters.
@@ -214,7 +219,7 @@ const CourseAssignments = () => {
 
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Department and Semester */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Department <span className="text-error-red">*</span>
@@ -265,8 +270,8 @@ const CourseAssignments = () => {
                   {!values.department_id
                     ? "Select Department First"
                     : isLoadingSemesters
-                    ? "Loading..."
-                    : "Select Semester"}
+                      ? "Loading..."
+                      : "Select Semester"}
                 </option>
                 {semesters.map((sem) => (
                   <option key={sem.id} value={sem.id}>
@@ -281,7 +286,7 @@ const CourseAssignments = () => {
           </div>
 
           {/* Batch and Course */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Batch <span className="text-error-red">*</span>
@@ -298,8 +303,8 @@ const CourseAssignments = () => {
                   {!values.semester_id
                     ? "Select Semester First"
                     : isLoadingBatches
-                    ? "Loading..."
-                    : "Select Batch"}
+                      ? "Loading..."
+                      : "Select Batch"}
                 </option>
                 {batches.map((batch) => (
                   <option key={batch.id} value={batch.id}>
@@ -332,8 +337,8 @@ const CourseAssignments = () => {
                   {!values.department_id || !values.semester_id
                     ? "Select Dept. & Semester First"
                     : isLoadingCourses
-                    ? "Loading..."
-                    : "Select Course"}
+                      ? "Loading..."
+                      : "Select Course"}
                 </option>
                 {courses.map((course) => (
                   <option key={course.id} value={course.id}>
@@ -348,7 +353,7 @@ const CourseAssignments = () => {
           </div>
 
           {/* Teacher and Assignment Type */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Teacher <span className="text-error-red">*</span>
@@ -365,8 +370,8 @@ const CourseAssignments = () => {
                   {!values.department_id
                     ? "Select Department First"
                     : isLoadingTeachers
-                    ? "Loading..."
-                    : "Select Teacher"}
+                      ? "Loading..."
+                      : "Select Teacher"}
                 </option>
                 {teachers.map((teacher) => (
                   <option key={teacher.id} value={teacher.id}>
@@ -380,10 +385,10 @@ const CourseAssignments = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="assignmentType">
                 Assignment Type <span className="text-error-red">*</span>
               </label>
-              <div className="flex items-center gap-6 mt-2">
+              <div className="flex items-center gap-4 sm:gap-6 mt-2">
                 {["Theory", "Practical", "Theory and Practical"].map((type) => (
                   <label
                     key={type}
@@ -391,6 +396,7 @@ const CourseAssignments = () => {
                   >
                     <input
                       type="radio"
+                      id="assignmentType"
                       name="assignment_type"
                       value={type}
                       checked={values.assignment_type === type}
@@ -428,7 +434,7 @@ const CourseAssignments = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -454,7 +460,7 @@ const CourseAssignments = () => {
                   Creating...
                 </>
               ) : (
-                "Create Assignment"
+                "Create"
               )}
             </button>
           </div>

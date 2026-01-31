@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import { TimeSlotEditValidationSchema } from "../../validations/TimeSlotValidationSchema";
 import axiosClient from "../../services/api/axiosClient";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 const TimeSlotEditModal = ({
   isOpen,
@@ -54,15 +55,31 @@ const TimeSlotEditModal = ({
     enableReinitialize: true,
   });
 
-  const { values, errors, touched, handleChange, handleBlur, setFieldValue, resetForm } =
-    formik;
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    setFieldValue,
+    resetForm,
+  } = formik;
+
+  useEffect(() => {
+    const duration = calculateDuration(values.start_time, values.end_time);
+
+    if (duration) {
+      setFieldValue("duration_minutes", duration);
+    } else {
+      setFieldValue("duration_minutes", "");
+    }
+  }, [values.start_time, values.end_time]);
 
   async function handleEditSubmit(values) {
     setIsSubmitting(true);
     try {
       const updateData = {};
 
-      // Compare and add only changed fields
       if (values.name !== slotDetails.name) updateData.name = values.name;
       if (values.start_time !== slotDetails.start_time)
         updateData.start_time = values.start_time;
@@ -76,7 +93,6 @@ const TimeSlotEditModal = ({
       if (values.is_active !== slotDetails.is_active)
         updateData.is_active = values.is_active;
 
-      // Check if applicable_days changed
       const currentDays = JSON.stringify(slotDetails.applicable_days?.sort());
       const newDays = JSON.stringify(values.applicable_days?.sort());
       if (currentDays !== newDays) {
@@ -91,11 +107,13 @@ const TimeSlotEditModal = ({
 
       const response = await axiosClient.put(
         `/admin/time-slots/${slotDetails.id}`,
-        updateData
+        updateData,
       );
 
       if (response.data.success) {
-        toast.success(response.data.message || "Time slot updated successfully");
+        toast.success(
+          response.data.message || "Time slot updated successfully",
+        );
         onClose();
         if (onUpdateSuccess) onUpdateSuccess();
       }
@@ -118,7 +136,7 @@ const TimeSlotEditModal = ({
     if (currentDays.includes(day)) {
       setFieldValue(
         "applicable_days",
-        currentDays.filter((d) => d !== day)
+        currentDays.filter((d) => d !== day),
       );
     } else {
       setFieldValue("applicable_days", [...currentDays, day]);
@@ -128,15 +146,25 @@ const TimeSlotEditModal = ({
   const selectAllDays = () => {
     setFieldValue(
       "applicable_days",
-      days.map((d) => d.value)
+      days.map((d) => d.value),
     );
   };
 
   const removeSelectedDay = (day) => {
     setFieldValue(
       "applicable_days",
-      values.applicable_days.filter((d) => d !== day)
+      values.applicable_days.filter((d) => d !== day),
     );
+  };
+
+  const calculateDuration = (start, end) => {
+    if (!start || !end) return "";
+    const [startH, startM] = start.split(":").map(Number);
+    const [endH, endM] = end.split(":").map(Number);
+    const startMinutes = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+    if (endMinutes <= startMinutes) return "";
+    return endMinutes - startMinutes;
   };
 
   if (!selectedSlot || !slotDetails) return null;
@@ -144,7 +172,7 @@ const TimeSlotEditModal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+        <div className="editmodal-wrapper">
           <motion.div
             className="background-blur"
             initial={{ opacity: 0 }}
@@ -157,111 +185,118 @@ const TimeSlotEditModal = ({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative bg-white dark:bg-dark-overlay w-full max-w-3xl rounded-2xl shadow-2xl p-8 z-10 overflow-y-auto max-h-[90vh]"
+            className="editmodal-container max-w-3xl max-h-[90vh] overflow-y-auto"
           >
-            <button onClick={onClose} className="absolute right-4 top-4 x-btn">
+            <button onClick={onClose} className="x-btn">
               <X size={20} />
             </button>
-
-            <h2 className="form-header text-xl font-bold mb-2">
-              Edit Timeslot Details
-            </h2>
-            <p className="text-sm text-main-blue font-medium mb-6">
-              Time Slot: {slotDetails.name}
-            </p>
+            <h2 className="form-header text-xl md:text-2xl pr-8">Edit Timeslot Details</h2>
+            <p className="form-subtitle-info">Time Slot: {slotDetails.name}</p>
 
             {isLoadingDetails ? (
-              <div className="flex flex-col items-center justify-center min-h-[300px]">
-                <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-                <p className="text-sub-text text-sm">Loading details...</p>
+              <div className="state-container">
+                <Loader2
+                  size={40}
+                  className="animate-spin text-main-blue mb-3"
+                />
+                <p className="state-text">Loading details...</p>
               </div>
             ) : (
-              <form className="space-y-6" onSubmit={formik.handleSubmit}>
+              <form
+                className="space-y-4 sm:space-y-6"
+                onSubmit={formik.handleSubmit}
+              >
                 {/* LOCKED INFO SECTION */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 border border-box-outline p-4 rounded-2xl bg-gray-50 dark:bg-gray-800">
+                <div className="read-only-grid">
                   <div>
-                    <label className="form-title">Department Name</label>
+                    <label className="form-title sm:text-sm">
+                      Department Name
+                    </label>
                     <input
                       type="text"
                       value={slotDetails.department?.code || "N/A"}
                       disabled
-                      className="dropdown-select cursor-not-allowed bg-white/50 dark:bg-black/20"
+                      className="dropdown-select cursor-not-allowed text-sm"
                     />
-                    <p className="mt-0.5 text-xs text-sub-text">
-                      Cannot be changed after creation
-                    </p>
                   </div>
                   <div>
-                    <label className="form-title">Semester Name</label>
+                    <label className="form-title sm:text-sm">
+                      Semester Name
+                    </label>
                     <input
                       type="text"
                       value={slotDetails.semester?.semester_name || "N/A"}
                       disabled
-                      className="dropdown-select cursor-not-allowed bg-white/50 dark:bg-black/20"
+                      className="dropdown-select cursor-not-allowed text-sm"
                     />
                   </div>
                   <div>
-                    <label className="form-title">Batch Name</label>
+                    <label className="form-title sm:text-sm">Batch Name</label>
                     <input
                       type="text"
                       value={slotDetails.batch?.name || "N/A"}
                       disabled
-                      className="dropdown-select cursor-not-allowed bg-white/50 dark:bg-black/20"
+                      className="dropdown-select cursor-not-allowed text-sm"
                     />
                   </div>
+                  <p className="sm:col-span-3 read-only-text">
+                    Cannot be changed after creation
+                  </p>
                 </div>
 
                 {/* Editable Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="col-span-1">
-                    <label className="form-title">Time Slot Name</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+                  <div className="sm:col-span-2 md:col-span-1">
+                    <label className="form-title sm:text-sm">
+                      Time Slot Name
+                    </label>
                     <input
                       name="name"
                       value={values.name}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                     />
                     {touched.name && errors.name && (
-                      <p className="showError">{errors.name}</p>
+                      <p className="showError text-xs">{errors.name}</p>
                     )}
                   </div>
                   <div>
-                    <label className="form-title">Start Time</label>
+                    <label className="form-title sm:text-sm">Start Time</label>
                     <input
                       type="time"
                       name="start_time"
                       value={values.start_time}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                     />
                     {touched.start_time && errors.start_time && (
-                      <p className="showError">{errors.start_time}</p>
+                      <p className="showError text-xs">{errors.start_time}</p>
                     )}
                   </div>
                   <div>
-                    <label className="form-title">End Time</label>
+                    <label className="form-title sm:text-sm">End Time</label>
                     <input
                       type="time"
                       name="end_time"
                       value={values.end_time}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                     />
                     {touched.end_time && errors.end_time && (
-                      <p className="showError">{errors.end_time}</p>
+                      <p className="showError text-xs">{errors.end_time}</p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="form-title">Slot Type</label>
-                    <div className="flex gap-4 mt-2">
+                  <div className="sm:col-span-2 md:col-span-1">
+                    <label className="form-title sm:text-sm">Slot Type</label>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
                       {["Lecture", "Practical", "Break"].map((type) => (
                         <label
                           key={type}
-                          className="flex items-center gap-1 cursor-pointer form-radio-title"
+                          className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm"
                         >
                           <input
                             type="radio"
@@ -272,23 +307,20 @@ const TimeSlotEditModal = ({
                             onBlur={handleBlur}
                             className="form-radio"
                           />
-                          {type}
+                          <span className="form-radio-title">{type}</span>
                         </label>
                       ))}
                     </div>
                     {touched.slot_type && errors.slot_type && (
-                      <p className="showError">{errors.slot_type}</p>
+                      <p className="showError text-xs">{errors.slot_type}</p>
                     )}
                   </div>
 
                   <div>
-                    <label className="form-title">Shift</label>
-                    <div className="flex gap-4 mt-2">
+                    <label className="form-title sm:text-sm">Shift</label>
+                    <div className="flex gap-4 sm:gap-6 mt-2">
                       {["Morning", "Day"].map((sh) => (
-                        <label
-                          key={sh}
-                          className="flex items-center gap-2 cursor-pointer form-radio-title"
-                        >
+                        <label key={sh} className="form-selection-label">
                           <input
                             type="radio"
                             name="shift"
@@ -298,19 +330,19 @@ const TimeSlotEditModal = ({
                             onBlur={handleBlur}
                             className="form-radio"
                           />
-                          {sh}
+                          <span className="form-radio-title">{sh}</span>
                         </label>
                       ))}
                     </div>
                     {touched.shift && errors.shift && (
-                      <p className="showError">{errors.shift}</p>
+                      <p className="showError text-xs">{errors.shift}</p>
                     )}
                   </div>
 
                   <div>
-                    <label className="form-title">Active</label>
-                    <div className="flex gap-4 mt-2">
-                      <label className="flex items-center gap-2 cursor-pointer form-radio-title">
+                    <label className="form-title sm:text-sm">Active</label>
+                    <div className="flex gap-4 sm:gap-6 mt-2">
+                      <label className="form-selection-label">
                         <input
                           type="radio"
                           name="is_active"
@@ -319,9 +351,9 @@ const TimeSlotEditModal = ({
                           onChange={() => setFieldValue("is_active", true)}
                           className="form-radio"
                         />
-                        True
+                        <span className="form-radio-title">True</span>
                       </label>
-                      <label className="flex items-center gap-2 cursor-pointer form-radio-title">
+                      <label className="form-selection-label">
                         <input
                           type="radio"
                           name="is_active"
@@ -330,33 +362,41 @@ const TimeSlotEditModal = ({
                           onChange={() => setFieldValue("is_active", false)}
                           className="form-radio"
                         />
-                        False
+                        <span className="form-radio-title">False</span>
                       </label>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="form-title">Duration in Minutes</label>
+                  <div className="sm:col-span-2 md:col-span-1">
+                    <label className="form-title sm:text-sm">
+                      Duration in Minutes
+                    </label>
                     <input
                       type="number"
                       name="duration_minutes"
+                      placeholder="Auto calculated"
                       value={values.duration_minutes}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className="dropdown-select"
+                      disabled
+                      className="dropdown-select bg-gray-100 dark:bg-gray-700 cursor-not-allowed text-sm"
                     />
                     {touched.duration_minutes && errors.duration_minutes && (
-                      <p className="showError">{errors.duration_minutes}</p>
+                      <p className="showError text-xs">
+                        {errors.duration_minutes}
+                      </p>
                     )}
                   </div>
 
-                  <div className="col-span-2">
-                    <label className="form-title">Applicable Days</label>
+                  <div className="sm:col-span-2">
+                    <label className="form-title sm:text-sm">
+                      Applicable Days
+                    </label>
                     <div className="relative">
                       <button
                         type="button"
-                        onClick={() => setApplicableDaysOpen(!applicableDaysOpen)}
-                        className="dropdown-select w-full flex items-center justify-between"
+                        onClick={() =>
+                          setApplicableDaysOpen(!applicableDaysOpen)
+                        }
+                        className="dropdown-select w-full flex items-center justify-between text-sm"
                       >
                         <div className="flex gap-2 flex-wrap flex-1">
                           {values.applicable_days.length > 0 ? (
@@ -365,7 +405,8 @@ const TimeSlotEditModal = ({
                                 key={day}
                                 className="inline-flex items-center gap-1 bg-main-blue text-white text-xs px-2 py-1 rounded-full"
                               >
-                                {days.find((d) => d.value === day)?.label || day}
+                                {days.find((d) => d.value === day)?.label ||
+                                  day}
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -379,7 +420,9 @@ const TimeSlotEditModal = ({
                               </span>
                             ))
                           ) : (
-                            <span className="text-sub-text">Select Days</span>
+                            <span className="text-sub-text text-xs sm:text-sm">
+                              Select Days
+                            </span>
                           )}
                         </div>
                         <ChevronDown
@@ -391,28 +434,30 @@ const TimeSlotEditModal = ({
                       </button>
 
                       {applicableDaysOpen && (
-                        <div className="absolute z-10 w-full mt-2 bg-white dark:bg-dark-overlay border border-box-outline rounded-lg shadow-lg p-4">
+                        <div className="absolute z-10 w-full mt-2 bg-white dark:bg-dark-overlay border border-box-outline rounded-lg shadow-lg p-3 sm:p-4">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-medium text-primary-text dark:text-white">
+                            <span className="text-xs sm:text-sm font-medium text-primary-text dark:text-white">
                               Working Days
                             </span>
                             <button
                               type="button"
                               onClick={selectAllDays}
-                              className="px-3 py-1 bg-main-blue text-white rounded text-xs hover:bg-hover-blue"
+                              className="px-2 sm:px-3 py-1 bg-main-blue text-white rounded text-xs hover:bg-hover-blue"
                             >
                               Select All
                             </button>
                           </div>
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {days.map((day) => (
                               <label
                                 key={day.value}
-                                className="flex items-center gap-2 cursor-pointer text-sm"
+                                className="form-selection-label"
                               >
                                 <input
                                   type="checkbox"
-                                  checked={values.applicable_days.includes(day.value)}
+                                  checked={values.applicable_days.includes(
+                                    day.value,
+                                  )}
                                   onChange={() => toggleDay(day.value)}
                                   className="form-radio"
                                 />
@@ -426,23 +471,25 @@ const TimeSlotEditModal = ({
                       )}
                     </div>
                     {touched.applicable_days && errors.applicable_days && (
-                      <p className="showError">{errors.applicable_days}</p>
+                      <p className="showError text-xs">
+                        {errors.applicable_days}
+                      </p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex justify-between gap-4 items-center mt-10">
+                <div className="modal-form-actions">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="cancel-btn"
+                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn flex items-center justify-center"
+                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

@@ -4,6 +4,7 @@ import MainLogo from "../../assets/svg/default_logo.svg";
 import logOut from "../../assets/svg/logout.svg";
 import CollapsedLogo from "../../assets/svg/CollapsedLogo.svg";
 import Downarrow from "../../assets/svg/Downarrow.svg";
+import logOutHover from "../../assets/svg/Logouthover.svg";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
@@ -28,7 +29,7 @@ const AdminSidebar = ({ collapsed, sidebarItems, role }) => {
         (item) =>
           item.children &&
           item.basePath &&
-          location.pathname.startsWith(item.basePath)
+          location.pathname.startsWith(item.basePath),
       );
 
     return activeDropdown ? activeDropdown.label : null;
@@ -50,8 +51,8 @@ const AdminSidebar = ({ collapsed, sidebarItems, role }) => {
     <motion.aside
       animate={{ width: collapsed ? 80 : 240 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="h-screen flex flex-col text-primary-text border-r border-box-outline font-general-sans bg-white overflow-y-auto overflow-x-hidden dark:bg-dark-overlay scrollbar-thin"
-    >
+      className="h-screen flex flex-col flex-shrink-0 text-primary-text border-r border-box-outline font-general-sans bg-white overflow-y-auto overflow-x-visible md:overflow-x-hidden dark:bg-dark-overlay scrollbar-thin"
+      >
       <section
         className={`p-4 flex flex-col h-full dark:text-white ${
           collapsed ? "items-center" : ""
@@ -234,11 +235,22 @@ const AdminSidebar = ({ collapsed, sidebarItems, role }) => {
         >
           <button
             onClick={handleLogout}
-            className={`flex items-center border border-main-blue rounded-md text-main-blue hover:bg-main-blue hover:text-white transition-all duration-300 h-11 ${
+            className={`group flex items-center border border-main-blue rounded-md text-main-blue hover:bg-main-blue hover:text-white transition-all duration-300 h-11 ${
               collapsed ? "justify-center w-12" : "justify-start px-3 w-full"
             }`}
           >
-            <img src={logOut} className="w-5 h-5 flex-shrink-0" alt="logout" />
+            {/* Normal icon */}
+            <img
+              src={logOut}
+              className="w-5 h-5 flex-shrink-0 group-hover:hidden"
+              alt="logout"
+            />
+            {/* Hover icon */}
+            <img
+              src={logOutHover} 
+              className="w-5 h-5 flex-shrink-0 hidden group-hover:block"
+              alt="logout hover"
+            />
             {!collapsed && <span className="ml-3 text-sm">Logout</span>}
           </button>
         </div>

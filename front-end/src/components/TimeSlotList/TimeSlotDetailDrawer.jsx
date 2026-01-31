@@ -3,7 +3,13 @@ import React from "react";
 import { X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const TimeSlotDetailDrawer = ({ isOpen, onClose, selectedSlot, slotDetails, isLoadingDetails }) => {
+const TimeSlotDetailDrawer = ({
+  isOpen,
+  onClose,
+  selectedSlot,
+  slotDetails,
+  isLoadingDetails,
+}) => {
   if (!selectedSlot) return null;
 
   const days = [
@@ -18,167 +24,153 @@ const TimeSlotDetailDrawer = ({ isOpen, onClose, selectedSlot, slotDetails, isLo
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <motion.div
+          className="fixed inset-0 z-50 font-general-sans"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
             className="absolute inset-0 bg-black/50"
+            onClick={onClose}
           />
+
+          {/* Drawer Container */}
           <motion.div
+            className="drawer-container"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="drawer-background"
+            transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="form-header">View Time-slot Details</h2>
-              <button onClick={onClose} className="x-btn">
-                <X size={20} />
-              </button>
+            {/* Sticky Header */}
+            <div className="drawer-sticky-header">
+              <div className="flex justify-between items-center">
+                <h2 className="drawer-title">
+                  View Time-slot Details
+                </h2>
+                <button onClick={onClose} className="x-btn p-2">
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
-            {isLoadingDetails ? (
-              <div className="flex flex-col items-center justify-center min-h-[400px]">
-                <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-                <p className="text-sub-text text-sm">Loading details...</p>
-              </div>
-            ) : slotDetails ? (
-              <>
-                <div className="drawer-box-background p-5 mb-8">
-                  <h3 className="drawer-info-header text-xl mb-1">
-                    {slotDetails.name}
-                  </h3>
-                  <p className="drawer-sub-title font-bold">
-                    TS-{String(slotDetails.id).padStart(3, "0")}
-                  </p>
-                  <div className="flex gap-2 mt-2">
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        slotDetails.shift === "Morning"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-orange-100 text-orange-700"
-                      }`}
-                    >
-                      {slotDetails.shift}
-                    </span>
-                    <span className="px-2 py-1 rounded text-xs bg-gray-100 dark:bg-dark-hover text-primary-text dark:text-white">
-                      {slotDetails.slot_type}
-                    </span>
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        slotDetails.is_active
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {slotDetails.is_active ? "Active" : "Inactive"}
-                    </span>
-                  </div>
+            {/* Scrollable Content Area */}
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 pb-20 sm:pb-24">
+              {isLoadingDetails ? (
+                <div className="state-container">
+                  <Loader2
+                    size={40}
+                    className="animate-spin text-main-blue mb-3"
+                  />
+                  <p className="state-loading">Loading details...</p>
                 </div>
-
-                <div className="mt-8">
-                  <h4 className="drawer-info-header text-base mb-4">
-                    Timeslot Information
-                  </h4>
-                  <div className="grid grid-cols-2 gap-y-6 gap-x-4 p-5 border border-box-outline rounded-xl bg-white dark:bg-dark-hover">
-                    <div>
-                      <p className="drawer-sub-title">Department</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails.department?.code || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="drawer-sub-title">Semester</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails.semester?.semester_name || "N/A"}
-                      </p>
-                    </div>
-                    <div className=" border-t border-gray-100 dark:border-gray-700 pt-4">
-                      <p className="drawer-sub-title">Batch</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails.batch?.name || "N/A"}
-                        {slotDetails.batch?.shift && (
-                          <span className="text-xs text-sub-text ml-2">
-                            ({slotDetails.batch.shift} Shift)
-                          </span>
-                        )}
-                      </p>
-                    </div>
-                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
-                      <p className="drawer-sub-title">Duration</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails.duration_minutes} Minutes
-                      </p>
-                    </div>
-                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
-                      <p className="drawer-sub-title">Start Time</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails.start_time}
-                      </p>
-                    </div>
-                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
-                      <p className="drawer-sub-title">End Time</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails.end_time}
-                      </p>
-                    </div>
-                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
-                      <p className="drawer-sub-title">Shift</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails?.batch?.shift || "N/A"}
-                      </p>
-                    </div>
-                      <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
-                      <p className="drawer-sub-title">Type</p>
-                      <p className="drawer-info-title text-sm">
-                        {slotDetails.slot_type}
-                      </p>
-                    </div>
-                    
-                  </div>
-                </div>
-
-                <div className="px-2 mt-8">
-                  <h4 className="drawer-info-header text-base mb-4">
-                    Applicable Days
-                  </h4>
-                  <div className="flex gap-2 flex-wrap">
-                    {days.map((day) => {
-                      const isApplicable =
-                        slotDetails.applicable_days &&
-                        slotDetails.applicable_days.includes(day.value);
-                      return (
+              ) : slotDetails ? (
+                <>
+                  {/* Top Info Box */}
+                  <div className="bg-gray-50 dark:bg-dark-hover p-4 sm:p-5 rounded-xl border border-box-outline">
+                    <h3 className="text-base sm:text-lg md:text-xl font-semibold text-primary-text dark:text-white break-words">
+                      {slotDetails.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-main-blue font-medium mt-1">
+                      TS-{String(slotDetails.id).padStart(3, "0")}
+                    </p>
+                    <div className="flex mt-3 items-center justify-between flex-wrap gap-2">
+                      {/* Shift and Slot Type */}
+                      <div className="flex gap-2 flex-wrap">
                         <span
-                          key={day.value}
-                          className={`px-4 py-1.5 rounded text-xs font-semibold ${
-                            isApplicable
-                              ? "bg-blue-50 text-blue-600 dark:bg-blue-900/30"
-                              : "bg-gray-50 text-gray-400 dark:bg-gray-800"
+                          className={`drawer-status-indicator ${
+                            slotDetails.shift === "Morning"
+                              ? "drawer-status-morning"
+                              : "drawer-status-day"
                           }`}
                         >
-                          {day.label}
+                          {slotDetails.shift} Shift
                         </span>
-                      );
-                    })}
+                        <span className="px-2 py-1 rounded text-xs bg-main-gray dark:bg-dark-hover text-primary-text dark:text-white whitespace-nowrap">
+                          {slotDetails.slot_type}
+                        </span>
+                      </div>
+
+                      {/* Active/Inactive */}
+                      <span
+                        className={`drawer-status-indicator ${
+                          slotDetails.is_active
+                            ? "drawer-status-active"
+                            : "drawer-status-inactive"
+                        }`}
+                      >
+                        {slotDetails.is_active ? "Active" : "Inactive"}
+                      </span>
+                    </div>
                   </div>
-                  {slotDetails.applicable_days &&
-                    slotDetails.applicable_days.length === 6 && (
-                      <p className="text-xs text-sub-text mt-2">
-                        All working days selected
-                      </p>
-                    )}
+
+                  {/* Information Grid */}
+                  <div>
+                    <h4 className="drawer-section-title">Timeslot Information</h4>
+                    <div className="drawer-info-grid">
+                      <div>
+                        <p className="grid-label">Department</p>
+                        <p className="grid-value">{slotDetails.department?.code || "N/A"}</p>
+                      </div>
+                      <div>
+                        <p className="grid-label">Semester</p>
+                        <p className="grid-value">{slotDetails.semester?.semester_name || "N/A"}</p>
+                      </div>
+                      <div>
+                        <p className="grid-label">Batch</p>
+                        <p className="grid-value">{slotDetails.batch?.name || "N/A"}</p>
+                      </div>
+                      <div>
+                        <p className="grid-label">Duration</p>
+                        <p className="grid-value">{slotDetails.duration_minutes} Minutes</p>
+                      </div>
+                      <div>
+                        <p className="grid-label">Start Time</p>
+                        <p className="grid-value">{slotDetails.start_time}</p>
+                      </div>
+                      <div>
+                        <p className="grid-label">End Time</p>
+                        <p className="grid-value">{slotDetails.end_time}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Applicable Days */}
+                  <div>
+                    <h4 className="drawer-section-title">
+                      Applicable Days
+                    </h4>
+                    <div className="flex gap-2 flex-wrap">
+                      {days.map((day) => {
+                        const isApplicable =
+                          slotDetails.applicable_days &&
+                          slotDetails.applicable_days.includes(day.value);
+                        return (
+                          <span
+                            key={day.value}
+                            className={`px-3 sm:px-4 py-1.5 rounded text-xs font-semibold whitespace-nowrap ${
+                              isApplicable
+                                ? "bg-main-blue text-white shadow-sm"
+                                : "bg-gray-50 text-gray-400 dark:bg-gray-800 dark:text-gray-500"
+                            }`}
+                          >
+                            {day.label}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="empty-state-wrapper">
+                  <p className="text-sub-text">No details available</p>
                 </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center justify-center min-h-[400px]">
-                <p className="text-sub-text">No details available</p>
-              </div>
-            )}
+              )}
+            </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );

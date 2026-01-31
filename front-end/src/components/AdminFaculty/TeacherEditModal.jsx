@@ -114,7 +114,7 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[60] flex items-center justify-center font-general-sans"
+        className="editmodal-wrapper"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -122,7 +122,7 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
         <div className="background-blur" onClick={handleClose} />
 
         <motion.div
-          className="relative bg-white dark:bg-dark-overlay w-full max-w-md rounded-xl shadow-2xl overflow-hidden"
+          className="faculty-edit-teacher-container"
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -130,22 +130,22 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
         >
           <button
             onClick={handleClose}
-            className="absolute right-4 top-4 p-1 x-btn"
+            className="x-btn"
           >
             <X size={20} />
           </button>
 
-          <div className="p-6">
-            <h2 className="form-header mb-1">Edit Teacher Details</h2>
-            <p className="text-sm text-sub-text mb-1">{teacherData.name}</p>
-            <p className="text-sm text-main-blue font-medium mb-4">
+          <div className="p-4 sm:p-6">
+            <h2 className="form-header text-xl md:text-2xl pr-8">Edit Teacher Details</h2>
+            <p className="text-xs sm:text-sm text-sub-text mb-1">{teacherData.name}</p>
+            <p className="form-subtitle-info">
               ID: FAC-{String(teacherData.id).padStart(4, "0")}
             </p>
 
-            <form onSubmit={formik.handleSubmit} className="space-y-4">
+            <form onSubmit={formik.handleSubmit} className="space-y-3 sm:space-y-4">
               {/* Department */}
               <div>
-                <label className="form-title">
+                <label className="form-title text-xs sm:text-sm">
                   Department <span className="text-error-red">*</span>
                 </label>
                 <select
@@ -153,7 +153,7 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
                   value={values.department_id}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="dropdown-select"
+                  className="dropdown-select text-sm"
                 >
                   <option value="">Select Department</option>
                   {departments.map((dept) => (
@@ -163,18 +163,18 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
                   ))}
                 </select>
                 {touched.department_id && errors.department_id && (
-                  <p className="showError">{errors.department_id}</p>
+                  <p className="showError text-xs">{errors.department_id}</p>
                 )}
               </div>
 
               {/* Employment Type */}
               <div>
-                <label className="form-title">
+                <label className="form-title text-xs sm:text-sm">
                   Employment Type <span className="text-error-red">*</span>
                 </label>
-                <div className="flex gap-4 mt-2">
-                  {["Full Time", "Part Time", "Guest"].map((type) => (
-                    <label key={type} className="form-radio-title">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2">
+                  {["Full Time", "Part Time"].map((type) => (
+                    <label key={type} className="form-radio-title flex items-center gap-2 cursor-pointer text-xs sm:text-sm">
                       <input
                         type="radio"
                         name="employment_type"
@@ -189,23 +189,23 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
                   ))}
                 </div>
                 {touched.employment_type && errors.employment_type && (
-                  <p className="showError">{errors.employment_type}</p>
+                  <p className="showError text-xs">{errors.employment_type}</p>
                 )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 cancel-btn"
+                  className="flex-1 cancel-btn text-sm order-2 sm:order-1"
                   disabled={isLoading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 auth-btn flex items-center justify-center"
+                  className="flex-1 auth-btn flex items-center justify-center text-sm order-1 sm:order-2"
                   disabled={isLoading || formik.isSubmitting}
                 >
                   {isLoading || formik.isSubmitting ? (

@@ -120,7 +120,7 @@ const AdminSettings = () => {
     return (
       <div className="wrapper flex flex-col items-center justify-center min-h-[400px]">
         <Loader2 size={40} className="animate-spin text-main-blue mb-2" />
-        <p className="text-sm text-sub-text animate-pulse font-medium">
+        <p className="text-xs sm:text-sm text-sub-text animate-pulse font-medium">
           Loading institutional settings...
         </p>
       </div>
@@ -128,11 +128,11 @@ const AdminSettings = () => {
   }
   return (
     <section className="wrapper">
-      <div className="max-w-2xl mx-auto p-6 border border-box-outline rounded-md font-general">
-        <h1 className="dark:text-white text-2xl font-semibold mb-2">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 border border-box-outline rounded-md font-general">
+        <h1 className="dark:text-white text-xl sm:text-2xl font-semibold mb-2">
           Institutional Settings
         </h1>
-        <p className="text-sm text-box-outline mb-8">
+        <p className="text-xs sm:text-sm text-sub-text mb-6 sm:mb-8">
           Configure key details to personalize your system and establish your
           institution's foundation.
         </p>
@@ -142,7 +142,7 @@ const AdminSettings = () => {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`mb-6 border-2 border-dashed rounded-lg bg-white dark:bg-dark-overlay p-8 text-center transition
+          className={`mb-4 sm:mb-6 border-2 border-dashed rounded-lg bg-white dark:bg-dark-overlay p-6 sm:p-8 text-center transition
             ${
               dragActive || logoPreview
                 ? "border-main-blue bg-box-outline"
@@ -155,21 +155,21 @@ const AdminSettings = () => {
               <img
                 src={logoPreview}
                 alt="Logo Preview"
-                className="mx-auto h-24 object-contain"
+                className="mx-auto h-20 sm:h-24 object-contain"
               />
-              <p className="text-sm text-sub-text">{logoFileName}</p>
-              <div className="flex justify-center gap-2">
+              <p className="text-xs sm:text-sm text-sub-text break-all px-2">{logoFileName}</p>
+              <div className="flex flex-col sm:flex-row justify-center gap-2">
                 <button
                   type="button"
                   onClick={handleBrowse}
-                  className="px-3 py-1 bg-main-blue text-white text-sm rounded hover:bg-mouse-pressed-blue transition-colors cursor-pointer"
+                  className="logo-update"
                 >
                   Update
                 </button>
                 <button
                   type="button"
                   onClick={handleDeletelogo}
-                  className="px-3 py-1 bg-white text-primary-text text-sm border border-box-outline rounded hover:text-error-red transition-colors cursor-pointer"
+                  className="logo-delete"
                 >
                   Delete
                 </button>
@@ -177,10 +177,10 @@ const AdminSettings = () => {
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-center mx-auto mb-3 w-10 h-10 rounded-full bg-gray-100">
+              <div className="flex items-center justify-center mx-auto mb-3 w-10 h-10 rounded-full bg-hover-gray">
                 <ImageUp size={20} className="text-sub-text" />
               </div>
-              <p className="text-sm dark:text-white">
+              <p className="text-xs sm:text-sm dark:text-white">
                 Drag and drop your logo to upload
               </p>
               <p className="text-xs my-2 text-box-outline dark:text-white">
@@ -189,7 +189,7 @@ const AdminSettings = () => {
               <button
                 type="button"
                 onClick={handleBrowse}
-                className="border border-main-blue px-4 py-1 rounded text-sm text-main-blue hover:bg-primary6-blue transition"
+                className="border border-main-blue px-3 sm:px-4 py-1.5 sm:py-1 rounded text-xs sm:text-sm text-main-blue hover:bg-primary6-blue transition"
               >
                 Browse Logo
               </button>
@@ -206,14 +206,14 @@ const AdminSettings = () => {
         </div>
 
         {/* Form */}
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
           {/* Type */}
-          <div className="flex gap-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
             {["University", "College", "School", "Institute"].map(
               (typeValue) => (
                 <label
                   key={typeValue}
-                  className="flex items-center text-primary-text dark:text-white gap-2"
+                  className="flex items-center text-primary-text dark:text-white gap-2 text-xs sm:text-sm cursor-pointer"
                 >
                   <input
                     type="radio"
@@ -221,6 +221,7 @@ const AdminSettings = () => {
                     value={typeValue}
                     checked={values.type === typeValue}
                     onChange={handleChange}
+                    className="form-radio"
                   />
                   {typeValue}
                 </label>
@@ -229,7 +230,7 @@ const AdminSettings = () => {
           </div>
 
           {/* Inputs */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {[
               ["institution_name", "Institution Name", true],
               ["address", "Address", false],
@@ -237,7 +238,7 @@ const AdminSettings = () => {
               ["contact_phone", "Phone", false],
             ].map(([field, label, required]) => (
               <div key={field}>
-                <label className="form-title">
+                <label className="form-title sm:text-sm">
                   {label}
                   {required && <span className="text-error-red ml-1">*</span>}
                 </label>
@@ -247,11 +248,11 @@ const AdminSettings = () => {
                   value={values[field]}
                   onChange={handleChange}
                   onBlur={formik.handleBlur}
-                  className="dropdown-select"
+                  className="dropdown-select text-sm"
                 />
 
                 {touched[field] && errors[field] && (
-                  <p className="text-error-red text-xs mt-3">{errors[field]}</p>
+                  <p className="text-error-red text-xs mt-2 sm:mt-3">{errors[field]}</p>
                 )}
               </div>
             ))}
@@ -259,11 +260,11 @@ const AdminSettings = () => {
 
           {/* Buttons */}
           <div>
-            <button className="auth-btn" disabled={isLoading}>
+            <button className="auth-btn text-sm sm:text-base" disabled={isLoading}>
               {isLoading ? (
                 <Loader2
                   size={16}
-                  className="animate-spin mx-auto dark:invert"
+                  className="animate-spin mx-auto dark:invert "
                 />
               ) : (
                 "Save Changes"

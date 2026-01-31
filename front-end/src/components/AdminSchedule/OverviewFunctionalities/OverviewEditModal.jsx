@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { X, Loader } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFormik } from "formik";
 import { RoutineCreationValidationSchema } from "../../../validations/RoutineCreationValidationSchema";
@@ -7,14 +7,13 @@ import { RoutineCreationValidationSchema } from "../../../validations/RoutineCre
 /**
  * editable fields: title, description, effective_from, effective_to
  * semester_id and batch_id are not editable after creation
- * 
+ *
  * @param {boolean} isOpen - Modal visibility
  * @param {object} routine - Routine object to edit
  * @param {function} onClose - Close modal handler
  * @param {function} onSubmit - Submit handler from parent
  */
 const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
-
   if (!isOpen || !routine) return null;
 
   /**
@@ -28,10 +27,10 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
     title: routine.title || "",
     description: routine.description || "",
     effective_from: routine.effective_from
-      ? routine.effective_from.split('T')[0]
+      ? routine.effective_from.split("T")[0]
       : "",
     effective_to: routine.effective_to
-      ? routine.effective_to.split('T')[0]
+      ? routine.effective_to.split("T")[0]
       : "",
   };
 
@@ -58,7 +57,7 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
     handleBlur,
     handleSubmit,
     handleChange,
-    isSubmitting
+    isSubmitting,
   } = formik;
 
   return (
@@ -72,31 +71,22 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
           transition={{ duration: 0.25 }}
         >
           <motion.div
-            className="bg-white dark:bg-dark-overlay rounded-xl w-full max-w-xl p-6 shadow-xl relative font-general-sans"
+            className="bg-white dark:bg-dark-overlay rounded-xl w-full max-w-xl mx-4 sm:mx-auto p-4 sm:p-6 shadow-xl relative font-general-sans max-h-[90vh] overflow-y-auto"
             initial={{ scale: 0.9, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
-
             {/* Header */}
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="schedulepopup-title">Edit Routine</h2>
-              <button
-                onClick={onClose}
-                className="scheduleClose-btn"
-                type="button"
-              >
-                <X size={20} />
-              </button>
-            </div>
 
+            <button onClick={onClose} className="x-btn">
+              <X size={20} />
+            </button>
+            <h2 className="schedulepopup-title mb-4">Edit Routine</h2>
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
-
               {/* read-only fields (Semester & Batch) */}
-              <div className="grid grid-cols-2 gap-4 bg-gray-50 dark:bg-dark-hover p-4 rounded-md">
-
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 dark:bg-dark-hover p-4 rounded-md">
                 {/* Semester (Read-only) */}
                 <div>
                   <label className="createSchedule-label text-gray-600 dark:text-gray-400">
@@ -164,7 +154,7 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
                   value={values.description}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className="createSchedule-option"
+                  className="createSchedule-option resize-none"
                   rows="3"
                   placeholder="Enter routine description"
                 />
@@ -174,8 +164,7 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
               </div>
 
               {/* Date Fields */}
-              <div className="grid grid-cols-2 gap-4">
-
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Effective From Date */}
                 <div>
                   <label className="createSchedule-label">
@@ -215,11 +204,11 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 sticky bottom-0 bg-white dark:bg-dark-overlay">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 border border-box-outline rounded-md hover:bg-gray-100 dark:hover:bg-dark-hover text-primary-text dark:text-white transition cursor-pointer"
+                  className="px-4 py-2 border border-box-outline rounded-md hover:bg-gray-100 dark:hover:bg-dark-hover text-primary-text dark:text-white transition cursor-pointer order-2 sm:order-1"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -227,12 +216,16 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
 
                 <button
                   type="submit"
-                  className="auth-btn disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 cursor-pointer"
+                  className="auth-btn disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 cursor-pointer order-1 sm:order-2"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader className="animate-spin mx-auto dark:invert" size={16} />
+                      <Loader2
+                        className="animate-spin mx-auto dark:invert"
+                        size={16}
+                      />
+                      
                     </>
                   ) : (
                     "Update Routine"

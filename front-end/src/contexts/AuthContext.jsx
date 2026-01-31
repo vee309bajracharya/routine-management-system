@@ -7,6 +7,7 @@ const AuthContext = createContext({
     token: null,
     login: () => { },
     logout: () => { },
+    updateUser: () => { },
     isAuthenticated: false,
     isLoading: true,
 });
@@ -76,6 +77,17 @@ export const AuthProvider = ({ children }) => {
             logout(); //if fetching fails, clear the stored data
         } finally {
             setIsLoading(false);
+        }
+    };
+    // function to update user data in state and storage
+    const updateUser = (updatedUserData) => {
+        setUser(updatedUserData);
+        
+        // Update storage based on where token is stored
+        if (localStorage.getItem('auth_token')) {
+            localStorage.setItem('user_data', JSON.stringify(updatedUserData));
+        } else {
+            sessionStorage.setItem('user_data', JSON.stringify(updatedUserData));
         }
     };
 
@@ -164,6 +176,7 @@ export const AuthProvider = ({ children }) => {
         token, // auth_token
         login, // login method
         logout, // logout method
+        updateUser, // update user data method
         isAuthenticated, // is user logged in
         isLoading, // is auth state being checked
     };

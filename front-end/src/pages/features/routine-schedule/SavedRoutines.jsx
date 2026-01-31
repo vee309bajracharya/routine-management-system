@@ -135,10 +135,10 @@ const SavedRoutines = () => {
     }
 
     return (
-        <section className="mt-4 font-general-sans">
+        <section className="mt-4 font-general-sans px-2 sm:px-0">
             {/* Header */}
             <div className="bg-white dark:bg-dark-overlay rounded-lg p-4 mb-4">
-                <h2 className="text-xl font-semibold text-primary-text dark:text-white mb-2">
+                <h2 className="text-lg sm:text-xl font-semibold text-primary-text dark:text-white mb-2">
                     Saved Routine Versions for : {currentRoutine.title}
                 </h2>
                 <p className="text-sm text-sub-text dark:text-white">
@@ -158,8 +158,8 @@ const SavedRoutines = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Table */}
-                        <section className="overflow-x-auto">
+                        {/* Desktop Table View */}
+                        <section className="hidden md:block overflow-x-auto">
                             <table className="w-full text-sm text-left">
                                 <thead className="border-b border-box-outline text-primary-text dark:text-white bg-gray-50 dark:bg-dark-hover font-medium">
                                     <tr>
@@ -214,6 +214,52 @@ const SavedRoutines = () => {
                                 </tbody>
                             </table>
                         </section>
+
+                        {/* Mobile Card View */}
+                        <div className="mobile-card-list md:hidden">
+                            {savedVersions.map((version) => (
+                                <div
+                                    key={version.id}
+                                    className="mobile-card-container"
+                                >
+                                    {/* Header Row */}
+                                    <div className="mobile-header">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="mobile-card-badge">
+                                                    SV-{String(version.id).padStart(3, '0')}
+                                                </span>
+                                                <span className="text-xs text-sub-text">
+                                                    {formatDate(version.saved_date)}
+                                                </span>
+                                            </div>
+                                            <h3 className="text-base font-semibold text-primary-text dark:text-white">
+                                                {version.label}
+                                            </h3>
+                                            <p className="text-sm text-sub-text dark:text-gray-400 mt-1 line-clamp-2">
+                                                {version.description || "No description"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="mobile-card-actions">
+                                        <button
+                                            className="btn-mobile-secondary flex-1"
+                                            onClick={() => handleConfirmLoad(version)}
+                                        >
+                                            <RotateCcw size={16} /> Load Version
+                                        </button>
+                                        <button
+                                            className="delete-mobile-btn"
+                                            onClick={() => handleConfirmDelete(version)}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </>
                 )}
             </div>

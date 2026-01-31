@@ -19,7 +19,7 @@ const AcademicYears = () => {
       try {
         const institutionId = 1; // Get from auth context if available
         const response = await axiosClient.get(
-          `/admin/dropdowns/departments/${institutionId}`
+          `/admin/dropdowns/departments/${institutionId}`,
         );
         if (response.data.success) {
           setDepartments(response.data.data || []);
@@ -49,12 +49,11 @@ const AcademicYears = () => {
         year_name: values.year_name,
         start_date: values.start_date,
         end_date: values.end_date,
-        
       });
 
       if (response.data.success) {
         toast.success(
-          response.data.message || "Academic year created successfully"
+          response.data.message || "Academic year created successfully",
         );
         resetForm();
       }
@@ -75,8 +74,8 @@ const AcademicYears = () => {
   }
 
   return (
-    <div className="mt-5 flex justify-center font-general-sans">
-      <div className="bg-white dark:bg-dark-overlay w-[720px] rounded-xl border border-box-outline shadow-sm p-8">
+    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
         <h2 className="form-header">Create Academic Year</h2>
         <p className="form-subtext">
           Define academic year periods for organizing semesters and courses.
@@ -84,50 +83,52 @@ const AcademicYears = () => {
 
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Department */}
-          <div>
-            <label className="form-title">
-              Department <span className="text-error-red">*</span>
-            </label>
-            <select
-              name="department_id"
-              value={values.department_id}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="dropdown-select"
-            >
-              <option value="">Select Department</option>
-              {departments.map((dept) => (
-                <option key={dept.id} value={dept.id}>
-                  {dept.display_label || dept.department_name}
-                </option>
-              ))}
-            </select>
-            {touched.department_id && errors.department_id && (
-              <p className="showError">{errors.department_id}</p>
-            )}
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="form-title">
+                Department <span className="text-error-red">*</span>
+              </label>
+              <select
+                name="department_id"
+                value={values.department_id}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="dropdown-select"
+              >
+                <option value="">Select Department</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.display_label || dept.department_name}
+                  </option>
+                ))}
+              </select>
+              {touched.department_id && errors.department_id && (
+                <p className="showError">{errors.department_id}</p>
+              )}
+            </div>
 
-          {/* Academic Year Name */}
-          <div>
-            <label className="form-title">
-              Academic Year Name <span className="text-error-red">*</span>
-            </label>
-            <input
-              type="text"
-              name="year_name"
-              placeholder="e.g., 2023-2024, Year 1"
-              value={values.year_name}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="dropdown-select"
-            />
-            {touched.year_name && errors.year_name && (
-              <p className="showError">{errors.year_name}</p>
-            )}
+            {/* Academic Year Name */}
+            <div>
+              <label className="form-title">
+                Academic Year Name <span className="text-error-red">*</span>
+              </label>
+              <input
+                type="text"
+                name="year_name"
+                placeholder="DEPT-2023,"
+                value={values.year_name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="dropdown-select"
+              />
+              {touched.year_name && errors.year_name && (
+                <p className="showError">{errors.year_name}</p>
+              )}
+            </div>
           </div>
 
           {/* Start Date and End Date */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="form-title">
                 Start Date <span className="text-error-red">*</span>
@@ -164,7 +165,7 @@ const AcademicYears = () => {
           </div>
 
           {/* Buttons */}
-          <div className="grid grid-cols-2 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
             <button
               type="button"
               className="cancel-btn"
@@ -184,7 +185,7 @@ const AcademicYears = () => {
                   Creating...
                 </>
               ) : (
-                "Create Academic Year"
+                "Create"
               )}
             </button>
           </div>

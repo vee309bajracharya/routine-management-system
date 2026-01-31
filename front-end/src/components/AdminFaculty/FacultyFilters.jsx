@@ -37,21 +37,16 @@ const FacultyFilters = ({
     setLocalSearch(e.target.value);
   };
 
-  const handleClearSearch = () => {
-    setLocalSearch("");
-    setSearchQuery("");
-  };
-
   return (
-    <div className="flex justify-between items-center mb-4 gap-4">
+    <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center mb-4 gap-3 sm:gap-4">
       {/* Role Filter Buttons */}
-      <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto pb-2 lg:pb-0">
         {["all", "admin", "teacher"].map((role) => (
           <button
             key={role}
-            className={`filter-btn transition-colors ${
+            className={`filter-btn transition-colors whitespace-nowrap ${
               selectedRole === role
-                ? "bg-main-blue text-white  hover:bg-hover-blue "
+                ? "bg-main-blue text-white hover:bg-hover-blue"
                 : "bg-gray-100 text-primary-text dark:hover:text-black hover:bg-gray-200 dark:bg-dark-hover dark:text-white"
             }`}
             onClick={() => handleRoleClick(role)}
@@ -65,9 +60,9 @@ const FacultyFilters = ({
       </div>
 
       {/* Search + Add Button */}
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-sub-text pointer-events-none" />
+      <div className="action-bar-container">
+        <div className="relative w-full sm:w-auto">
+          <Search className="search-icon" />
           <input
             type="text"
             placeholder="Search by Name, Email, or Department"
@@ -75,21 +70,14 @@ const FacultyFilters = ({
             onChange={handleSearchChange}
             className="search-btn"
           />
-          {localSearch && (
-            <button
-              onClick={handleClearSearch}
-              className="absolute right-3 top-2.5 text-sub-text hover:text-primary-text"
-              aria-label="Clear search"
-            >
-              ×
-            </button>
-          )}
+          
         </div>
         <button
-          className="btn-link"
+          className="btn-link justify-center font-medium"
           onClick={() => navigate("/admin/academic-structure/user-accounts")}
         >
-          Add Faculty <Plus size={16} />
+          <Plus size={16} />
+          <span>Add Faculty</span>
         </button>
       </div>
     </div>

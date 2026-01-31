@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useCallback } from "react";
-import { Pencil, Trash2, Plus, Search, X, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { useFormik } from "formik";
+import { DepartmentEditValidationSchema } from "../../../../validations/DepartmentValidationSchema";
+import { Edit, Trash2, Plus, Search, X, Loader2 } from "lucide-react";
 import axiosClient from "../../../../services/api/axiosClient";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { toast } from "react-toastify";
-import { DepartmentEditValidationSchema } from "../../../../validations/DepartmentValidationSchema";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import { toast } from "react-toastify";
 
 const DepartmentList = () => {
   const { user } = useAuth();
@@ -98,7 +98,7 @@ const DepartmentList = () => {
 
       if (response.data.success) {
         toast.success(
-          response.data.message || "Department deleted successfully"
+          response.data.message || "Department deleted successfully",
         );
         await fetchDepartments(currentPage, {
           search: searchTerm?.trim() || null,
@@ -132,10 +132,7 @@ const DepartmentList = () => {
             This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
-            <button
-              onClick={closeToast}
-              className="px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors"
-            >
+            <button onClick={closeToast} className="toast-cancel">
               Cancel
             </button>
             <button
@@ -143,7 +140,7 @@ const DepartmentList = () => {
                 closeToast();
                 await deleteDepartment(dept.id);
               }}
-              className="px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors"
+              className="toast-delete"
             >
               Confirm Delete
             </button>
@@ -155,7 +152,7 @@ const DepartmentList = () => {
         closeButton: false,
         hideProgressBar: true,
         autoClose: false,
-      }
+      },
     );
   };
 
@@ -176,13 +173,12 @@ const DepartmentList = () => {
           code: "",
           head_teacher_id: "",
           description: "",
-          
         },
     validationSchema: DepartmentEditValidationSchema,
     onSubmit: handleEditSubmit,
     enableReinitialize: true,
   });
-  
+
   const {
     values,
     errors,
@@ -193,7 +189,7 @@ const DepartmentList = () => {
     setFieldValue,
   } = formik;
 
-  // Open edit modal - FIXED: Use head_teacher.id which is the user_id
+  // Open edit modal
   const handleEditClick = (dept) => {
     setSelectedDept(dept);
 
@@ -201,7 +197,9 @@ const DepartmentList = () => {
       values: {
         department_name: dept.department_name || "",
         code: dept.code || "",
-        head_teacher_id: dept.head_teacher?.id ? String(dept.head_teacher.id) : "",
+        head_teacher_id: dept.head_teacher?.id
+          ? String(dept.head_teacher.id)
+          : "",
         description: dept.description || "",
         status: dept.status || "active",
       },
@@ -217,7 +215,7 @@ const DepartmentList = () => {
     resetForm();
   };
 
-  // Handle edit submit - FIXED: Compare with head_teacher.id (user_id)
+  // Handle edit submit
   async function handleEditSubmit(values) {
     setIsSubmitting(true);
     try {
@@ -230,13 +228,13 @@ const DepartmentList = () => {
       if (values.code !== selectedDept.code) {
         updateData.code = values.code.toUpperCase();
       }
-      
-      // FIXED: Compare with selectedDept.head_teacher.id (which is user_id from API)
+
+      // Compare with selectedDept
       const currentHeadTeacherId = selectedDept.head_teacher?.id || "";
       if (values.head_teacher_id !== String(currentHeadTeacherId)) {
         updateData.head_teacher_id = values.head_teacher_id || null;
       }
-      
+
       if (values.description !== selectedDept.description) {
         updateData.description = values.description || null;
       }
@@ -252,12 +250,12 @@ const DepartmentList = () => {
 
       const response = await axiosClient.put(
         `/admin/departments/${selectedDept.id}`,
-        updateData
+        updateData,
       );
 
       if (response.data.success) {
         toast.success(
-          response.data.message || "Department updated successfully"
+          response.data.message || "Department updated successfully",
         );
         handleCloseModal();
         await fetchDepartments(currentPage, {
@@ -299,30 +297,32 @@ const DepartmentList = () => {
   return (
     <div className="academic-common-bg">
       {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="form-header text-2xl font-bold">Departments</h1>
-        <p className="form-subtext">
+      <div className="mb-6 md:mb-8">
+        <h1 className="form-header text-xl md:text-2xl font-bold">Departments</h1>
+        <p className="form-subtext text-sm">
           Manage all department data here, including adding new departments,
           editing details, viewing, and deleting entries.
         </p>
       </div>
 
       {/* Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
+      <div className="actions-toolbar">
+        {/* Status Filter */}
+        <div className="w-full sm:w-auto">
           <select
-            className="dropdown-select cursor-pointer"
+            className="dropdown-select cursor-pointer text-sm outline-none sm:w-auto"
             value={statusFilter}
             onChange={(e) => handleFilterChange("status", e.target.value)}
           >
-            <option value="">All Status</option>
+            <option value="">Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
         </div>
 
-        <div className="flex items-center gap-3 flex-1 md:justify-end">
-          <div className="relative w-full max-w-sm">
+        {/* Search and Add Button */}
+        <div className="action-bar-container flex-1 sm:justify-end">
+          <div className="relative flex-1 sm:max-w-sm">
             <span className="search-icon">
               <Search size={18} />
             </span>
@@ -338,40 +338,48 @@ const DepartmentList = () => {
             onClick={() =>
               navigate("/admin/academic-structure/academic-departments")
             }
-            className="btn-link"
+            className="btn-link justify-center font-medium"
           >
-            Add Department
-            <Plus size={18} />
+            <Plus size={16} /> Add Department
           </button>
         </div>
       </div>
 
-      {/* Table Section */}
+      {/* Main Content */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="text-sub-text text-sm">Loading departments...</p>
+          <p className="state-loading">Loading departments...</p>
         </div>
       ) : departments.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 dark:bg-dark-hover rounded-lg">
-          <p className="text-sub-text text-base">No departments found</p>
+        <div className="state-empty-bg">
+          <p className="state-text">No departments found</p>
+          {(searchTerm || statusFilter) && (
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setStatusFilter("");
+                setCurrentPage(1);
+              }}
+              className="mt-3 text-sm text-main-blue hover:underline cursor-pointer"
+            >
+              Clear filters to see all departments
+            </button>
+          )}
         </div>
       ) : (
         <>
-          <div className="w-full overflow-hidden">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block w-full overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="table-thead">
                   <tr className="text-left text-primary-text dark:text-white">
-                    <th className="table-th whitespace-nowrap">
-                      Department ID
-                    </th>
+                    <th className="table-th whitespace-nowrap">Department ID</th>
                     <th className="table-th">Department Name</th>
                     <th className="table-th whitespace-nowrap">Code</th>
                     <th className="table-th">Description</th>
-                    <th className="table-th whitespace-nowrap">
-                      Head of Department
-                    </th>
+                    <th className="table-th whitespace-nowrap">Head of Department</th>
                     <th className="table-th">Teachers</th>
                     <th className="table-th">Status</th>
                     <th className="table-th">Actions</th>
@@ -381,12 +389,8 @@ const DepartmentList = () => {
                 <tbody className="divide-y divide-box-outline">
                   {departments.map((dept) => (
                     <tr key={dept.id} className="table-tbody-tr">
-                      <td className="p-4 font-semibold">
-                        DEP-{String(dept.id).padStart(4, "0")}
-                      </td>
-                      <td className="p-4 text-main-blue font-semibold hover:underline cursor-pointer">
-                        {dept.department_name}
-                      </td>
+                      <td className="p-4">DEP-{String(dept.id).padStart(4, "0")}</td>
+                      <td className="p-4">{dept.department_name}</td>
                       <td className="p-4">{dept.code}</td>
                       <td className="p-4 max-w-[200px]">
                         <p className="truncate" title={dept.description}>
@@ -396,12 +400,10 @@ const DepartmentList = () => {
                       <td className="p-4">
                         {dept.head_teacher?.name || "N/A"}
                       </td>
-                      <td className="p-4 text-center">
-                        {dept.teachers_count || 0}
-                      </td>
-                      <td className="p-4 text-center">
+                      <td className="p-4">{dept.teachers_count || 0}</td>
+                      <td className="p-4">
                         <span
-                          className={`px-3 py-1 rounded-sm text-sm uppercase ${
+                          className={`px-3 py-1 rounded-sm text-xs capitalize ${
                             dept.status === "active"
                               ? "table-active"
                               : "table-inactive"
@@ -411,28 +413,22 @@ const DepartmentList = () => {
                         </span>
                       </td>
                       <td className="p-4">
-                        <div className="flex items-center justify-center gap-3">
+                        <section className="flex items-center gap-3">
                           <button
                             className="action-edit-btn"
                             onClick={() => handleEditClick(dept)}
                             aria-label="Edit department"
                           >
-                            <Pencil
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Edit size={16} />
                           </button>
                           <button
                             className="action-delete-btn"
                             onClick={() => handleConfirmDelete(dept)}
                             aria-label="Delete department"
                           >
-                            <Trash2
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Trash2 size={16} />
                           </button>
-                        </div>
+                        </section>
                       </td>
                     </tr>
                   ))}
@@ -441,10 +437,86 @@ const DepartmentList = () => {
             </div>
           </div>
 
+          {/* Mobile Card View */}
+          <div className="mobile-card-list">
+            {departments.map((dept) => (
+              <div
+                key={dept.id}
+                className="mobile-card-container"
+              >
+                {/* Header Row */}
+                <div className="mobile-header">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-sub-text">
+                        DEP-{String(dept.id).padStart(4, "0")}
+                      </span>
+                      <span className="mobile-card-badge">
+                        {dept.code}
+                      </span>
+                    </div>
+                    <h3 className="info-title-click">
+                      {dept.department_name}
+                    </h3>
+                  </div>
+                  <span
+                    className={`status-indicator ${
+                      dept.status === "active"
+                        ? "table-active"
+                        : "table-inactive"
+                    }`}
+                  >
+                    {dept.status}
+                  </span>
+                </div>
+
+                {/* Department Info */}
+                <div className="space-y-2 pt-2">
+                  <div className="mobile-data-row">
+                    <span className="text-xs text-sub-text">Head:</span>
+                    <span className="text-sm text-primary-text dark:text-white font-medium text-right">
+                      {dept.head_teacher?.name || "N/A"}
+                    </span>
+                  </div>
+                  <div className="mobile-data-row">
+                    <span className="info-label">Teachers:</span>
+                    <span className="info-value">
+                      {dept.teachers_count || 0}
+                    </span>
+                  </div>
+                  {dept.description && (
+                    <div className="pt-2 border-t border-box-outline">
+                      <p className="text-xs text-sub-text mb-1">Description:</p>
+                      <p className="text-sm text-primary-text dark:text-white leading-relaxed">
+                        {dept.description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 pt-2">
+                  <button
+                    className="btn-mobile-secondary"
+                    onClick={() => handleEditClick(dept)}
+                  >
+                    <Edit size={16} /> Edit
+                  </button>
+                  <button
+                    className="delete-mobile-btn"
+                    onClick={() => handleConfirmDelete(dept)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* Pagination */}
           {pagination && pagination.last_page > 1 && (
-            <div className="flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline">
-              <div className="text-sm text-primary-text dark:text-white">
+            <div className="pagination-container flex-col sm:flex-row gap-4">
+              <div className="pagination-text text-center sm:text-left">
                 Showing{" "}
                 <span className="font-semibold">
                   {(currentPage - 1) * pagination.per_page + 1}
@@ -453,43 +525,40 @@ const DepartmentList = () => {
                 <span className="font-semibold">
                   {Math.min(
                     currentPage * pagination.per_page,
-                    pagination.total
+                    pagination.total,
                   )}
                 </span>{" "}
                 of <span className="font-semibold">{pagination.total}</span>{" "}
                 results
               </div>
-
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2 flex-wrap">
                 <button
                   onClick={() => loadPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronLeft size={18} />
                 </button>
-
                 {Array.from(
                   { length: pagination.last_page },
-                  (_, i) => i + 1
+                  (_, i) => i + 1,
                 ).map((page) => (
                   <button
                     key={page}
                     onClick={() => loadPage(page)}
-                    className={`px-3 py-1.5 rounded-md text-sm cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-md text-sm ${
                       page === currentPage
                         ? "bg-main-blue text-white"
-                        : "border border-box-outline hover:bg-gray-50 dark:text-white"
+                        : "border dark:text-white"
                     }`}
                   >
                     {page}
                   </button>
                 ))}
-
                 <button
                   onClick={() => loadPage(currentPage + 1)}
                   disabled={currentPage === pagination.last_page}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -499,10 +568,10 @@ const DepartmentList = () => {
         </>
       )}
 
-      {/* EDIT MODAL - FIXED: Use teacher.user_id in dropdown */}
+      {/* EDIT MODAL */}
       <AnimatePresence>
         {isEditModalOpen && selectedDept && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="editmodal-wrapper">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -515,38 +584,38 @@ const DepartmentList = () => {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white dark:bg-dark-overlay w-full max-w-lg rounded-2xl shadow-2xl p-8 z-10"
+              className="editmodal-container max-h-[90vh] overflow-y-auto"
             >
               <button
                 onClick={handleCloseModal}
-                className="absolute right-4 top-4 p-1 x-btn"
+                className="x-btn"
               >
                 <X size={20} />
               </button>
 
-              <h2 className="form-header">Edit Department</h2>
-              <p className="text-sm text-main-blue font-medium mb-6">
+              <h2 className="form-header text-xl md:text-2xl pr-8">Edit Department</h2>
+              <p className="form-subtitle-info">
                 Department: {selectedDept.department_name}
               </p>
 
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 <div>
-                  <label className="form-title">Department Name</label>
+                  <label className="form-title sm:text-sm">Department Name</label>
                   <input
                     type="text"
                     name="department_name"
                     value={values.department_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   />
                   {touched.department_name && errors.department_name && (
-                    <p className="showError">{errors.department_name}</p>
+                    <p className="showError text-xs">{errors.department_name}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-title">Department Code</label>
+                  <label className="form-title sm:text-sm">Department Code</label>
                   <input
                     type="text"
                     name="code"
@@ -556,55 +625,56 @@ const DepartmentList = () => {
                       setFieldValue("code", upperValue);
                     }}
                     onBlur={handleBlur}
-                    className="dropdown-select uppercase"
+                    className="dropdown-select uppercase text-sm"
                   />
                   {touched.code && errors.code && (
-                    <p className="showError">{errors.code}</p>
+                    <p className="showError text-xs">{errors.code}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-title">Head of Department</label>
+                  <label className="form-title sm:text-sm">Head of Department</label>
                   <select
                     name="head_teacher_id"
                     value={values.head_teacher_id}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="dropdown-select"
+                    className="dropdown-select text-sm"
                   >
                     <option value="">Select Head of Department</option>
                     {teachers.map((teacher) => (
-                      <option key={teacher.id} value={String(teacher.user_id)}>
+                      <option key={teacher.id} value={String(teacher.user_id)} className="form-option">
                         {teacher.display_label || teacher.name}
                       </option>
                     ))}
                   </select>
                   {touched.head_teacher_id && errors.head_teacher_id && (
-                    <p className="showError">{errors.head_teacher_id}</p>
+                    <p className="showError text-xs">{errors.head_teacher_id}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-title">Description</label>
+                  <label className="form-title sm:text-sm">Description</label>
                   <textarea
                     name="description"
                     value={values.description}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="textarea-input h-24"
+                    className="textarea-input h-20 sm:h-24 text-sm"
+                    placeholder="Enter description..."
                   />
                   {touched.description && errors.description && (
-                    <p className="showError">{errors.description}</p>
+                    <p className="showError text-xs">{errors.description}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="form-title">Status</label>
-                  <div className="flex gap-8">
+                  <label className="form-title sm:text-sm">Status</label>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-8 mt-2">
                     {["active", "inactive"].map((status) => (
                       <label
                         key={status}
-                        className="flex items-center gap-2.5 cursor-pointer"
+                        className="flex items-center gap-2 cursor-pointer"
                       >
                         <input
                           type="radio"
@@ -613,30 +683,31 @@ const DepartmentList = () => {
                           checked={values.status === status}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          className="form-radio"
                         />
-                        <span className="form-radio-title">
-                          {status.charAt(0).toUpperCase() + status.slice(1)}
+                        <span className="form-radio-title text-xs sm:text-sm capitalize">
+                          {status}
                         </span>
                       </label>
                     ))}
                   </div>
                   {touched.status && errors.status && (
-                    <p className="showError">{errors.status}</p>
+                    <p className="showError text-xs">{errors.status}</p>
                   )}
                 </div>
 
-                <div className="flex justify-between gap-4 items-center pt-6">
+                <div className="modal-form-actions">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4"
+                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 whitespace-nowrap flex items-center justify-center"
+                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

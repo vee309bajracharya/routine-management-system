@@ -12,7 +12,7 @@ const BaseLayout = ({ role }) => {
     role === "admin" ? adminSidebarItems : teacherSidebarItems;
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen min-w-0">
       {/* Sidebar */}
       <AdminSidebar
         collapsed={collapsed}
@@ -28,7 +28,7 @@ const BaseLayout = ({ role }) => {
           role={role}
         />
 
-        <main className="flex-1 overflow-y-auto p-5 bg-light-bg dark:bg-dark-overlay">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 p-5 bg-light-bg dark:bg-dark-overlay relative block">
           <Outlet />
         </main>
       </div>

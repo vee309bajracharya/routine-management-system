@@ -15,8 +15,10 @@
   --color-primary5-blue: oklch(0.8686 0.0641 264.59);
   --color-primary6-blue: oklch(0.9693 0.0144 264.5);
   --color-box-outline: oklch(0.8765 0.0056 274.96);
+  --color-hover-gray:oklch(0.985 0.004 247);
+  --color-main-gray:oklch(0.97 0.006 247);
   --color-primary-text: oklch(0.2492 0.0363 265.49);
-  --color-sub-text: oklch(0.4841 0.0227 262.91);
+  --color-sub-text: oklch(0.5641 0.0227 262.91);
   --color-error-red: oklch(0.5683 0.2157 27.65);
   --color-success-green: oklch(0.7471 0.2315 144.6);
   --color-information-purple: oklch(0.446 0.2505 277.18);
@@ -167,7 +169,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .overview-status-btn {
-  @apply px-3 py-1 border border-gray-300 rounded-md bg-gray-100 text-sm cursor-pointer;
+  @apply px-3 py-1 border border-gray-300 rounded-md bg-main-gray text-sm cursor-pointer;
 }
 
 .routine-list-head {
@@ -190,10 +192,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply block text-sm font-medium text-primary-text dark:text-white mb-2;
 }
 .textarea-input {
-  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-  bg-white dark:bg-dark-hover text-primary-text dark:text-white 
-  placeholder-gray-400 dark:placeholder-gray-500
-  disabled:opacity-50 resize-none;
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-dark-hover text-primary-text dark:text-white placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-50 resize-none;
 }
 
 .edit-form-info-span {
@@ -243,13 +242,19 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply flex flex-col items-center justify-center rounded-lg
 }
 .x-btn{
-  @apply text-gray-400 hover:text-gray-600 dark:hover:bg-dark-hover transition cursor-pointer
+  @apply text-gray-400 hover:text-box-outline dark:hover:bg-dark-hover transition cursor-pointer absolute right-4 top-4 p-1 z-10
 }
 .search-btn{
   @apply pl-9 pr-10 py-2 border border-box-outline rounded-md text-sm w-full bg-white dark:bg-dark-overlay dark:text-white focus:outline-none focus:ring-2 focus:ring-main-blue
 }
+.action-bar-container{
+  @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 lg:ml-4
+}
+.search-input-wrapper{
+  @apply relative flex-1 sm:w-64
+}
 .btn-link{
-  @apply flex items-center gap-2 bg-main-blue text-white px-4 py-2 rounded-md cursor-pointer text-sm hover:bg-hover-blue transition-colors
+  @apply flex items-center gap-2 bg-main-blue whitespace-nowrap text-white px-4 py-2 rounded-md cursor-pointer text-sm hover:bg-hover-blue transition-colors
 }
 .background-blur{
   @apply absolute inset-0 bg-black/40 backdrop-blur-sm
@@ -257,45 +262,297 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .status-btn-active{
   @apply bg-green-100 text-green-600 px-3 py-1 rounded-sm text-sm uppercase
 }
+.drawer-container{
+  @apply fixed right-0 top-0 h-full w-full sm:w-[90%] md:w-[600px] lg:w-[600px] bg-white dark:bg-dark-overlay overflow-y-auto
+}
 .drawer-info-header{
-  @apply text-lg font-semibold text-black dark:text-white
+  @apply text-lg font-semibold text-black dark:text-white mb-3
+}
+.drawer-sticky-header{
+  @apply sticky top-0 bg-white dark:bg-dark-overlay p-4 sm:p-6 border-b border-box-outline z-10
 }
 .drawer-info-title{
   @apply text-primary-text dark:text-white
 }
+.drawer-icon-box{
+  @apply w-10 h-10 bg-blue-100 dark:bg-dark-overlay rounded-md flex items-center justify-center flex-shrink-0
+}
+.drawer-items-seprator{
+  @apply flex justify-between items-center py-2 border-b border-main-gray dark:border-gray-700
+}
+.drawer-box-title{
+  @apply text-xs sm:text-sm text-sub-text font-medium 
+}
+.drawer-box-subtext{
+  @apply text-xs sm:text-sm md:text-base text-primary-text dark:text-white font-semibold text-right
+}
+.drawer-title{
+  @apply text-lg sm:text-xl md:text-2xl font-semibold text-primary-text dark:text-white
+}
 .academic-common-bg{
-  @apply bg-white dark:bg-dark-overlay min-h-screen font-general-sans 
+  @apply bg-white dark:bg-dark-overlay min-h-screen font-general-sans p-4 md:p-6 lg:p-8 
 }
 .search-icon{
   @apply absolute left-3 top-2.5 w-4 h-4 text-sub-text pointer-events-none;
 }
 .table-thead{
- @apply bg-gray-100 border-b border-box-outline dark:bg-dark-hover
+ @apply bg-main-gray border-b border-box-outline dark:bg-dark-hover
 }
 .table-tbody-tr{
- @apply hover:bg-gray-50 dark:hover:bg-dark-hover dark:text-white transition-colors text-sm
+ @apply hover:bg-hover-gray dark:hover:bg-dark-hover dark:text-white transition-colors text-sm font-medium
 }
 .table-active{
- @apply bg-green-100 text-green-600 px-3 py-1 rounded-sm text-sm uppercase
+ @apply bg-green-100 text-success-green px-3 py-1 rounded-sm text-sm uppercase
 }
 .table-inactive{
  @apply bg-red-100 text-red-600 px-3 py-1 rounded-sm text-sm uppercase
 }
 .table-th{
- @apply p-4 text-left font-semibold text-sm dark:text-white
+ @apply p-4 text-left font-semibold text-sm dark:text-white 
 }
 .drawer-background{
   @apply fixed right-0 top-0 h-full w-full max-w-[500px] border-l border-box-outline bg-white dark:bg-dark-overlay shadow-2xl z-[80] overflow-y-auto p-6 font-general-sans
 }
 .drawer-box-background{
-  @apply dark:bg-dark-hover p-5 rounded-xl border border-box-outline mb-8 relative
+  @apply dark:bg-dark-hover bg-white p-5 rounded-xl border border-box-outline mb-8 relative
 }
 .drawer-sub-title{
   @apply text-xs uppercase text-gray-400 font-semibold mb-1
 }
+.drawer-table-th{
+  @apply p-3 md:p-4 text-left text-xs md:text-sm font-semibold text-primary-text dark:text-white
+}
+.drawer-status-active{
+  @apply bg-green-100 text-success-green dark:bg-green-900/30
+}
+.drawer-status-inactive{
+  @apply bg-red-100 text-error-red dark:bg-red-900/30
+}
+.drawer-section-title{
+  @apply text-sm sm:text-base md:text-lg font-semibold text-primary-text dark:text-white mb-3
+}
+.drawer-status-morning{
+  @apply bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400
+}
+.drawer-status-day{
+  @apply bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400
+}
 .dashboard-btn-link{
-  @apply bg-white border border-box-outline px-4 py-2 rounded-md text-sm font-semibold text-primary-text dark:bg-dark-overlay dark:text-white dark:hover:bg-dark-hover hover:bg-gray-100 shadow-sm transition-all
+  @apply bg-white border border-box-outline px-4 py-2 rounded-md text-sm font-semibold text-primary-text dark:bg-dark-overlay dark:text-white dark:hover:bg-dark-hover hover:bg-main-gray transition-all cursor-pointer
 }
 .dashboard-box{
-  @apply bg-white p-6 rounded-xl shadow-sm border border-box-outline flex flex-col justify-between hover:bg-primary6-blue dark:bg-dark-overlay dark:hover:bg-dark-hover
+  @apply bg-white p-6 rounded-xl border border-box-outline flex flex-col justify-between hover:bg-primary6-blue dark:bg-dark-overlay dark:hover:bg-dark-hover cursor-pointer transition-shadow hover:shadow-md
+}
+.dashboard-stat-value{
+  @apply text-3xl dark:text-white my-4 text-left
+}
+.dashboard-box-title{
+  @apply text-primary-text dark:text-white text-sm font-bold
+}
+.dashboard-box-subtext{
+  @apply text-xl font-semibold text-primary-text dark:text-white
+}
+.toast-cancel{
+  @apply px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors
+}
+.toast-delete{
+  @apply px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors
+}
+.draft{
+  @apply bg-yellow-200 text-warning-orange flex-1 flex flex-col items-center justify-center min-w-0
+}
+.published{
+  @apply bg-green-200 text-success-green flex-1 flex flex-col items-center justify-center min-w-0 border-x border-box-outline
+}
+.archived{
+  @apply bg-purple-200 text-information-purple flex-1 flex flex-col items-center justify-center min-w-0
+}
+.academic-menu-wrapper{
+  @apply bg-white w-[720px] dark:bg-dark-overlay rounded-xl border border-box-outline p-8
+}
+.editmodal-wrapper{
+  @apply fixed inset-0 z-[60] flex items-center justify-center px-4
+}
+.editmodal-container{
+  @apply relative bg-white dark:bg-dark-overlay w-full max-w-xl rounded-2xl p-8 z-10
+}
+.pagination-container{
+  @apply flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline
+}
+.pagination-text{
+  @apply text-sm text-primary-text dark:text-white
+}
+.pagination-prev-btn{
+  @apply px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-main-gray dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors
+}
+.state-container{
+  @apply flex flex-col items-center justify-center min-h-[400px]
+}
+.state-loading{
+  @apply text-sub-text text-sm
+}
+.state-empty-bg{
+  @apply flex flex-col items-center justify-center min-h-[400px] bg-hover-gray dark:bg-dark-hover rounded-lg
+}
+.state-text{
+  @apply text-sub-text text-base
+}
+.mobile-card-list{
+  @apply lg:hidden space-y-4
+}
+.mobile-card-container{
+  @apply bg-white dark:bg-dark-overlay border border-box-outline rounded-lg p-4 space-y-3
+}
+.mobile-header{
+  @apply flex items-start justify-between
+}
+.mobile-card-badge{
+  @apply inline-block bg-main-blue/10 text-main-blue text-xs font-semibold px-2 py-1 rounded
+}
+.info-label{
+  @apply text-xs text-sub-text mb-1
+}
+.info-value{
+  @apply text-sm font-medium text-primary-text dark:text-white
+}
+.mobile-card-actions{
+  @apply flex items-center gap-2 pt-2
+}
+.btn-mobile-secondary{
+  @apply flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm border border-box-outline rounded-md hover:bg-hover-gray dark:text-white dark:hover:bg-dark-hover
+}
+.delete-mobile-btn{
+  @apply px-3 py-2 border border-error-red text-error-red rounded-md hover:bg-error-red hover:text-white
+}
+.table-status-morning{
+  @apply bg-blue-100 text-blue-700 dark:bg-blue-900/30
+}
+.table-status-day{
+  @apply bg-orange-100 text-orange-700 dark:bg-orange-900/30
+}
+.info-title-click{
+  @apply text-base font-semibold text-primary-text dark:text-white cursor-pointer hover:text-main-blue
+}
+.table-status-completed{
+  @apply bg-blue-100 text-blue-700 dark:bg-blue-900/30
+}
+.status-indicator{
+  @apply px-2 py-1 rounded text-xs uppercase whitespace-nowrap
+}
+.grid-label{
+  @apply text-xs sm:text-sm text-sub-text font-medium mb-1
+}
+.grid-value{
+  @apply text-sm sm:text-base text-primary-text dark:text-white font-semibold
+}
+.drawer-status-indicator{
+  @apply px-2 py-1 rounded text-xs font-medium whitespace-nowrap
+}
+.form-subtitle-info{
+  @apply text-xs sm:text-sm text-main-blue font-medium mb-4 sm:mb-6
+}
+.read-only-text{
+  @apply  text-xs text-center text-sub-text
+}
+.modal-form-actions{
+  @apply flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 items-stretch sm:items-center pt-4 sm:pt-6
+}
+.form-selection-label{
+  @apply flex items-center gap-2 cursor-pointer text-xs sm:text-sm
+}
+.read-only-grid{
+  @apply grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6 border border-box-outline p-3 sm:p-4 rounded-lg sm:rounded-2xl bg-hover-gray dark:bg-gray-800
+}
+.drawer-info-grid{
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-5 border border-box-outline rounded-xl bg-white dark:bg-dark-overlay
+}
+.empty-state-wrapper{
+  @apply flex flex-col items-center justify-center min-h-[400px]
+}
+.drawer-row-label{
+  @apply text-main-blue font-medium text-sm sm:text-base
+}
+.drawer-row-value{
+  @apply text-primary-text dark:text-white text-sm sm:text-base text-right
+}
+.mobile-data-row{
+  @apply flex justify-between items-center
+}
+.create{
+  @apply bg-green-100 text-success-green border border-green-200 dark:bg-green-900/30 dark:text-green-500 
+}
+.delete{
+  @apply bg-red-100 text-error-red border border-red-200 dark:bg-red-900/30 dark:text-red-500
+}
+.update{
+  @apply bg-yellow-100 text-warning-orange border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-500
+}
+.default{
+  @apply bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-500
+}
+.logo-update{
+  @apply px-3 py-1.5 sm:py-1 bg-main-blue text-white text-xs sm:text-sm rounded hover:bg-mouse-pressed-blue transition-colors cursor-pointer
+}
+.logo-delete{
+  @apply px-3 py-1.5 sm:py-1 bg-white text-primary-text text-xs sm:text-sm border border-box-outline rounded hover:text-error-red transition-colors cursor-pointer
+}
+.filter-action-bar{
+  @apply flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6
+}
+.filter-group{
+  @apply flex flex-col sm:flex-row lg:items-center gap-4 flex-1 min-w-0
+}
+.scrollable-nav-bar{
+  @apply flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 md:mx-0 md:px-0 flex-1 min-w-0
+}
+.drawer-avatar-box{
+  @apply w-14 h-14 sm:w-16 sm:h-16 bg-primary6-blue rounded-2xl flex-shrink-0 flex items-center justify-center
+}
+.drawer-count-badge{
+  @apply text-xs sm:text-sm bg-main-blue text-white px-2 py-1 rounded mt-2 inline-block
+}
+.drawer-header-title{
+  @apply text-base sm:text-lg md:text-xl font-semibold text-primary-text dark:text-white break-words leading-tight
+}
+.dashboard-wrapper{
+  @apply flex flex-col lg:flex-row bg-white dark:bg-dark-overlay min-h-screen font-general-sans p-4 md:p-4  
+}
+.actions-toolbar{
+  @apply flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-6
+}
+.drawer-footer-sticky{
+  @apply sticky bottom-0 bg-white dark:bg-dark-overlay p-4 sm:p-6 border-t border-box-outline
+}
+.drawer-edit-btn{
+  @apply flex-1 flex items-center justify-center gap-2 bg-main-blue text-white px-4 py-2.5 rounded-lg hover:bg-hover-blue transition-colors text-sm sm:text-base
+}
+.tab-nav-list{
+  @apply flex gap-4 sm:gap-6 px-4 sm:px-6 border-b border-box-outline overflow-x-auto
+}
+.tab-item{
+  @apply pb-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap
+}
+.tab-item-active{
+  @apply text-main-blue border-b-2 border-main-blue
+}
+.tab-item-inactive{
+  @apply text-sub-text hover:text-primary-text dark:hover:text-white
+}
+.faculty-edit-admin-container{
+  @apply relative bg-white dark:bg-dark-overlay w-full max-w-lg mx-4 sm:mx-auto rounded-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto
+}
+.faculty-edit-teacher-container{
+  @apply relative bg-white dark:bg-dark-overlay w-full max-w-md mx-4 sm:mx-auto rounded-xl shadow-2xl overflow-hidden
+}
+.dashboard-table-draft{
+  @apply bg-warning-faidorange text-warning-orange dark:bg-yellow-900 dark:text-yellow-500
+}
+.dashboard-table-archived{
+  @apply bg-purple-100 text-information-purple dark:bg-purple-900 dark:text-purple-500
+}
+.view-details{
+  @apply w-full  flex items-center justify-center gap-2 px-3 py-2 text-sm border border-box-outline rounded-md hover:bg-hover-gray dark:text-white dark:hover:bg-dark-hover transition-colors
+}
+.mobile-timeslot-item{
+  @apply text-xs p-1.5 bg-hover-gray dark:bg-dark-hover border border-box-outline rounded text-primary-text dark:text-white
 }

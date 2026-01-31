@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, useCallback } from "react";
-import { Pencil, Trash2, Plus, Search, X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Edit, Trash2, Plus, Search, X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFormik } from "formik";
@@ -115,7 +115,7 @@ const BatchList = () => {
           <div className="flex gap-2 justify-end">
             <button
               onClick={closeToast}
-              className="px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors"
+              className="toast-cancel"
             >
               Cancel
             </button>
@@ -124,7 +124,7 @@ const BatchList = () => {
                 closeToast();
                 await deleteBatch(batch.id);
               }}
-              className="px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors"
+              className="toast-delete"
             >
               Confirm Delete
             </button>
@@ -264,31 +264,33 @@ const BatchList = () => {
   return (
     <div className="academic-common-bg">
       {/* Header Section */}
-      <div className="mb-8">
-        <h1 className="form-header text-2xl font-bold">Batches</h1>
-        <p className="form-subtext">
+      <div className="mb-6 md:mb-8">
+        <h1 className="form-header text-xl md:text-2xl">Batches</h1>
+        <p className="form-subtext text-sm">
           Manage all academic batches here, including batch name, code, year level,
           shift, and status details.
         </p>
       </div>
 
       {/* Action Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+        {/* Filter Dropdown */}
+        <div className="actions-toolbar">
           <select
-            className="dropdown-select cursor-pointer"
+            className="dropdown-select cursor-pointer text-sm outline-none sm:w-auto"
             value={filterStatus}
             onChange={(e) => handleFilterChange("status", e.target.value)}
           >
-            <option value="">All Status</option>
+            <option value="">Status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
             <option value="completed">Completed</option>
           </select>
         </div>
 
-        <div className="flex items-center gap-3 flex-1 md:justify-end">
-          <div className="relative w-full max-w-sm">
+        {/* Search and Add Button */}
+        <div className="action-bar-container">
+          <div className="relative flex-1 sm:w-64">
             <span className="search-icon">
               <Search size={18} />
             </span>
@@ -302,27 +304,27 @@ const BatchList = () => {
           </div>
           <button
             onClick={() => navigate("/admin/academic-structure/batches")}
-            className="btn-link"
+            className="btn-link justify-center font-medium"
           >
-            Add Batch
-            <Plus size={18} />
+            <Plus size={16} /> Add Batch
           </button>
         </div>
       </div>
 
-      {/* Table Section */}
+      {/* Main Content */}
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="text-sub-text text-sm">Loading batches...</p>
+          <p className="state-loading">Loading batches...</p>
         </div>
       ) : batches.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 dark:bg-dark-hover rounded-lg">
-          <p className="text-sub-text text-base">No batches found</p>
+        <div className="state-empty-bg">
+          <p className="state-text">No batches found</p>
         </div>
       ) : (
         <>
-          <div className="w-full overflow-hidden">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block w-full overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="table-thead">
@@ -341,12 +343,8 @@ const BatchList = () => {
                 <tbody className="divide-y divide-box-outline">
                   {batches.map((batch) => (
                     <tr key={batch.id} className="table-tbody-tr">
-                      <td className="p-4 font-medium">
-                        BATCH-{String(batch.id).padStart(4, "0")}
-                      </td>
-                      <td className="p-4 text-main-blue font-semibold hover:underline cursor-pointer">
-                        {batch.department?.code || "N/A"}
-                      </td>
+                      <td className="p-4">BATCH-{String(batch.id).padStart(4, "0")}</td>
+                      <td className="p-4">{batch.department?.code || "N/A"}</td>
                       <td className="p-4">{batch.semester?.semester_name || "N/A"}</td>
                       <td className="p-4">{batch.batch_name}</td>
                       <td className="p-4">{batch.code || "N/A"}</td>
@@ -371,19 +369,13 @@ const BatchList = () => {
                             onClick={() => handleEditClick(batch)}
                             className="action-edit-btn"
                           >
-                            <Pencil
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Edit size={16}/>
                           </button>
                           <button
                             onClick={() => handleConfirmDelete(batch)}
                             className="action-delete-btn"
                           >
-                            <Trash2
-                              size={16}
-                              className="text-primary-text dark:text-white"
-                            />
+                            <Trash2 size={16}/>
                           </button>
                         </div>
                       </td>
@@ -394,26 +386,101 @@ const BatchList = () => {
             </div>
           </div>
 
+          {/* Mobile Card View */}
+          <div className="mobile-card-list">
+            {batches.map((batch) => (
+              <div
+                key={batch.id}
+                className="mobile-card-container"
+              >
+                {/* Header Row */}
+                <div className="mobile-header">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="mobile-card-badge">
+                        {batch.department?.code || "N/A"}
+                      </span>
+                      <span className="text-xs text-sub-text">
+                        BATCH-{String(batch.id).padStart(4, "0")}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-semibold text-primary-text dark:text-white">
+                      {batch.batch_name}
+                    </h3>
+                    <p className="text-sm text-main-blue font-medium mt-1">
+                      {batch.semester?.semester_name || "N/A"}
+                    </p>
+                  </div>
+                  <span
+                    className={`px-2 py-1 rounded text-xs uppercase whitespace-nowrap ${
+                      batch.status === "active"
+                        ? "table-active"
+                        : batch.status === "completed"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        : "table-inactive"
+                    }`}
+                  >
+                    {batch.status}
+                  </span>
+                </div>
+
+                {/* Details Grid */}
+                <div className="grid  gap-3 pt-2">
+                  <div>
+                    <p className="info-label">Code</p>
+                    <p className="info-value">
+                      {batch.code || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="info-label">Year Level</p>
+                    <p className="info-value">
+                      {batch.year_level}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="info-label">Shift</p>
+                    <p className="info-value">
+                      {batch.shift}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 pt-2">
+                  <button
+                    className="btn-mobile-secondary"
+                    onClick={() => handleEditClick(batch)}
+                  >
+                    <Edit size={16} /> Edit
+                  </button>
+                  <button
+                    className="delete-mobile-btn"
+                    onClick={() => handleConfirmDelete(batch)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* Pagination */}
           {pagination && pagination.last_page > 1 && (
-            <div className="flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline">
-              <div className="text-sm text-primary-text dark:text-white">
+            <div className="pagination-container flex-col sm:flex-row gap-4">
+              <div className="pagination-text text-center sm:text-left">
                 Showing{" "}
-                <span className="font-semibold">
-                  {(currentPage - 1) * pagination.per_page + 1}
-                </span>{" "}
+                <span className="font-semibold">{(currentPage - 1) * pagination.per_page + 1}</span>{" "}
                 to{" "}
-                <span className="font-semibold">
-                  {Math.min(currentPage * pagination.per_page, pagination.total)}
-                </span>{" "}
+                <span className="font-semibold">{Math.min(currentPage * pagination.per_page, pagination.total)}</span>{" "}
                 of <span className="font-semibold">{pagination.total}</span> results
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2 flex-wrap">
                 <button
                   onClick={() => loadPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronLeft size={18} />
                 </button>
@@ -423,10 +490,10 @@ const BatchList = () => {
                     <button
                       key={page}
                       onClick={() => loadPage(page)}
-                      className={`px-3 py-1.5 rounded-md text-sm cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-md text-sm ${
                         page === currentPage
                           ? "bg-main-blue text-white"
-                          : "border border-box-outline hover:bg-gray-50 dark:text-white"
+                          : "border dark:text-white"
                       }`}
                     >
                       {page}
@@ -437,7 +504,7 @@ const BatchList = () => {
                 <button
                   onClick={() => loadPage(currentPage + 1)}
                   disabled={currentPage === pagination.last_page}
-                  className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+                  className="pagination-prev-btn"
                 >
                   <ChevronRight size={18} />
                 </button>
@@ -450,7 +517,7 @@ const BatchList = () => {
       {/* EDIT BATCH MODAL */}
       <AnimatePresence>
         {isEditModalOpen && selectedBatch && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div className="editmodal-wrapper">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -463,103 +530,103 @@ const BatchList = () => {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative bg-white dark:bg-dark-overlay w-full max-w-xl rounded-2xl shadow-2xl p-8 z-10"
+              className="editmodal-container max-h-[90vh] overflow-y-auto"
             >
               <button
                 onClick={handleCloseModal}
-                className="absolute right-4 top-4 p-1 x-btn"
+                className="x-btn"
               >
                 <X size={20} />
               </button>
 
-              <h2 className="form-header">Edit Batch Details</h2>
-              <p className="text-sm text-main-blue font-medium mb-6">
+              <h2 className="form-header text-xl md:text-2xl pr-8">Edit Batch Details</h2>
+              <p className="form-subtitle-info">
                 Batch: {selectedBatch.batch_name}
               </p>
 
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 {/* LOCKED INFO SECTION */}
-                <div className="grid grid-cols-2 gap-4 mb-3 border border-box-outline p-4 rounded-2xl bg-gray-50 dark:bg-gray-800">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-3 border border-box-outline p-3 sm:p-4 rounded-lg sm:rounded-2xl bg-gray-50 dark:bg-gray-800">
                   <div className="col-span-1">
-                    <label className="form-title">Department</label>
+                    <label className="form-title sm:text-sm">Department</label>
                     <input
                       type="text"
                       value={selectedBatch.department?.code || "N/A"}
-                      className="dropdown-select"
+                      className="dropdown-select cursor-not-allowed text-sm"
                       disabled
                     />
-                    <p className="mt-0.5 text-xs text-gray-400">
-                      Cannot be changed after creation
-                    </p>
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title">Semester</label>
+                    <label className="form-title sm:text-sm">Semester</label>
                     <input
                       type="text"
                       value={selectedBatch.semester?.semester_name || "N/A"}
-                      className="dropdown-select"
+                      className="dropdown-select cursor-not-allowed text-sm"
                       disabled
                     />
                   </div>
+                  <p className="col-span-1 sm:col-span-2 text-xs text-center text-sub-text">
+                    Cannot be changed after creation
+                  </p>
                 </div>
 
                 {/* EDITABLE FIELDS */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="col-span-1">
-                    <label className="form-title">Batch Name</label>
+                    <label className="form-title sm:text-sm">Batch Name</label>
                     <input
                       type="text"
                       name="batch_name"
                       value={values.batch_name}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                     />
                     {touched.batch_name && errors.batch_name && (
-                      <p className="showError">{errors.batch_name}</p>
+                      <p className="showError text-xs">{errors.batch_name}</p>
                     )}
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title">Batch Code</label>
+                    <label className="form-title sm:text-sm">Batch Code</label>
                     <input
                       type="text"
                       name="code"
                       value={values.code}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                     />
                     {touched.code && errors.code && (
-                      <p className="showError">{errors.code}</p>
+                      <p className="showError text-xs">{errors.code}</p>
                     )}
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title">Year Level</label>
+                    <label className="form-title sm:text-sm">Year Level</label>
                     <input
                       type="number"
                       name="year_level"
                       value={values.year_level}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      className="dropdown-select"
+                      className="dropdown-select text-sm"
                       min="1"
                       max="8"
                     />
                     {touched.year_level && errors.year_level && (
-                      <p className="showError">{errors.year_level}</p>
+                      <p className="showError text-xs">{errors.year_level}</p>
                     )}
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title">Shift</label>
-                    <div className="flex gap-4 mt-2">
+                    <label className="form-title sm:text-sm">Shift</label>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-2">
                       {["Morning", "Day", "Evening"].map((shift) => (
                         <label
                           key={shift}
-                          className="flex items-center gap-2.5 cursor-pointer"
+                          className="flex items-center gap-2 cursor-pointer"
                         >
                           <input
                             type="radio"
@@ -568,24 +635,24 @@ const BatchList = () => {
                             checked={values.shift === shift}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className="accent-main-blue"
+                            className="form-radio"
                           />
-                          <span className="form-radio-title">{shift}</span>
+                          <span className="form-radio-title text-xs sm:text-sm">{shift}</span>
                         </label>
                       ))}
                     </div>
                     {touched.shift && errors.shift && (
-                      <p className="showError">{errors.shift}</p>
+                      <p className="showError text-xs">{errors.shift}</p>
                     )}
                   </div>
 
-                  <div className="col-span-2">
-                    <label className="form-title">Status</label>
-                    <div className="flex gap-6 mt-2">
+                  <div className="col-span-1 sm:col-span-2">
+                    <label className="form-title sm:text-sm">Status</label>
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-2">
                       {["active", "inactive", "completed"].map((status) => (
                         <label
                           key={status}
-                          className="flex items-center gap-2.5 cursor-pointer"
+                          className="flex items-center gap-2 cursor-pointer"
                         >
                           <input
                             type="radio"
@@ -594,33 +661,33 @@ const BatchList = () => {
                             checked={values.status === status}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            className="accent-main-blue"
+                            className="form-radio"
                           />
-                          <span className="form-radio-title">
+                          <span className="form-radio-title text-xs sm:text-sm">
                             {status.charAt(0).toUpperCase() + status.slice(1)}
                           </span>
                         </label>
                       ))}
                     </div>
                     {touched.status && errors.status && (
-                      <p className="showError">{errors.status}</p>
+                      <p className="showError text-xs">{errors.status}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex justify-between gap-4 items-center pt-6">
+                <div className="modal-form-actions">
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4"
+                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 whitespace-nowrap flex items-center justify-center"
+                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

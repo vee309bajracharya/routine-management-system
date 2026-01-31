@@ -46,21 +46,22 @@ const FacultyPagination = ({ pagination, loadPage }) => {
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="flex items-center justify-between px-4 py-4 border-t border-box-outline bg-white dark:bg-dark-overlay">
+    <div className="pagination-container flex-col sm:flex-row gap-3 sm:gap-4">
       {/* Results Info */}
-      <div className="text-sm text-primary-text dark:text-white">
-        Showing <span className="font-semibold">{from}</span> to{" "}
+      <div className="pagination-text text-xs sm:text-sm text-center sm:text-left">
+        Showing 
+        <span className="font-semibold"> {from}</span> to{" "}
         <span className="font-semibold">{to}</span> of{" "}
         <span className="font-semibold">{total}</span> results
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
         {/* Previous Button */}
         <button
           onClick={() => loadPage(current_page - 1)}
           disabled={current_page === 1}
-          className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+          className="pagination-prev-btn"
           aria-label="Previous page"
         >
           <ChevronLeft size={18} />
@@ -71,7 +72,7 @@ const FacultyPagination = ({ pagination, loadPage }) => {
           {pageNumbers.map((page, index) => {
             if (page === "...") {
               return (
-                <span key={`ellipsis-${index}`} className="px-2 text-sub-text">
+                <span key={`ellipsis-${index}`} className="px-1 sm:px-2 text-sub-text text-sm">
                   ...
                 </span>
               );
@@ -81,10 +82,10 @@ const FacultyPagination = ({ pagination, loadPage }) => {
               <button
                 key={page}
                 onClick={() => loadPage(page)}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all cursor-pointer ${
                   page === current_page
                     ? "bg-main-blue text-white shadow-sm"
-                    : "border border-box-outline hover:bg-gray-50 dark:hover:bg-dark-hover"
+                    : "border border-box-outline hover:bg-hover-gray dark:hover:bg-dark-hover"
                 }`}
                 aria-label={`Page ${page}`}
                 aria-current={page === current_page ? "page" : undefined}
@@ -99,7 +100,7 @@ const FacultyPagination = ({ pagination, loadPage }) => {
         <button
           onClick={() => loadPage(current_page + 1)}
           disabled={current_page === last_page}
-          className="px-3 py-1.5 border border-box-outline rounded-md dark:text-white cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent transition-colors"
+          className="pagination-prev-btn"
           aria-label="Next page"
         >
           <ChevronRight size={18} />
