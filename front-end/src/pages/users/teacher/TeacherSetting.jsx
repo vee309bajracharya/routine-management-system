@@ -39,7 +39,7 @@ const TeacherSetting = () => {
 
         // Update AuthContext with the latest user data
         updateUser(profileData);
-        
+
         // Update formik values with fetched data
         formik.setValues({
           name: profileData.name || "",
@@ -113,7 +113,7 @@ const TeacherSetting = () => {
 
       if (response.data.success) {
         let successMessage = "Profile updated successfully";
-        
+
         if (hasPersonalInfoChanges && hasPasswordChange) {
           successMessage = "Profile and password updated successfully";
         } else if (hasPasswordChange) {
@@ -127,11 +127,11 @@ const TeacherSetting = () => {
         // If password changed handle logout and redirect
         if (response.data.require_login) {
           toast.warning("Please login again with your new password", { autoClose: 3000 });
-          
+
           // Clear auth data
           sessionStorage.clear();
           localStorage.clear();
-          
+
           setTimeout(() => {
             window.location.href = "/teacher-login";
           }, 3000);
@@ -140,12 +140,12 @@ const TeacherSetting = () => {
 
         // Refresh profile data
         await fetchTeacherProfile();
-        
+
         // Reset password fields only
         formik.setFieldValue("current_password", "");
         formik.setFieldValue("password", "");
         formik.setFieldValue("password_confirmation", "");
-        
+
         // Switch to personal tab
         setActiveTab("personal");
       }
@@ -198,11 +198,10 @@ const TeacherSetting = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-                activeTab === tab
-                  ? "text-main-blue border-b-2 border-main-blue"
-                  : "text-sub-text hover:text-primary-text dark:hover:text-white"
-              }`}
+              className={`pb-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${activeTab === tab
+                ? "text-main-blue border-b-2 border-main-blue"
+                : "text-sub-text hover:text-primary-text dark:hover:text-white"
+                }`}
             >
               {tab === "personal" ? "Personal Information" : "Change Password"}
             </button>
@@ -214,15 +213,17 @@ const TeacherSetting = () => {
           {activeTab === "personal" ? (
             <>
               <div>
-                <label className="form-title">Full Name</label>
+                <label className="form-title" htmlFor="name">Full Name</label>
                 <input
                   type="text"
+                  id="name"
                   name="name"
                   value={values.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="Enter your full name"
                   className="dropdown-select"
+                  autoComplete="off"
                 />
                 {touched.name && errors.name && (
                   <p className="showError">{errors.name}</p>
@@ -230,15 +231,17 @@ const TeacherSetting = () => {
               </div>
 
               <div>
-                <label className="form-title">Email</label>
+                <label className="form-title" htmlFor="email">Email</label>
                 <input
                   type="email"
+                  id="email"
                   name="email"
                   value={values.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="Enter your email"
                   className="dropdown-select"
+                  autoComplete="off"
                 />
                 {touched.email && errors.email && (
                   <p className="showError">{errors.email}</p>
@@ -246,9 +249,10 @@ const TeacherSetting = () => {
               </div>
 
               <div>
-                <label className="form-title">Phone</label>
+                <label className="form-title" htmlFor="phone">Phone</label>
                 <input
                   type="text"
+                  id="phone"
                   name="phone"
                   value={values.phone}
                   onChange={handleChange}
@@ -256,6 +260,7 @@ const TeacherSetting = () => {
                   placeholder="Enter 10-digit phone number"
                   className="dropdown-select"
                   maxLength="10"
+                  autoComplete="off"
                 />
                 {touched.phone && errors.phone && (
                   <p className="showError">{errors.phone}</p>
@@ -270,15 +275,17 @@ const TeacherSetting = () => {
               <div className="space-y-4">
                 {/* Current Password */}
                 <div className="relative">
-                  <label className="form-title">Current Password</label>
+                  <label className="form-title" htmlFor="current_password">Current Password</label>
                   <input
                     type={showCurrentPassword ? "text" : "password"}
+                    id="current_password"
                     name="current_password"
                     value={values.current_password}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Enter current password"
                     className="dropdown-select"
+                    autoComplete="off"
                   />
                   <button
                     type="button"
@@ -298,15 +305,17 @@ const TeacherSetting = () => {
 
                 {/* New Password */}
                 <div className="relative">
-                  <label className="form-title">New Password</label>
+                  <label className="form-title" htmlFor="password">New Password</label>
                   <input
                     type={showPassword ? "text" : "password"}
+                    id="password"
                     name="password"
                     value={values.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Enter new password"
                     className="dropdown-select"
+                    autoComplete="off"
                   />
                   <button
                     type="button"
@@ -322,15 +331,17 @@ const TeacherSetting = () => {
 
                 {/* Confirm Password */}
                 <div className="relative">
-                  <label className="form-title">Confirm Password</label>
+                  <label className="form-title" htmlFor="password_confirmation">Confirm Password</label>
                   <input
                     type={showConfirmPassword ? "text" : "password"}
+                    id="password_confirmation"
                     name="password_confirmation"
                     value={values.password_confirmation}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Confirm new password"
                     className="dropdown-select"
+                    autoComplete="off"
                   />
                   <button
                     type="button"
