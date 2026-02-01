@@ -260,7 +260,7 @@ const RoutineEntryEditModal = () => {
 
                     {/* read-only reference info */}
                     <section className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-md max-w-3xl">
-                        <div className="grid grid-cols-2 gap-3 text-sm text-sub-text dark:text-gray-400">
+                        <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-3 text-sm text-sub-text dark:text-gray-400">
                             <div>
                                 <span className="edit-form-info-span">Department</span>
                                 <p className="edit-form-info-p">
@@ -306,13 +306,14 @@ const RoutineEntryEditModal = () => {
                             Edit Fields
                         </h3>
 
-                        <section className="grid grid-cols-2 gap-4">
+                        <section className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Course Assignment */}
                             <div>
-                                <label htmlFor="course_assignment_id" className="form-label">
+                                <label htmlFor="course_assignment" className="form-label">
                                     Course Assignment <span className="text-error-red">*</span>
                                 </label>
                                 <select
+                                    id="course_assignment"
                                     name="course_assignment_id"
                                     value={values.course_assignment_id}
                                     onChange={handleChange}
@@ -335,10 +336,11 @@ const RoutineEntryEditModal = () => {
 
                             {/* Time Slot */}
                             <div>
-                                <label htmlFor="time_slot_id" className="form-label">
+                                <label htmlFor="time_slot" className="form-label">
                                     Time Slot <span className="text-error-red">*</span>
                                 </label>
                                 <select
+                                    id="time_slot"
                                     name="time_slot_id"
                                     value={values.time_slot_id}
                                     onChange={handleChange}
@@ -365,6 +367,7 @@ const RoutineEntryEditModal = () => {
                                     Entry Type <span className="text-error-red">*</span>
                                 </label>
                                 <select
+                                    id="entry_type"
                                     name="entry_type"
                                     value={values.entry_type}
                                     onChange={handleChange}
@@ -385,6 +388,7 @@ const RoutineEntryEditModal = () => {
                                     Notes (Optional)
                                 </label>
                                 <textarea
+                                    id="notes"
                                     name="notes"
                                     value={values.notes}
                                     onChange={handleChange}
@@ -401,30 +405,30 @@ const RoutineEntryEditModal = () => {
                     </section>
 
                     {/* Footer */}
-                    <div className="flex justify-between gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex justify-between xs:flex-col-reverse md:flex-row gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                         {/* delete */}
                         <button
                             type="button"
                             onClick={handleDelete}
                             disabled={isSubmitting}
-                            className="px-4 py-2 bg-error-red text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer"
+                            className="px-4 py-2 bg-error-red text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer xs:mx-auto md:mx-0"
                         >
                             Delete Entry
                         </button>
 
                         {/* Cancel and Update */}
-                        <div className="flex gap-3">
+                        <div className="flex gap-3 xs:flex-col md:flex-row">
                             <button
                                 type="button"
                                 onClick={closeModal}
-                                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-primary-text dark:text-white hover:bg-gray-50 dark:hover:bg-dark-hover transition cursor-pointer"
+                                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-primary-text dark:text-white hover:bg-gray-50 dark:hover:bg-dark-hover transition cursor-pointer xs:mx-auto md:mx-0"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting || isLoading}
-                                className="px-6 py-2 bg-main-blue text-white rounded-md hover:bg-mouse-pressed-blue disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 cursor-pointer"
+                                className="px-6 py-2 bg-main-blue text-white rounded-md hover:bg-mouse-pressed-blue disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2 cursor-pointer xs:mx-auto md:mx-0"
                             >
                                 {isSubmitting && <Loader2 className="animate-spin" size={16} />}
                                 {isSubmitting ? "Updating..." : "Update Entry"}

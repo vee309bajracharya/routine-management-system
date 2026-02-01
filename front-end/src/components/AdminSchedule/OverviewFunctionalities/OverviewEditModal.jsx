@@ -89,12 +89,13 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-50 dark:bg-dark-hover p-4 rounded-md">
                 {/* Semester (Read-only) */}
                 <div>
-                  <label className="createSchedule-label text-gray-600 dark:text-gray-400">
+                  <label className="createSchedule-label text-gray-600 dark:text-gray-400" htmlFor="semester">
                     Semester
                   </label>
                   <input
                     type="text"
                     value={routine.semester?.name || "N/A"}
+                    id="semester"
                     className="createSchedule-option bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
                     disabled
                     readOnly
@@ -106,12 +107,13 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
 
                 {/* Batch (Read-only) */}
                 <div>
-                  <label className="createSchedule-label text-gray-600 dark:text-gray-400">
+                  <label className="createSchedule-label text-gray-600 dark:text-gray-400" htmlFor="batch">
                     Batch
                   </label>
                   <input
                     type="text"
                     value={routine.batch?.name || "N/A"}
+                    id="batch"
                     className="createSchedule-option bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
                     disabled
                     readOnly
@@ -126,11 +128,12 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
 
               {/* Routine Title */}
               <div>
-                <label className="createSchedule-label">
+                <label className="createSchedule-label" htmlFor="title">
                   Routine Title <span className="text-error-red">*</span>
                 </label>
                 <input
                   type="text"
+                  id="title"
                   name="title"
                   value={values.title}
                   onChange={handleChange}
@@ -146,10 +149,11 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
 
               {/* Routine Description (Optional) */}
               <div>
-                <label className="createSchedule-label">
+                <label className="createSchedule-label" htmlFor="description">
                   Description (Optional)
                 </label>
                 <textarea
+                  id="description"
                   name="description"
                   value={values.description}
                   onChange={handleChange}
@@ -167,11 +171,12 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Effective From Date */}
                 <div>
-                  <label className="createSchedule-label">
+                  <label className="createSchedule-label" htmlFor="effective_from">
                     Effective From <span className="text-error-red">*</span>
                   </label>
                   <input
                     type="date"
+                    id="effective_from"
                     name="effective_from"
                     value={values.effective_from}
                     onChange={handleChange}
@@ -185,11 +190,12 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
 
                 {/* Effective To Date */}
                 <div>
-                  <label className="createSchedule-label">
+                  <label className="createSchedule-label" htmlFor="effective_to">
                     Effective To <span className="text-error-red">*</span>
                   </label>
                   <input
                     type="date"
+                    id="effective_to"
                     name="effective_to"
                     value={values.effective_to}
                     onChange={handleChange}
@@ -204,11 +210,11 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 sticky bottom-0 bg-white dark:bg-dark-overlay">
+              <div className="flex justify-end gap-3 pt-4 sticky bottom-0 bg-white dark:bg-dark-overlay">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 border border-box-outline rounded-md hover:bg-gray-100 dark:hover:bg-dark-hover text-primary-text dark:text-white transition cursor-pointer order-2 sm:order-1"
+                  className="px-4 py-2 border border-box-outline rounded-md hover:bg-gray-100 dark:hover:bg-dark-hover text-primary-text dark:text-white transition cursor-pointer"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -216,7 +222,7 @@ const OverviewEditModal = ({ isOpen, routine, onClose, onSubmit }) => {
 
                 <button
                   type="submit"
-                  className="auth-btn disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 cursor-pointer order-1 sm:order-2"
+                  className="auth-btn disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 cursor-pointer"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (

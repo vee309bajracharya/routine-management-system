@@ -34,7 +34,7 @@ const RoutineCreation = ({ isOpen, onClose }) => {
         onClose();
 
         // redirect to Routine Planning page with new routine_id
-        if(newRoutine?.id){
+        if (newRoutine?.id) {
           navigate(`/admin/schedule/routine?id=${newRoutine.id}`);
         }
       } catch (error) {
@@ -141,14 +141,15 @@ const RoutineCreation = ({ isOpen, onClose }) => {
               onSubmit={handleSubmit}
               className="space-y-4">
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
 
                 {/* semester */}
                 <div>
-                  <label className="createSchedule-label">
+                  <label className="createSchedule-label" htmlFor="semester">
                     Semester <span className="text-error-red">*</span>
                   </label>
                   <select
+                    id="semester"
                     name="semester_id"
                     value={values.semester_id}
                     onChange={handleSemesterChange}
@@ -172,10 +173,11 @@ const RoutineCreation = ({ isOpen, onClose }) => {
 
                 {/* batch , filtered by semesters */}
                 <div>
-                  <label className="createSchedule-label">
+                  <label className="createSchedule-label" htmlFor="batch">
                     Batch <span className="text-error-red">*</span>
                   </label>
                   <select
+                    id="batch"
                     name="batch_id"
                     value={values.batch_id}
                     onChange={handleChange}
@@ -202,12 +204,13 @@ const RoutineCreation = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Routine title */}
-                <div className="col-span-2">
-                  <label className="createSchedule-label">
+                <div className="md:col-span-2">
+                  <label className="createSchedule-label" htmlFor="title">
                     Routine Title <span className="text-error-red">*</span>
                   </label>
                   <input
                     type="text"
+                    id="title"
                     name="title"
                     value={values.title}
                     onChange={handleChange}
@@ -222,11 +225,12 @@ const RoutineCreation = ({ isOpen, onClose }) => {
                 </div>
 
                 {/* Routine description (Optional) */}
-                <div className="col-span-2">
-                  <label className="createSchedule-label">
+                <div className="md:col-span-2">
+                  <label className="createSchedule-label" htmlFor="description">
                     Description (Optional)
                   </label>
                   <textarea
+                    id="description"
                     name="description"
                     value={values.description}
                     onChange={handleChange}
@@ -242,11 +246,12 @@ const RoutineCreation = ({ isOpen, onClose }) => {
 
                 {/* Effective From Date */}
                 <div>
-                  <label className="createSchedule-label">
+                  <label className="createSchedule-label" htmlFor="effective_from">
                     Effective From <span className="text-error-red">*</span>
                   </label>
                   <input
                     type="date"
+                    id="effective_from"
                     name="effective_from"
                     value={values.effective_from}
                     onChange={handleChange}
@@ -260,11 +265,12 @@ const RoutineCreation = ({ isOpen, onClose }) => {
 
                 {/* Effective To Date */}
                 <div>
-                  <label className="createSchedule-label">
+                  <label className="createSchedule-label" htmlFor="effective_to">
                     Effective To <span className="text-error-red">*</span>
                   </label>
                   <input
                     type="date"
+                    id="effective_to"
                     name="effective_to"
                     value={values.effective_to}
                     onChange={handleChange}
