@@ -84,6 +84,7 @@ const OverviewFilters = ({
           <input
             type="text"
             placeholder="Search Routine"
+            id="search"
             value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             className="outline-none text-sm text-primary-text dark:text-white bg-transparent flex-1 sm:w-48" />
           {searchTerm && <button onClick={() => setSearchTerm('')} className="text-sub-text dark:text-white flex-shrink-0"><X size={14} className="cursor-pointer" /></button>}

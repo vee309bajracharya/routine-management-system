@@ -285,9 +285,9 @@ const CopyEntries = () => {
 
             {/* Modal Header */}
             <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-              <h2 className="text-xl font-semibold text-primary-text dark:text-white">
+              <h1 className="text-xl font-semibold text-primary-text dark:text-white">
                 Copy Routine Entries
-              </h2>
+              </h1>
               <p className="text-sm text-sub-text dark:text-white mt-1">
                 Select source day and target days to copy entries
               </p>
@@ -298,13 +298,14 @@ const CopyEntries = () => {
 
               {/* Source Day Selection */}
               <div>
-                <label className="form-label mb-2 flex items-center gap-2">
+                <label className="form-label mb-2 flex items-center gap-2" htmlFor="source_day">
                   Copy FROM{' '}
                   <span className="text-xs text-sub-text font-normal">
                     (Source Day)
                   </span>
                 </label>
                 <select
+                  id="source_day"
                   value={sourceDay}
                   onChange={(e) => handleSourceChange(e.target.value)}
                   className="dropdown-select">
@@ -327,7 +328,7 @@ const CopyEntries = () => {
 
               {/* Target Days Selection */}
               <div>
-                <label className="form-label mb-2 flex items-center gap-2">
+                <label className="form-label mb-2 flex items-center gap-2" htmlFor="target_days">
                   Copy TO{' '}
                   <span className="text-xs text-sub-text font-normal">
                     (Target Days)
@@ -360,6 +361,7 @@ const CopyEntries = () => {
                           `}>
                           <input
                             type="checkbox"
+                            id="target_days"
                             checked={isSelected}
                             onChange={() => handleTargetToggle(day)}
                             disabled={isDisabled}
@@ -376,7 +378,7 @@ const CopyEntries = () => {
                             )}
                             {hasData && !isSameAsSource && (
                               <span className="ml-2 text-xs text-warning-orange">
-                                ⚠ Has entries
+                                &#x26A0; Has entries
                               </span>
                             )}
                           </div>
