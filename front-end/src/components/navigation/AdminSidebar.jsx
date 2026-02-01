@@ -64,7 +64,7 @@ const AdminSidebar = ({ collapsed, sidebarItems, role }) => {
             collapsed ? "justify-center" : "justify-start px-1"
           }`}
         >
-          <Link to="/admin/dashboard">
+          <Link to={role === "admin" ? "/admin/dashboard" : "/teacher/dashboard"}>
             <img
               src={logoSrc}
               alt="Logo"
@@ -235,7 +235,7 @@ const AdminSidebar = ({ collapsed, sidebarItems, role }) => {
         >
           <button
             onClick={handleLogout}
-            className={`group flex items-center border border-main-blue rounded-md text-main-blue hover:bg-main-blue hover:text-white transition-all duration-300 h-11 ${
+            className={`group flex items-center border border-main-blue rounded-md text-main-blue hover:bg-main-blue hover:text-white transition-all duration-300 h-11 cursor-pointer ${
               collapsed ? "justify-center w-12" : "justify-start px-3 w-full"
             }`}
           >
