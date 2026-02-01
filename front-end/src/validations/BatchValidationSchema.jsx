@@ -24,7 +24,7 @@ export const BatchValidationSchema = Yup.object({
   year_level: Yup.number()
     .required("Year level is required")
     .min(1, "Year level must be at least 1")
-    .max(8, "Year level must not exceed 8")
+    .max(10, "Year level must not exceed 10")
     .integer("Year level must be a whole number"),
   shift: Yup.string()
     .required("Shift is required")
@@ -42,7 +42,7 @@ export const BatchEditValidationSchema = Yup.object({
   year_level: Yup.number()
     .required("Year level is required")
     .min(1, "Year level must be at least 1")
-    .max(8, "Year level must not exceed 8")
+    .max(10, "Year level must not exceed 10")
     .integer("Year level must be a whole number"),
   shift: Yup.string()
     .required("Shift is required")

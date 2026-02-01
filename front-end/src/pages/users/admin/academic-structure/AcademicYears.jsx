@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useFormik } from "formik";
@@ -9,6 +8,8 @@ import {
   AcademicYearInitialValues,
 } from "../../../../validations/AcademicYearValidationSchema";
 
+const INSTITUTION_ID = import.meta.env.VITE_INSTITUTION_ID;
+
 const AcademicYears = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [departments, setDepartments] = useState([]);
@@ -17,9 +18,8 @@ const AcademicYears = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const institutionId = 1; // Get from auth context if available
         const response = await axiosClient.get(
-          `/admin/dropdowns/departments/${institutionId}`,
+          `/admin/dropdowns/departments/${INSTITUTION_ID}`,
         );
         if (response.data.success) {
           setDepartments(response.data.data || []);
@@ -74,9 +74,9 @@ const AcademicYears = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Academic Year</h2>
+        <h1 className="form-header">Create Academic Year</h1>
         <p className="form-subtext">
           Define academic year periods for organizing semesters and courses.
         </p>
@@ -85,10 +85,11 @@ const AcademicYears = () => {
           {/* Department */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="department_id">
                 Department <span className="text-error-red">*</span>
               </label>
               <select
+                id="department_id"
                 name="department_id"
                 value={values.department_id}
                 onChange={handleChange}
@@ -109,17 +110,19 @@ const AcademicYears = () => {
 
             {/* Academic Year Name */}
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="year_name">
                 Academic Year Name <span className="text-error-red">*</span>
               </label>
               <input
+                id="year_name"
                 type="text"
                 name="year_name"
-                placeholder="DEPT-2023,"
+                placeholder="DEPT-2023"
                 value={values.year_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.year_name && errors.year_name && (
                 <p className="showError">{errors.year_name}</p>
@@ -130,10 +133,11 @@ const AcademicYears = () => {
           {/* Start Date and End Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="start_date">
                 Start Date <span className="text-error-red">*</span>
               </label>
               <input
+                id="start_date"
                 type="date"
                 name="start_date"
                 value={values.start_date}
@@ -147,10 +151,11 @@ const AcademicYears = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="end_date">
                 End Date <span className="text-error-red">*</span>
               </label>
               <input
+                id="end_date"
                 type="date"
                 name="end_date"
                 value={values.end_date}
@@ -191,7 +196,7 @@ const AcademicYears = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

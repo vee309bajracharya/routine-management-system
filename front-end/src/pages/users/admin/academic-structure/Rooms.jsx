@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useFormik } from "formik";
@@ -50,9 +49,9 @@ const Rooms = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Room</h2>
+        <h1 className="form-header">Create Room</h1>
         <p className="form-subtext">
           Add new rooms and labs to your institution's infrastructure.
         </p>
@@ -60,14 +59,15 @@ const Rooms = () => {
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Room Type */}
           <div>
-            <label className="form-title">
+            <div className="form-title">
               Room Type <span className="text-error-red">*</span>
-            </label>
+            </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
               {["Classroom", "Lecture Hall", "Lab"].map((type) => (
-                <label key={type} className="form-radio-title">
+                <label key={type} className="form-radio-title" htmlFor={`room_type.${type}`}>
                   <input
                     type="radio"
+                    id={`room_type.${type}`}
                     name="room_type"
                     value={type}
                     checked={values.room_type === type}
@@ -87,17 +87,19 @@ const Rooms = () => {
           {/* Room Name and Room Number */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="room_name">
                 Room Name <span className="text-error-red">*</span>
               </label>
               <input
                 type="text"
+                id="room_name"
                 name="name"
                 placeholder="Computer Lab 1. Room 301"
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.name && errors.name && (
                 <p className="showError">{errors.name}</p>
@@ -105,17 +107,19 @@ const Rooms = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="room_number">
                 Room Number <span className="text-error-red">*</span>
               </label>
               <input
                 type="text"
+                id="room_number"
                 name="room_number"
                 placeholder="101, Lab-205"
                 value={values.room_number}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.room_number && errors.room_number && (
                 <p className="showError">{errors.room_number}</p>
@@ -150,7 +154,7 @@ const Rooms = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

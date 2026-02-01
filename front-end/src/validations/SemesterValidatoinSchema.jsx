@@ -16,7 +16,7 @@ export const SemesterValidationSchema = Yup.object({
     .required("Semester number is required")
     .integer("Semester number must be an integer")
     .min(1, "Semester number must be at least 1")
-    .max(8, "Semester number must not exceed 8")
+    .max(10, "Semester number must not exceed 10")
     .typeError("Semester number must be a number"),
 
   start_date: Yup.date()
@@ -44,7 +44,7 @@ export const SemesterEditValidationSchema = Yup.object({
   semester_number: Yup.number()
     .integer("Semester number must be an integer")
     .min(1, "Semester number must be at least 1")
-    .max(8, "Semester number must not exceed 8")
+    .max(10, "Semester number must not exceed 10")
     .typeError("Semester number must be a number"),
 
   start_date: Yup.date()

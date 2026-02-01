@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useFormik } from "formik";
@@ -8,6 +7,8 @@ import {
   CourseAssignmentValidationSchema,
   CourseAssignmentInitialValues,
 } from "../../../../validations/CourseAssignmentValidationSchema";
+
+const INSTITUTION_ID = import.meta.env.VITE_INSTITUTION_ID;
 
 const CourseAssignments = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +38,7 @@ const CourseAssignments = () => {
       setIsLoadingDepartments(true);
       try {
         const response = await axiosClient.get(
-          `/admin/dropdowns/departments/1`,
+          `/admin/dropdowns/departments/${INSTITUTION_ID}`,
         );
         if (response.data.success) {
           setDepartments(response.data.data || []);
@@ -210,9 +211,9 @@ const CourseAssignments = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Course Assignment</h2>
+        <h1 className="form-header">Create Course Assignment</h1>
         <p className="form-subtext">
           Assign courses to teachers for specific batches and semesters.
         </p>
@@ -221,10 +222,11 @@ const CourseAssignments = () => {
           {/* Department and Semester */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="department_id">
                 Department <span className="text-error-red">*</span>
               </label>
               <select
+                id="department_id"
                 name="department_id"
                 value={values.department_id}
                 onChange={(e) => {
@@ -251,10 +253,11 @@ const CourseAssignments = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="semester_id">
                 Semester <span className="text-error-red">*</span>
               </label>
               <select
+                id="semester_id"
                 name="semester_id"
                 value={values.semester_id}
                 onChange={(e) => {
@@ -288,10 +291,11 @@ const CourseAssignments = () => {
           {/* Batch and Course */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="batch_id">
                 Batch <span className="text-error-red">*</span>
               </label>
               <select
+                id="batch_id"
                 name="batch_id"
                 value={values.batch_id}
                 onChange={handleChange}
@@ -318,10 +322,11 @@ const CourseAssignments = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="course_id">
                 Course <span className="text-error-red">*</span>
               </label>
               <select
+                id="course_id"
                 name="course_id"
                 value={values.course_id}
                 onChange={handleChange}
@@ -355,10 +360,11 @@ const CourseAssignments = () => {
           {/* Teacher and Assignment Type */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="teacher_id">
                 Teacher <span className="text-error-red">*</span>
               </label>
               <select
+                id="teacher_id"
                 name="teacher_id"
                 value={values.teacher_id}
                 onChange={handleChange}
@@ -385,18 +391,19 @@ const CourseAssignments = () => {
             </div>
 
             <div>
-              <label className="form-title" htmlFor="assignmentType">
+              <div className="form-title">
                 Assignment Type <span className="text-error-red">*</span>
-              </label>
-              <div className="flex items-center gap-4 sm:gap-6 mt-2">
+              </div>
+              <div className="flex justify-between xs:flex-col md:flex-row gap-3 mt-2">
                 {["Theory", "Practical", "Theory and Practical"].map((type) => (
                   <label
                     key={type}
                     className="flex items-center gap-2 cursor-pointer"
+                    htmlFor={`assignmentType.${type}`}
                   >
                     <input
                       type="radio"
-                      id="assignmentType"
+                      id={`assignmentType.${type}`}
                       name="assignment_type"
                       value={type}
                       checked={values.assignment_type === type}
@@ -416,10 +423,11 @@ const CourseAssignments = () => {
 
           {/* Notes */}
           <div>
-            <label className="form-title">
+            <label className="form-title" htmlFor="notes">
               Notes <span className="text-gray-400 text-sm">(Optional)</span>
             </label>
             <textarea
+              id="notes"
               name="notes"
               placeholder="Add additional notes about this assignment..."
               value={values.notes}
@@ -466,7 +474,7 @@ const CourseAssignments = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

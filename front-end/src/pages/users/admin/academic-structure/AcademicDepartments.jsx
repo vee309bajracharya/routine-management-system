@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useFormik } from "formik";
@@ -71,9 +70,9 @@ const AcademicDepartments = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Department</h2>
+        <h1 className="form-header">Create Department</h1>
         <p className="form-subtext">
           Add new departments to organize your institution's academic structure.
         </p>
@@ -82,10 +81,11 @@ const AcademicDepartments = () => {
           {/* Department Name and Code */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="department_name">
                 Department Name <span className="text-error-red">*</span>
               </label>
               <input
+                id="department_name"
                 type="text"
                 name="department_name"
                 placeholder="Enter Department Name"
@@ -93,6 +93,7 @@ const AcademicDepartments = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.department_name && errors.department_name && (
                 <p className="showError">{errors.department_name}</p>
@@ -100,10 +101,11 @@ const AcademicDepartments = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="code">
                 Department Code <span className="text-error-red">*</span>
               </label>
               <input
+                id="code"
                 type="text"
                 name="code"
                 placeholder="BCA, CSE"
@@ -115,6 +117,7 @@ const AcademicDepartments = () => {
                 onBlur={handleBlur}
                 className="dropdown-select uppercase"
                 maxLength="50"
+                autoComplete="off"
               />
               {touched.code && errors.code && (
                 <p className="showError">{errors.code}</p>
@@ -124,8 +127,9 @@ const AcademicDepartments = () => {
 
           {/* Head of Department */}
           <div>
-            <label className="form-title">Head of Department (Optional)</label>
+            <label className="form-title" htmlFor="head_teacher_id">Head of Department (Optional)</label>
             <select
+              id="head_teacher_id"
               name="head_teacher_id"
               value={values.head_teacher_id}
               onChange={handleChange}
@@ -146,8 +150,9 @@ const AcademicDepartments = () => {
 
           {/* Description */}
           <div>
-            <label className="form-title">Description (Optional)</label>
+            <label className="form-title" htmlFor="description">Description (Optional)</label>
             <textarea
+              id="description"
               name="description"
               placeholder="Write a description about the department"
               value={values.description}
@@ -197,7 +202,7 @@ const AcademicDepartments = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 
