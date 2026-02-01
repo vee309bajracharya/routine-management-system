@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect, useCallback } from "react";
 import {
   CalendarDays,
@@ -122,7 +121,7 @@ const TeacherDashboard = () => {
   };
 
   return (
-    <div className="pt-6 px-4 sm:pt-8 sm:px-6 lg:pt-10 lg:px-8 xl:px-12 min-h-screen font-general-sans">
+    <section className="p-6 min-h-screen font-general-sans">
       {/* HEADER */}
       <h1 className="text-2xl sm:text-3xl font-semibold text-primary-text dark:text-white mb-3 sm:mb-4">
         Dashboard
@@ -152,7 +151,7 @@ const TeacherDashboard = () => {
             {todaysClasses.map((cls) => (
               <div
                 key={cls.id}
-                className="flex border dark:border-box-outline rounded-lg bg-white dark:bg-dark-overlay shadow-sm"
+                className="flex dark:border-box-outline rounded-lg bg-white dark:bg-dark-box-outline shadow-md"
               >
                 {cls.status === "Ongoing" && (
                   <div className="w-1 sm:w-1.5 bg-main-blue rounded-l-lg"></div>
@@ -167,7 +166,7 @@ const TeacherDashboard = () => {
                     >
                       {cls.status}
                     </span>
-                    <span className="text-xs text-sub-text capitalize">
+                    <span className="text-xs text-gray-600 dark:text-gray-400 capitalize">
                       {cls.batch?.shift || "N/A"} Session
                     </span>
                   </div>
@@ -201,20 +200,19 @@ const TeacherDashboard = () => {
       </div>
 
       {/* MY TEACHING SCHEDULE SECTION */}
-      <div className="p-3 sm:p-4 lg:p-6 bg-white dark:bg-dark-overlay rounded-lg shadow-sm">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 dark:text-white">
-          My Teaching Schedule
-        </h2>
+      <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 dark:text-white">
+        My Teaching Schedule
+      </h2>
+      <div className="my-5">
 
         {/* FILTERS */}
         <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 mb-4">
           <button
             onClick={() => handleFilterChange("day", "")}
-            className={`filter-btn ${
-              selectedDay === ""
+            className={`filter-btn ${selectedDay === ""
                 ? "bg-main-blue text-white hover:bg-hover-blue"
                 : "bg-main-gray text-primary-text dark:hover:text-black hover:bg-gray-200 dark:bg-dark-hover dark:text-white"
-            }`}
+              }`}
           >
             All Days
           </button>
@@ -223,6 +221,7 @@ const TeacherDashboard = () => {
               value={selectedDay}
               onChange={(e) => handleFilterChange("day", e.target.value)}
               className="dropdown-select w-full sm:w-auto"
+              id="day"
             >
               <option value="">Select Day</option>
               <option value="Sunday">Sunday</option>
@@ -244,6 +243,8 @@ const TeacherDashboard = () => {
               className="search-btn w-full pl-10"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              autoComplete="off"
+              id="search"
             />
           </div>
         </div>
@@ -280,11 +281,10 @@ const TeacherDashboard = () => {
                       {row.day}
                     </span>
                     <span
-                      className={`px-2 py-0.5 rounded text-xs ${
-                        row.shift === "Morning"
+                      className={`px-2 py-0.5 rounded text-xs ${row.shift === "Morning"
                           ? "bg-blue-50 text-main-blue dark:bg-blue-900/30 dark:text-hover-blue"
                           : "bg-orange-50 text-warning-orange dark:bg-orange-900/30 dark:text-orange-400"
-                      }`}
+                        }`}
                     >
                       {row.shift}
                     </span>
@@ -339,11 +339,10 @@ const TeacherDashboard = () => {
                       <td className="p-4">{row.day}</td>
                       <td className="p-4">
                         <span
-                          className={`px-2 py-0.5 rounded text-xs ${
-                            row.shift === "Morning"
+                          className={`px-2 py-0.5 rounded text-xs ${row.shift === "Morning"
                               ? "bg-blue-50 text-main-blue dark:bg-blue-900/30 dark:text-hover-blue"
                               : "bg-orange-50 text-warning-orange dark:bg-orange-900/30 dark:text-orange-400"
-                          }`}
+                            }`}
                         >
                           {row.shift}
                         </span>
@@ -390,11 +389,10 @@ const TeacherDashboard = () => {
                       <button
                         key={page}
                         onClick={() => loadPage(page)}
-                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm cursor-pointer transition-colors ${
-                          page === currentPage
+                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm cursor-pointer transition-colors ${page === currentPage
                             ? "bg-main-blue text-white"
                             : "border border-box-outline hover:bg-main-gray dark:text-white dark:hover:bg-dark-hover"
-                        }`}
+                          }`}
                       >
                         {page}
                       </button>
@@ -414,7 +412,7 @@ const TeacherDashboard = () => {
           </>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 
