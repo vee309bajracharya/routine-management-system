@@ -91,22 +91,23 @@ const UserAccounts = () => {
   };
 
   return (
-    <div className="wrapper mt-6 flex justify-center font-general-sans px-4">
-      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create User Account</h2>
+    <section className="wrapper mt-6 flex justify-center font-general-sans">
+      <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-2 md:p-8">
+        <h1 className="form-header">Create User Account</h1>
         <p className="form-subtext">
           Create login accounts for Admins and Teachers
         </p>
 
         {/* ROLE SELECTION */}
         <div className="mt-6">
-          <label className="form-title">
+          <label className="form-title" htmlFor="role">
             Role <span className="text-error-red">*</span>
           </label>
           <div className="flex flex-wrap gap-4 sm:gap-6 mt-2">
             {["admin", "teacher"].map((role) => (
-              <label key={role} className="form-radio-title">
+              <label key={role} className="form-radio-title" htmlFor="role">
                 <input
+                  id="role"
                   type="radio"
                   name="role"
                   value={role}
@@ -128,10 +129,11 @@ const UserAccounts = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* FULL NAME */}
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="name">
                 Full Name <span className="text-error-red">*</span>
               </label>
               <input
+                id="name"
                 type="text"
                 name="name"
                 placeholder="Enter Full Name"
@@ -139,6 +141,7 @@ const UserAccounts = () => {
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                autoComplete="off"
               />
               {touched.name && errors.name && (
                 <p className="showError">{errors.name}</p>
@@ -147,10 +150,11 @@ const UserAccounts = () => {
 
             {/* EMAIL */}
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="email">
                 Email <span className="text-error-red">*</span>
               </label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 placeholder="Enter Email Address"
@@ -158,6 +162,7 @@ const UserAccounts = () => {
                 value={values.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                autoComplete="off"
               />
               {touched.email && errors.email && (
                 <p className="showError">{errors.email}</p>
@@ -166,10 +171,11 @@ const UserAccounts = () => {
 
             {/* PASSWORD */}
             <div className="relative">
-              <label className="form-title">
+              <label className="form-title" htmlFor="password">
                 Password <span className="text-error-red">*</span>
               </label>
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter Password"
@@ -177,6 +183,7 @@ const UserAccounts = () => {
                 value={values.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                autoComplete="off"
               />
               <button
                 type="button"
@@ -193,8 +200,9 @@ const UserAccounts = () => {
 
             {/* PHONE */}
             <div>
-              <label className="form-title">Phone</label>
+              <label className="form-title" htmlFor="phone">Phone</label>
               <input
+                id="phone"
                 type="text"
                 name="phone"
                 placeholder="Enter Phone Number"
@@ -203,6 +211,7 @@ const UserAccounts = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 maxLength="10"
+                autoComplete="off"
               />
               {touched.phone && errors.phone && (
                 <p className="showError">{errors.phone}</p>
@@ -214,10 +223,11 @@ const UserAccounts = () => {
               <>
                 {/* DEPARTMENT */}
                 <div>
-                  <label className="form-title">
+                  <label className="form-title" htmlFor="department">
                     Department <span className="text-error-red">*</span>
                   </label>
                   <select
+                    id="department"
                     name="department_id"
                     value={values.department_id}
                     onChange={handleChange}
@@ -238,13 +248,14 @@ const UserAccounts = () => {
 
                 {/* EMPLOYMENT TYPE */}
                 <div>
-                  <label className="form-title">
+                  <label className="form-title" htmlFor="employment_type">
                     Employment Type <span className="text-error-red">*</span>
                   </label>
                   <div className="flex flex-wrap gap-3 sm:gap-6 mt-2">
                     {["Full Time", "Part Time", "Guest"].map((type) => (
                       <label key={type} className="form-radio-title">
                         <input
+                          id="employment_type"
                           type="radio"
                           name="employment_type"
                           value={type}
@@ -295,7 +306,7 @@ const UserAccounts = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

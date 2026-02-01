@@ -103,13 +103,13 @@ const TeacherAvailability = () => {
 
       const payload = {
         teacher_id: values.teacher_id,
-        days: fullDayNames, 
-        available_from: slot.from || "09:00", 
-        available_to: slot.to || "17:00", 
+        days: fullDayNames,
+        available_from: slot.from || "09:00",
+        available_to: slot.to || "17:00",
         notes: values.notes || null,
       };
 
-      console.log("Sending Payload:", payload); 
+      console.log("Sending Payload:", payload);
 
       const response = await axiosClient.post(
         "/admin/teacher-availability",
@@ -138,9 +138,9 @@ const TeacherAvailability = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Teacher Availability</h2>
+        <h1 className="form-header">Teacher Availability</h1>
         <p className="form-subtext">
           Set weekly time slots and availability for faculty members.
         </p>
@@ -148,10 +148,11 @@ const TeacherAvailability = () => {
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Teacher Selection */}
           <div>
-            <label className="form-title">
+            <label className="form-title" htmlFor="teacher_id">
               Teacher Name <span className="text-error-red">*</span>
             </label>
             <select
+              id="teacher_id"
               name="teacher_id"
               value={values.teacher_id}
               onChange={handleChange}
@@ -173,16 +174,18 @@ const TeacherAvailability = () => {
 
           {/* Days of Week Selection */}
           <div>
-            <label className="form-title">
+            <div className="form-title">
               Days of Week <span className="text-error-red">*</span>
-            </label>
+            </div>
             <div className="flex flex-wrap items-center gap-2 mb-4">
               {daysOfWeek.map((day) => (
                 <label
                   key={day.short}
                   className="flex items-center gap-2 cursor-pointer dark:text-white"
+                  htmlFor={`day-${day.short}`}
                 >
                   <input
+                    id={`day-${day.short}`}
                     type="checkbox"
                     checked={values.days.includes(day.short)}
                     onChange={() => toggleDay(day.short)}
@@ -195,7 +198,7 @@ const TeacherAvailability = () => {
               <button
                 type="button"
                 onClick={selectAllDays}
-                className="ml-auto px-4 py-2 bg-main-blue text-white rounded-lg text-sm hover:bg-hover-blue"
+                className="ml-auto px-4 py-2 bg-main-blue text-white rounded-lg text-sm hover:bg-hover-blue cursor-pointer"
               >
                 All
               </button>
@@ -207,7 +210,7 @@ const TeacherAvailability = () => {
 
           {/* Selected Days Time Slots */}
           <div className="space-y-3">
-            <label className="form-title">Set Time Slots</label>
+            <div className="form-title">Set Time Slots</div>
 
             {values.days.length === 0 ? (
               <div className="text-center text-sub-text py-8 border-2 border-dashed border-box-outline rounded-lg">
@@ -222,6 +225,7 @@ const TeacherAvailability = () => {
                   <div
                     key={dayShort}
                     className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border border-box-outline rounded-lg dark:text-white bg-white dark:bg-dark-hover"
+                    htmlFor={`timeSlots.${dayKey}`}
                   >
                     <Clock size={16} className="text-sub-text" />
                     <span className="font-medium text-sm min-w-[80px]">
@@ -231,6 +235,7 @@ const TeacherAvailability = () => {
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                       <input
                         type="time"
+                        id={`timeSlots.${dayKey}.from`}
                         name={`timeSlots.${dayKey}.from`}
                         value={values.timeSlots?.[dayKey]?.from || ""}
                         onChange={handleChange}
@@ -240,6 +245,7 @@ const TeacherAvailability = () => {
                       <span className="text-sub-text">-</span>
                       <input
                         type="time"
+                        id={`timeSlots.${dayKey}.to`}
                         name={`timeSlots.${dayKey}.to`}
                         value={values.timeSlots?.[dayKey]?.to || ""}
                         onChange={handleChange}
@@ -260,12 +266,13 @@ const TeacherAvailability = () => {
 
           {/* Notes */}
           <div>
-            <label className="form-title">
+            <label className="form-title" htmlFor="notes">
               Notes <span className="text-gray-400 text-sm">(Optional)</span>
             </label>
             <textarea
+              id="notes"
               name="notes"
-              placeholder="Add additional notes about availability..."
+              placeholder="Add additional notes about teacher's availability time..."
               value={values.notes}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -275,6 +282,10 @@ const TeacherAvailability = () => {
             {touched.notes && errors.notes && (
               <p className="showError">{errors.notes}</p>
             )}
+          </div>
+
+          <div>
+            <small className="text-gray-600 dark:text-gray-400"> <span className="uppercase">info : </span> If the times are same for all days, set one entry and click on Create for automatic Bulk Entries.</small>
           </div>
 
           {/* Buttons */}
@@ -304,7 +315,7 @@ const TeacherAvailability = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

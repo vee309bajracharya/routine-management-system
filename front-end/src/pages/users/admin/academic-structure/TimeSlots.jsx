@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Loader2, ChevronDown, X } from "lucide-react";
 import { useFormik } from "formik";
@@ -8,6 +7,8 @@ import {
   TimeSlotValidationSchema,
   TimeSlotInitialValues,
 } from "../../../../validations/TimeSlotValidationSchema";
+
+const INSTITUTION_ID = import.meta.env.VITE_INSTITUTION_ID;
 
 const TimeSlots = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +53,7 @@ const TimeSlots = () => {
       setIsLoadingDepartments(true);
       try {
         const response = await axiosClient.get(
-          `/admin/dropdowns/departments/1`,
+          `/admin/dropdowns/departments/${INSTITUTION_ID}`,
         );
         if (response.data.success) {
           setDepartments(response.data.data || []);
@@ -212,9 +213,9 @@ const TimeSlots = () => {
   };
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Time Slot</h2>
+        <h1 className="form-header">Create Time Slot</h1>
         <p className="form-subtext">
           Define time slots for scheduling classes, breaks, and practical
           sessions.
@@ -224,10 +225,11 @@ const TimeSlots = () => {
           {/* Department and Semester */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="department_id">
                 Department <span className="text-error-red">*</span>
               </label>
               <select
+                id="department_id"
                 name="department_id"
                 value={values.department_id}
                 onChange={(e) => {
@@ -252,10 +254,11 @@ const TimeSlots = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="semester_id">
                 Semester <span className="text-error-red">*</span>
               </label>
               <select
+                id="semester_id"
                 name="semester_id"
                 value={values.semester_id}
                 onChange={(e) => {
@@ -288,10 +291,11 @@ const TimeSlots = () => {
           {/* Batch and Name */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="batch_id">
                 Batch <span className="text-error-red">*</span>
               </label>
               <select
+                id="batch_id"
                 name="batch_id"
                 value={values.batch_id}
                 onChange={handleChange}
@@ -318,17 +322,19 @@ const TimeSlots = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="time_slot_name">
                 Time Slot Name <span className="text-error-red">*</span>
               </label>
               <input
                 type="text"
+                id="time_slot_name"
                 name="name"
                 placeholder="BCA Morning/Day Class 1/Practical"
                 value={values.name}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.name && errors.name && (
                 <p className="showError">{errors.name}</p>
@@ -339,16 +345,18 @@ const TimeSlots = () => {
           {/* Slot Type and Shift */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <div className="form-title">
                 Slot Type <span className="text-error-red">*</span>
-              </label>
+              </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
                 {["Lecture", "Practical", "Break"].map((type) => (
                   <label
                     key={type}
                     className="flex items-center gap-2 cursor-pointer"
+                    htmlFor={`slot_type.${type}`}
                   >
                     <input
+                      id={`slot_type.${type}`}
                       type="radio"
                       name="slot_type"
                       value={type}
@@ -367,16 +375,18 @@ const TimeSlots = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <div className="form-title">
                 Shift <span className="text-error-red">*</span>
-              </label>
+              </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
                 {["Morning", "Day"].map((shift) => (
                   <label
                     key={shift}
                     className="flex items-center gap-2 cursor-pointer"
+                    htmlFor={`shift.${shift}`}
                   >
                     <input
+                      id={`shift.${shift}`}
                       type="radio"
                       name="shift"
                       value={shift}
@@ -395,13 +405,14 @@ const TimeSlots = () => {
             </div>
           </div>
 
-          {/* Start Time  End Time  Duration */}
+          {/* Start Time, End Time and Duration */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="start_time">
                 Start Time <span className="text-error-red">*</span>
               </label>
               <input
+                id="start_time"
                 type="time"
                 name="start_time"
                 value={values.start_time}
@@ -415,10 +426,11 @@ const TimeSlots = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="end_time">
                 End Time <span className="text-error-red">*</span>
               </label>
               <input
+                id="end_time"
                 type="time"
                 name="end_time"
                 value={values.end_time}
@@ -432,10 +444,11 @@ const TimeSlots = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="duration_minutes">
                 Duration (min) <span className="text-error-red">*</span>
               </label>
               <input
+                id="duration_minutes"
                 type="number"
                 name="duration_minutes"
                 placeholder="Auto calculated"
@@ -451,9 +464,9 @@ const TimeSlots = () => {
 
           {/* Applicable Days */}
           <div>
-            <label className="form-title">
+            <div className="form-title">
               Applicable Days <span className="text-error-red">*</span>
-            </label>
+            </div>
             <div className="relative">
               <button
                 type="button"
@@ -465,7 +478,7 @@ const TimeSlots = () => {
                     values.applicable_days.map((day) => (
                       <span
                         key={day}
-                        className="inline-flex items-center gap-1 bg-main-blue text-white text-xs px-2 py-1 rounded-full"
+                        className="inline-flex items-center gap-1 bg-main-blue text-white text-xs px-2 py-1 rounded-full cursor-pointer"
                       >
                         {days.find((d) => d.value === day)?.label || day}
                         <button
@@ -486,9 +499,8 @@ const TimeSlots = () => {
                 </div>
                 <ChevronDown
                   size={18}
-                  className={`text-black dark:text-white transition-transform ${
-                    applicableDaysOpen ? "rotate-180" : ""
-                  }`}
+                  className={`text-black dark:text-white transition-transform ${applicableDaysOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -501,7 +513,7 @@ const TimeSlots = () => {
                     <button
                       type="button"
                       onClick={selectAllDays}
-                      className="px-3 py-1 bg-main-blue text-white rounded text-xs hover:bg-hover-blue"
+                      className="px-3 py-1 bg-main-blue text-white rounded text-xs hover:bg-hover-blue cursor-pointer"
                     >
                       Select All
                     </button>
@@ -563,7 +575,7 @@ const TimeSlots = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

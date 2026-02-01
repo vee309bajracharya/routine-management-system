@@ -107,9 +107,9 @@ const Batches = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Batch</h2>
+        <h1 className="form-header">Create Batch</h1>
         <p className="form-subtext">
           Create batches for organizing students by semester, department, and shift.
         </p>
@@ -118,10 +118,11 @@ const Batches = () => {
           {/* Department Name and Semester Name */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="department_id">
                 Department Name <span className="text-error-red">*</span>
               </label>
               <select
+                id="department_id"
                 name="department_id"
                 value={values.department_id}
                 onChange={handleChange}
@@ -142,10 +143,11 @@ const Batches = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="semester_id">
                 Semester Name <span className="text-error-red">*</span>
               </label>
               <select
+                id="semester_id"
                 name="semester_id"
                 value={values.semester_id}
                 onChange={handleChange}
@@ -175,17 +177,19 @@ const Batches = () => {
           {/* Batch Name and Batch Code */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="batch_name">
                 Batch Name <span className="text-error-red">*</span>
               </label>
               <input
                 type="text"
+                id="batch_name"
                 name="batch_name"
                 placeholder="2022 BCA Batch"
                 value={values.batch_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.batch_name && errors.batch_name && (
                 <p className="showError">{errors.batch_name}</p>
@@ -193,15 +197,17 @@ const Batches = () => {
             </div>
 
             <div>
-              <label className="form-title">Batch Code</label>
+              <label className="form-title" htmlFor="code">Batch Code</label>
               <input
                 type="text"
+                id="code"
                 name="code"
                 placeholder="BCA-2022"
                 value={values.code}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.code && errors.code && (
                 <p className="showError">{errors.code}</p>
@@ -212,11 +218,12 @@ const Batches = () => {
           {/* Year Level and Shift */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="year_level">
                 Year Level <span className="text-error-red">*</span>
               </label>
               <input
                 type="number"
+                id="year_level"
                 name="year_level"
                 placeholder="4"
                 value={values.year_level}
@@ -224,7 +231,8 @@ const Batches = () => {
                 onBlur={handleBlur}
                 className="dropdown-select"
                 min="1"
-                max="8"
+                max="10"
+                autoComplete="off"
               />
               {touched.year_level && errors.year_level && (
                 <p className="showError">{errors.year_level}</p>
@@ -232,7 +240,7 @@ const Batches = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="shift">
                 Shift <span className="text-error-red">*</span>
               </label>
               <div className="flex items-center gap-6 mt-2">
@@ -240,6 +248,7 @@ const Batches = () => {
                   <label key={shift} className="form-radio-title">
                     <input
                       type="radio"
+                      id="shift"
                       name="shift"
                       value={shift}
                       checked={values.shift === shift}
@@ -287,7 +296,7 @@ const Batches = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

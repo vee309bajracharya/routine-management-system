@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useFormik } from "formik";
@@ -8,6 +7,8 @@ import {
   CourseValidationSchema,
   CourseInitialValues,
 } from "../../../../validations/CourseValidationSchema";
+
+const INSTITUTION_ID = import.meta.env.VITE_INSTITUTION_ID;
 
 const Courses = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,8 +23,7 @@ const Courses = () => {
     onSubmit: handleSubmit,
   });
 
-  const { values, errors, touched, handleChange, handleBlur, setFieldValue } =
-    formik;
+  const { values, errors, touched, handleChange, handleBlur, setFieldValue } = formik;
 
   // Fetch departments on mount
   useEffect(() => {
@@ -31,7 +31,7 @@ const Courses = () => {
       setIsLoadingDepartments(true);
       try {
         const response = await axiosClient.get(
-          `/admin/dropdowns/departments/1`
+          `/admin/dropdowns/departments/${INSTITUTION_ID}`
         );
 
         if (response.data.success) {
@@ -96,7 +96,7 @@ const Courses = () => {
 
       if (response.data.success) {
         toast.success(response.data.message || "Course created successfully");
-       // Preserve department and semester, reset other fields
+        // Preserve department and semester, reset other fields
         const preservedDepartmentId = values.department_id;
         const preservedSemesterId = values.semester_id;
         resetForm();
@@ -120,9 +120,9 @@ const Courses = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Course</h2>
+        <h1 className="form-header">Create Course</h1>
         <p className="form-subtext">
           Add new courses to your institution's academic structure and assign
           them to departments and semesters.
@@ -132,10 +132,11 @@ const Courses = () => {
           {/* Department and Semester */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="department_id">
                 Department <span className="text-error-red">*</span>
               </label>
               <select
+                id="department_id"
                 name="department_id"
                 value={values.department_id}
                 onChange={(e) => {
@@ -161,10 +162,11 @@ const Courses = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="semester_id">
                 Semester <span className="text-error-red">*</span>
               </label>
               <select
+                id="semester_id"
                 name="semester_id"
                 value={values.semester_id}
                 onChange={handleChange}
@@ -176,8 +178,8 @@ const Courses = () => {
                   {!values.department_id
                     ? "Select Department First"
                     : isLoadingSemesters
-                    ? "Loading..."
-                    : "Select Semester"}
+                      ? "Loading..."
+                      : "Select Semester"}
                 </option>
                 {semesters.map((sem) => (
                   <option key={sem.id} value={sem.id}>
@@ -194,17 +196,19 @@ const Courses = () => {
           {/* Course Name and Code */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="course_name">
                 Course Name <span className="text-error-red">*</span>
               </label>
               <input
                 type="text"
+                id="course_name"
                 name="course_name"
                 placeholder="Cybersecurity"
                 value={values.course_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.course_name && errors.course_name && (
                 <p className="showError">{errors.course_name}</p>
@@ -212,11 +216,12 @@ const Courses = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="code">
                 Course Code <span className="text-error-red">*</span>
               </label>
               <input
                 type="text"
+                id="code"
                 name="code"
                 placeholder="CACS-401"
                 value={values.code}
@@ -226,6 +231,7 @@ const Courses = () => {
                 }}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.code && errors.code && (
                 <p className="showError">{errors.code}</p>
@@ -235,7 +241,7 @@ const Courses = () => {
 
           {/* Course Type */}
           <div>
-            <label className="form-title">
+            <label className="form-title" htmlFor="type">
               Course Type <span className="text-error-red">*</span>
             </label>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
@@ -246,6 +252,7 @@ const Courses = () => {
                 >
                   <input
                     type="radio"
+                    id="type"
                     name="course_type"
                     value={type}
                     checked={values.course_type === type}
@@ -264,11 +271,12 @@ const Courses = () => {
 
           {/* Description */}
           <div>
-            <label className="form-title">
+            <label className="form-title" htmlFor="description">
               Description{" "}
               <span className="text-gray-400 text-sm">(Optional)</span>
             </label>
             <textarea
+              id="description"
               name="description"
               placeholder="Write a brief description about the course..."
               value={values.description}
@@ -312,7 +320,7 @@ const Courses = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

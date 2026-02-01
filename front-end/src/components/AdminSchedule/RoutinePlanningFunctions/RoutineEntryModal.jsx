@@ -264,7 +264,7 @@ const RoutineEntryModal = () => {
                 <form
                     onSubmit={formik.handleSubmit}
                     className="p-6">
-                    <section className="grid grid-cols-2 gap-4">
+                    <section className="grid xs:grid-cols-1 md:grid-cols-2 gap-4">
 
                         {/* Department */}
                         <div>
@@ -272,6 +272,7 @@ const RoutineEntryModal = () => {
                                 htmlFor="department"
                                 className="form-label">Department <span className="text-error-red">*</span></label>
                             <select
+                                id="department"
                                 name="department_id"
                                 value={values.department_id}
                                 onChange={handleChange}
@@ -296,6 +297,7 @@ const RoutineEntryModal = () => {
                                 htmlFor="academicYear"
                                 className="form-label">Academic Year <span className="text-error-red">*</span></label>
                             <select
+                                id="academicYear"
                                 name="academic_year_id"
                                 value={values.academic_year_id}
                                 onChange={handleChange}
@@ -322,6 +324,7 @@ const RoutineEntryModal = () => {
                                 htmlFor="semester"
                                 className="form-label">Semester <span className="text-error-red">*</span></label>
                             <select
+                                id="semester"
                                 name="semester_id"
                                 value={values.semester_id}
                                 onChange={handleChange}
@@ -348,6 +351,7 @@ const RoutineEntryModal = () => {
                                 htmlFor="batch"
                                 className="form-label">Batch <span className="text-error-red">*</span></label>
                             <select
+                                id="batch"
                                 name="batch_id"
                                 value={values.batch_id}
                                 onChange={handleChange}
@@ -372,6 +376,7 @@ const RoutineEntryModal = () => {
                         <div>
                             <label htmlFor="shift" className="form-label">Shift <span className="text-error-red">*</span></label>
                             <input
+                                id="shift"
                                 type="text"
                                 name="shift"
                                 value={values.shift}
@@ -385,6 +390,7 @@ const RoutineEntryModal = () => {
                                 htmlFor="courseAssignment"
                                 className="form-label">Course Assignment <span className="text-error-red">*</span></label>
                             <select
+                                id="courseAssignment"
                                 name="course_assignment_id"
                                 value={values.course_assignment_id}
                                 onChange={handleChange}
@@ -413,6 +419,7 @@ const RoutineEntryModal = () => {
                         <div>
                             <label htmlFor="room" className="form-label">Room <span className="text-error-red">*</span></label>
                             <select
+                                id="room"
                                 name="room_id"
                                 value={values.room_id}
                                 onChange={handleChange}
@@ -442,6 +449,7 @@ const RoutineEntryModal = () => {
                             <label htmlFor="timeSlot" className="form-label">Time Slot <span className="text-error-red">*</span>
                             </label>
                             <select
+                                id="timeSlot"
                                 name="time_slot_id"
                                 value={values.time_slot_id}
                                 onChange={handleChange}
@@ -471,6 +479,7 @@ const RoutineEntryModal = () => {
                             <label htmlFor="day" className="form-label"> Day <span className="text-error-red">*</span>
                             </label>
                             <input
+                                id="day"
                                 type="text"
                                 name="day_of_week"
                                 value={values.day_of_week}
@@ -484,6 +493,7 @@ const RoutineEntryModal = () => {
                             <label htmlFor="entryType" className="form-label">Entry Type <span className="text-error-red">*</span>
                             </label>
                             <select
+                                id="entryType"
                                 name="entry_type"
                                 value={values.entry_type}
                                 onChange={handleChange}
@@ -499,11 +509,12 @@ const RoutineEntryModal = () => {
                         </div>
 
                         {/* Notes */}
-                        <div className="col-span-2">
+                        <div className="xs:col-span-1 md:col-span-2">
                             <label htmlFor="notes" className="form-label">
                                 Notes (Optional)
                             </label>
                             <textarea
+                                id="notes"
                                 name="notes"
                                 value={values.notes}
                                 onChange={handleChange}

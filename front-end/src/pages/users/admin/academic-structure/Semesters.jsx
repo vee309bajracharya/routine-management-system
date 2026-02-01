@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useFormik } from "formik";
@@ -75,9 +74,9 @@ const Semesters = () => {
   }
 
   return (
-    <div className="wrapper mt-5 flex justify-center font-general-sans px-4">
+    <section className="wrapper mt-5 flex justify-center font-general-sans px-4">
       <div className="w-full max-w-[720px] bg-white dark:bg-dark-overlay rounded-xl border border-box-outline p-4 sm:p-6 md:p-8">
-        <h2 className="form-header">Create Semester</h2>
+        <h1 className="form-header">Create Semester</h1>
         <p className="form-subtext">
           Define semester periods within academic years for organizing courses and batches.
         </p>
@@ -85,10 +84,11 @@ const Semesters = () => {
         <form onSubmit={formik.handleSubmit} className="mt-6 space-y-4">
           {/* Academic Year */}
           <div>
-            <label className="form-title">
+            <label className="form-title" htmlFor="academic_year_id">
               Academic Year <span className="text-error-red">*</span>
             </label>
             <select
+              id="academic_year_id"
               name="academic_year_id"
               value={values.academic_year_id}
               onChange={handleChange}
@@ -113,17 +113,19 @@ const Semesters = () => {
           {/* Semester Name and Number */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="semester_name">
                 Semester Name <span className="text-error-red">*</span>
               </label>
               <input
                 type="text"
+                id="semester_name"
                 name="semester_name"
-                placeholder="1st Sem BCA, First Semester"
+                placeholder="1st Sem BCA, First Semester BCA"
                 value={values.semester_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.semester_name && errors.semester_name && (
                 <p className="showError">{errors.semester_name}</p>
@@ -131,19 +133,21 @@ const Semesters = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="semester_number">
                 Semester Number <span className="text-error-red">*</span>
               </label>
               <input
                 type="number"
+                id="semester_number"
                 name="semester_number"
                 placeholder="Enter number"
                 value={values.semester_number}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 min="1"
-                max="8"
+                max="10"
                 className="dropdown-select"
+                autoComplete="off"
               />
               {touched.semester_number && errors.semester_number && (
                 <p className="showError">{errors.semester_number}</p>
@@ -154,11 +158,12 @@ const Semesters = () => {
           {/* Start Date and End Date */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="start_date">
                 Start Date <span className="text-error-red">*</span>
               </label>
               <input
                 type="date"
+                id="start_date"
                 name="start_date"
                 value={values.start_date}
                 onChange={handleChange}
@@ -171,11 +176,12 @@ const Semesters = () => {
             </div>
 
             <div>
-              <label className="form-title">
+              <label className="form-title" htmlFor="end_date">
                 End Date <span className="text-error-red">*</span>
               </label>
               <input
                 type="date"
+                id="end_date"
                 name="end_date"
                 value={values.end_date}
                 onChange={handleChange}
@@ -215,7 +221,7 @@ const Semesters = () => {
           </div>
         </form>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -239,12 +239,13 @@ const AdminSettings = () => {
               ["contact_phone", "Phone", false],
             ].map(([field, label, required]) => (
               <div key={field}>
-                <label className="form-title sm:text-sm">
+                <label className="form-title sm:text-sm" htmlFor={`fields.${field}`}>
                   {label}
                   {required && <span className="text-error-red ml-1">*</span>}
                 </label>
 
                 <input
+                  id={`fields.${field}`}
                   name={field}
                   value={values[field]}
                   onChange={handleChange}
