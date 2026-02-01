@@ -56,6 +56,7 @@ const ResetPassword = () => {
                         <input
                             type={showPassword ? 'text' : 'password'}
                             className="inputbox" {...formik.getFieldProps('password')}
+                            autoComplete="off"
                         />
                         <button
                             type="button"
@@ -73,11 +74,13 @@ const ResetPassword = () => {
                         <input
                             type={showPassword ? 'text' : 'password'}
                             className="inputbox" {...formik.getFieldProps('password_confirmation')}
+                            autoComplete="off"
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-10">
+                            className="absolute right-4 top-10"
+                        >
                             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                         {formik.errors.password_confirmation && formik.touched.password_confirmation && <p className='showError'>{formik.errors.password_confirmation}</p>}

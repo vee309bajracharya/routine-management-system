@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from "react";
 import { ImageUp, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
@@ -128,8 +127,8 @@ const AdminSettings = () => {
   }
   return (
     <section className="wrapper">
-      <div className="max-w-2xl mx-auto p-4 sm:p-6 border border-box-outline rounded-md font-general">
-        <h1 className="dark:text-white text-xl sm:text-2xl font-semibold mb-2">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 border border-box-outline rounded-md font-general-sans">
+        <h1 className="form-header dark:text-white mb-2">
           Institutional Settings
         </h1>
         <p className="text-xs sm:text-sm text-sub-text mb-6 sm:mb-8">
@@ -183,13 +182,13 @@ const AdminSettings = () => {
               <p className="text-xs sm:text-sm dark:text-white">
                 Drag and drop your logo to upload
               </p>
-              <p className="text-xs my-2 text-box-outline dark:text-white">
+              <p className="text-xs my-2 text-sub-text dark:text-white">
                 or
               </p>
               <button
                 type="button"
                 onClick={handleBrowse}
-                className="border border-main-blue px-3 sm:px-4 py-1.5 sm:py-1 rounded text-xs sm:text-sm text-main-blue hover:bg-primary6-blue transition"
+                className="border border-main-blue px-3 sm:px-4 py-1.5 sm:py-1 rounded text-xs sm:text-sm text-main-blue hover:bg-primary6-blue transition cursor-pointer"
               >
                 Browse Logo
               </button>
@@ -214,8 +213,10 @@ const AdminSettings = () => {
                 <label
                   key={typeValue}
                   className="flex items-center text-primary-text dark:text-white gap-2 text-xs sm:text-sm cursor-pointer"
+                  htmlFor="type"
                 >
                   <input
+                    id="type"
                     type="radio"
                     name="type"
                     value={typeValue}
@@ -249,6 +250,7 @@ const AdminSettings = () => {
                   onChange={handleChange}
                   onBlur={formik.handleBlur}
                   className="dropdown-select text-sm"
+                  autoComplete="off"
                 />
 
                 {touched[field] && errors[field] && (
@@ -260,7 +262,7 @@ const AdminSettings = () => {
 
           {/* Buttons */}
           <div>
-            <button className="auth-btn text-sm sm:text-base" disabled={isLoading}>
+            <button className="auth-btn text-sm sm:text-base" disabled={isLoading} type="submit">
               {isLoading ? (
                 <Loader2
                   size={16}
