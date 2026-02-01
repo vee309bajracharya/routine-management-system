@@ -290,7 +290,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply text-lg sm:text-xl md:text-2xl font-semibold text-primary-text dark:text-white
 }
 .academic-common-bg{
-  @apply bg-white dark:bg-dark-overlay min-h-screen font-general-sans p-4 md:p-6 lg:p-8 
+  @apply bg-white dark:bg-dark-overlay min-h-screen font-general-sans
 }
 .search-icon{
   @apply absolute left-3 top-2.5 w-4 h-4 text-sub-text pointer-events-none;

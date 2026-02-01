@@ -57,6 +57,7 @@ const ForgotPassword = () => {
                 id="email"
                 placeholder="Enter your email"
                 className="inputbox" {...formik.getFieldProps('email')}
+                autoComplete="off"
               />
               {formik.errors.email && formik.touched.email && <p className='showError'>{formik.errors.email}</p>}
             </div>
