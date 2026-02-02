@@ -31,25 +31,25 @@ const TimeSlotEditModal = ({
   const formik = useFormik({
     initialValues: slotDetails
       ? {
-          name: slotDetails.name || "",
-          start_time: slotDetails.start_time || "",
-          end_time: slotDetails.end_time || "",
-          duration_minutes: slotDetails.duration_minutes || "",
-          shift: slotDetails.shift || "Morning",
-          slot_type: slotDetails.slot_type || "Lecture",
-          applicable_days: slotDetails.applicable_days || [],
-          is_active: slotDetails.is_active ?? true,
-        }
+        name: slotDetails.name || "",
+        start_time: slotDetails.start_time || "",
+        end_time: slotDetails.end_time || "",
+        duration_minutes: slotDetails.duration_minutes || "",
+        shift: slotDetails.shift || "Morning",
+        slot_type: slotDetails.slot_type || "Lecture",
+        applicable_days: slotDetails.applicable_days || [],
+        is_active: slotDetails.is_active ?? true,
+      }
       : {
-          name: "",
-          start_time: "",
-          end_time: "",
-          duration_minutes: "",
-          shift: "Morning",
-          slot_type: "Lecture",
-          applicable_days: [],
-          is_active: true,
-        },
+        name: "",
+        start_time: "",
+        end_time: "",
+        duration_minutes: "",
+        shift: "Morning",
+        slot_type: "Lecture",
+        applicable_days: [],
+        is_active: true,
+      },
     validationSchema: TimeSlotEditValidationSchema,
     onSubmit: handleEditSubmit,
     enableReinitialize: true,
@@ -172,7 +172,7 @@ const TimeSlotEditModal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="editmodal-wrapper">
+        <section className="editmodal-wrapper">
           <motion.div
             className="background-blur"
             initial={{ opacity: 0 }}
@@ -191,7 +191,7 @@ const TimeSlotEditModal = ({
               <X size={20} />
             </button>
             <h2 className="form-header text-xl md:text-2xl pr-8">Edit Timeslot Details</h2>
-            <p className="form-subtitle-info">Time Slot: {slotDetails.name}</p>
+            <p className="form-subtitle-info">{slotDetails.name}</p>
 
             {isLoadingDetails ? (
               <div className="state-container">
@@ -199,7 +199,7 @@ const TimeSlotEditModal = ({
                   size={40}
                   className="animate-spin text-main-blue mb-3"
                 />
-                <p className="state-text">Loading details...</p>
+                <p className="state-text">Loading Details</p>
               </div>
             ) : (
               <form
@@ -209,7 +209,7 @@ const TimeSlotEditModal = ({
                 {/* LOCKED INFO SECTION */}
                 <div className="read-only-grid">
                   <div>
-                    <label className="form-title sm:text-sm">
+                    <label className="form-title sm:text-sm" htmlFor="department">
                       Department Name
                     </label>
                     <input
@@ -217,10 +217,12 @@ const TimeSlotEditModal = ({
                       value={slotDetails.department?.code || "N/A"}
                       disabled
                       className="dropdown-select cursor-not-allowed text-sm"
+                      id="department"
+                      autoComplete="off"
                     />
                   </div>
                   <div>
-                    <label className="form-title sm:text-sm">
+                    <label className="form-title sm:text-sm" htmlFor="semester">
                       Semester Name
                     </label>
                     <input
@@ -228,15 +230,19 @@ const TimeSlotEditModal = ({
                       value={slotDetails.semester?.semester_name || "N/A"}
                       disabled
                       className="dropdown-select cursor-not-allowed text-sm"
+                      id="semester"
+                      autoComplete="off"
                     />
                   </div>
                   <div>
-                    <label className="form-title sm:text-sm">Batch Name</label>
+                    <label className="form-title sm:text-sm" htmlFor="batch">Batch Name</label>
                     <input
                       type="text"
                       value={slotDetails.batch?.name || "N/A"}
                       disabled
                       className="dropdown-select cursor-not-allowed text-sm"
+                      id="batch"
+                      autoComplete="off"
                     />
                   </div>
                   <p className="sm:col-span-3 read-only-text">
@@ -247,24 +253,28 @@ const TimeSlotEditModal = ({
                 {/* Editable Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
                   <div className="sm:col-span-2 md:col-span-1">
-                    <label className="form-title sm:text-sm">
+                    <label className="form-title sm:text-sm" htmlFor="name">
                       Time Slot Name
                     </label>
                     <input
+                      type="text"
+                      id="name"
                       name="name"
                       value={values.name}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="dropdown-select text-sm"
+                      autoComplete="off"
                     />
                     {touched.name && errors.name && (
                       <p className="showError text-xs">{errors.name}</p>
                     )}
                   </div>
                   <div>
-                    <label className="form-title sm:text-sm">Start Time</label>
+                    <label className="form-title sm:text-sm" htmlFor="start_time">Start Time</label>
                     <input
                       type="time"
+                      id="start_time"
                       name="start_time"
                       value={values.start_time}
                       onChange={handleChange}
@@ -276,9 +286,10 @@ const TimeSlotEditModal = ({
                     )}
                   </div>
                   <div>
-                    <label className="form-title sm:text-sm">End Time</label>
+                    <label className="form-title sm:text-sm" htmlFor="end_time">End Time</label>
                     <input
                       type="time"
+                      id="end_time"
                       name="end_time"
                       value={values.end_time}
                       onChange={handleChange}
@@ -291,15 +302,17 @@ const TimeSlotEditModal = ({
                   </div>
 
                   <div className="sm:col-span-2 md:col-span-1">
-                    <label className="form-title sm:text-sm">Slot Type</label>
+                    <div className="form-title sm:text-sm">Slot Type</div>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
                       {["Lecture", "Practical", "Break"].map((type) => (
                         <label
                           key={type}
                           className="flex items-center gap-1 cursor-pointer text-xs sm:text-sm"
+                          htmlFor={`slot_type_${type}`}
                         >
                           <input
                             type="radio"
+                            id={`slot_type_${type}`}
                             name="slot_type"
                             value={type}
                             checked={values.slot_type === type}
@@ -317,12 +330,13 @@ const TimeSlotEditModal = ({
                   </div>
 
                   <div>
-                    <label className="form-title sm:text-sm">Shift</label>
+                    <div className="form-title sm:text-sm">Shift</div>
                     <div className="flex gap-4 sm:gap-6 mt-2">
                       {["Morning", "Day"].map((sh) => (
-                        <label key={sh} className="form-selection-label">
+                        <label key={sh} className="form-selection-label" htmlFor={`shift_${sh}`}>
                           <input
                             type="radio"
+                            id={`shift_${sh}`}
                             name="shift"
                             value={sh}
                             checked={values.shift === sh}
@@ -340,11 +354,12 @@ const TimeSlotEditModal = ({
                   </div>
 
                   <div>
-                    <label className="form-title sm:text-sm">Active</label>
+                    <div className="form-title sm:text-sm">Active</div>
                     <div className="flex gap-4 sm:gap-6 mt-2">
-                      <label className="form-selection-label">
+                      <label className="form-selection-label" htmlFor={`is_active_true`}>
                         <input
                           type="radio"
+                          id={`is_active_true`}
                           name="is_active"
                           value="true"
                           checked={values.is_active === true}
@@ -353,9 +368,10 @@ const TimeSlotEditModal = ({
                         />
                         <span className="form-radio-title">True</span>
                       </label>
-                      <label className="form-selection-label">
+                      <label className="form-selection-label" htmlFor={`is_active_false`}>
                         <input
                           type="radio"
+                          id={`is_active_false`}
                           name="is_active"
                           value="false"
                           checked={values.is_active === false}
@@ -368,11 +384,12 @@ const TimeSlotEditModal = ({
                   </div>
 
                   <div className="sm:col-span-2 md:col-span-1">
-                    <label className="form-title sm:text-sm">
+                    <label className="form-title sm:text-sm" htmlFor={`duration_minutes`}>
                       Duration in Minutes
                     </label>
                     <input
                       type="number"
+                      id={`duration_minutes`}
                       name="duration_minutes"
                       placeholder="Auto calculated"
                       value={values.duration_minutes}
@@ -387,9 +404,9 @@ const TimeSlotEditModal = ({
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="form-title sm:text-sm">
+                    <div className="form-title sm:text-sm">
                       Applicable Days
-                    </label>
+                    </div>
                     <div className="relative">
                       <button
                         type="button"
@@ -407,16 +424,20 @@ const TimeSlotEditModal = ({
                               >
                                 {days.find((d) => d.value === day)?.label ||
                                   day}
-                                <button
+                                <span
                                   type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    removeSelectedDay(day);
+                                  role="button"
+                                  className="hover:bg-blue-600 rounded-full p-0.5 cursor-pointer"
+                                  tabIndex={0}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      removeSelectedDay(day);
+                                    }
                                   }}
-                                  className="hover:bg-blue-600 rounded-full p-0.5"
                                 >
-                                  <X size={12} />
-                                </button>
+                                </span>
                               </span>
                             ))
                           ) : (
@@ -427,9 +448,8 @@ const TimeSlotEditModal = ({
                         </div>
                         <ChevronDown
                           size={18}
-                          className={`text-black dark:text-white transition-transform ${
-                            applicableDaysOpen ? "rotate-180" : ""
-                          }`}
+                          className={`text-black dark:text-white cursor-pointer transition-transform ${applicableDaysOpen ? "rotate-180" : ""
+                            }`}
                         />
                       </button>
 
@@ -442,7 +462,7 @@ const TimeSlotEditModal = ({
                             <button
                               type="button"
                               onClick={selectAllDays}
-                              className="px-2 sm:px-3 py-1 bg-main-blue text-white rounded text-xs hover:bg-hover-blue"
+                              className="px-2 sm:px-3 py-1 bg-main-blue text-white rounded text-xs hover:bg-hover-blue cursor-pointer"
                             >
                               Select All
                             </button>
@@ -452,6 +472,7 @@ const TimeSlotEditModal = ({
                               <label
                                 key={day.value}
                                 className="form-selection-label"
+                                htmlFor={`applicable_days_${day.value}`}
                               >
                                 <input
                                   type="checkbox"
@@ -460,6 +481,7 @@ const TimeSlotEditModal = ({
                                   )}
                                   onChange={() => toggleDay(day.value)}
                                   className="form-radio"
+                                  id={`applicable_days_${day.value}`}
                                 />
                                 <span className="text-primary-text dark:text-white">
                                   {day.label}
@@ -482,14 +504,14 @@ const TimeSlotEditModal = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
+                    className="modal-form-actions-cancel cancel-btn"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
+                    className="modal-form-actions-update auth-btn"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -505,7 +527,7 @@ const TimeSlotEditModal = ({
               </form>
             )}
           </motion.div>
-        </div>
+        </section>
       )}
     </AnimatePresence>
   );
