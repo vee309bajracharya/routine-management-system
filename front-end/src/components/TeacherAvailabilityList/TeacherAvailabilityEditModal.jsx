@@ -86,19 +86,20 @@ const TeacherAvailabilityEditModal = ({ isOpen, onClose, availability, teacher, 
               <X size={20} />
             </button>
 
-            <h2 className="form-header text-xl md:text-2xl pr-8">Edit Availability</h2>
+            <h2 className="form-header text-xl md:text-2xl pr-8">Edit Teacher Availability Details</h2>
             <p className="form-subtitle-info">
-              Teacher: {teacher.teacher_name} - {availability.day_of_week}
+              {teacher.teacher_name} - {availability.day_of_week}
             </p>
             
             <form onSubmit={formik.handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="form-title sm:text-sm">
+                  <label className="form-title sm:text-sm" htmlFor="available_from">
                     Available From <span className="text-error-red">*</span>
                   </label>
                   <input 
                     type="time" 
+                    id="available_from"
                     name="available_from" 
                     value={formik.values.available_from} 
                     onChange={formik.handleChange} 
@@ -110,11 +111,12 @@ const TeacherAvailabilityEditModal = ({ isOpen, onClose, availability, teacher, 
                   )}
                 </div>
                 <div>
-                  <label className="form-title sm:text-sm">
+                  <label className="form-title sm:text-sm" htmlFor="available_to">
                     Available To <span className="text-error-red">*</span>
                   </label>
                   <input 
-                    type="time" 
+                    type="time"
+                    id="available_to"
                     name="available_to" 
                     value={formik.values.available_to} 
                     onChange={formik.handleChange} 
@@ -128,15 +130,16 @@ const TeacherAvailabilityEditModal = ({ isOpen, onClose, availability, teacher, 
               </div>
 
               <div>
-                <label className="form-title sm:text-sm">Status</label>
+                <div className="form-title sm:text-sm">Status</div>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-2">
                   {[ 
                     { value: true, label: "Available" }, 
                     { value: false, label: "Unavailable" } 
                   ].map((status) => (
-                    <label key={status.label} className="flex items-center gap-2 cursor-pointer">
+                    <label key={status.label} className="flex items-center gap-2 cursor-pointer" htmlFor={`status-${status.value}`}>
                       <input 
-                        type="radio" 
+                        type="radio"
+                        id={`status-${status.value}`}
                         name="is_available" 
                         checked={formik.values.is_available === status.value} 
                         onChange={() => formik.setFieldValue("is_available", status.value)} 
@@ -149,8 +152,9 @@ const TeacherAvailabilityEditModal = ({ isOpen, onClose, availability, teacher, 
               </div>
 
               <div>
-                <label className="form-title sm:text-sm">Notes</label>
+                <label className="form-title sm:text-sm" htmlFor="notes">Notes</label>
                 <textarea 
+                  id="notes"
                   name="notes" 
                   value={formik.values.notes} 
                   onChange={formik.handleChange} 
@@ -164,14 +168,14 @@ const TeacherAvailabilityEditModal = ({ isOpen, onClose, availability, teacher, 
                 <button 
                   type="button" 
                   onClick={onClose} 
-                  className="cancel-btn px-4 text-sm order-2 sm:order-1" 
+                  className="modal-form-actions-cancel cancel-btn" 
                   disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
-                  className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2" 
+                  className="modal-form-actions-update auth-btn" 
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (

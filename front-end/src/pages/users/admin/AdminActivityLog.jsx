@@ -165,6 +165,7 @@ const AdminActivityLog = () => {
               className="search-btn"
               value={searchTerm}
               onChange={handleSearchChange}
+              autoComplete="off"
             />
             {searchTerm && (
               <button

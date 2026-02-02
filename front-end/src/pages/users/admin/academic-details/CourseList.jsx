@@ -145,7 +145,7 @@ const CourseList = () => {
             Delete {course.course_name}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            This action cannot be undone.
+            Are you sure to delete this course? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button onClick={closeToast} className="toast-cancel">
@@ -235,6 +235,7 @@ const CourseList = () => {
               className="dropdown-select cursor-pointer text-sm outline-none"
               value={filterStatus}
               onChange={(e) => handleFilterChange("status", e.target.value)}
+              id="status"
             >
               <option value="">Status</option>
               <option value="active">Active</option>
@@ -272,10 +273,12 @@ const CourseList = () => {
             </span>
             <input
               type="text"
-              placeholder="Search by name or code..."
+              placeholder="Course Name, Code"
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              autoComplete="off"
+              id="search"
             />
           </div>
 
@@ -292,7 +295,7 @@ const CourseList = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading courses...</p>
+          <p className="state-loading">Loading Courses</p>
         </div>
       ) : courses.length === 0 ? (
         <div className="state-empty-bg">

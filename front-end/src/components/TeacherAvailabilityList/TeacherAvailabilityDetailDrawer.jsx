@@ -63,9 +63,9 @@ const TeacherAvailabilityDetailDrawer = ({ isOpen, onClose, teacher, onEditClick
                     {teacher.schedule.map((slot) => (
                       <div 
                         key={slot.id} 
-                        className="border border-box-outline rounded-lg p-3 sm:p-4 bg-gray-50 dark:bg-dark-hover"
+                        className="border border-box-outline rounded-lg p-3 bg-gray-50 dark:bg-dark-hover"
                       >
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start xs:gap-0 md:gap-3">
                           <div className="flex items-start gap-2 flex-1 min-w-0">
                             <Clock size={18} className="text-main-blue flex-shrink-0 mt-0.5" />
                             <div className="flex-1 min-w-0">
@@ -94,12 +94,12 @@ const TeacherAvailabilityDetailDrawer = ({ isOpen, onClose, teacher, onEditClick
                         </div>
                         
                         {slot.notes && (
-                          <p className="text-xs sm:text-sm text-sub-text mt-3 pt-3">
-                            <span className="font-medium">Notes:</span> {slot.notes}
+                          <p className="text-xs sm:text-sm text-sub-text xs:mt-0 md:mt-3 ml-6">
+                            <span className="font-semibold">Notes:</span> {slot.notes}
                           </p>
                         )}
                         
-                        <div className="mt-3">
+                        <div className="mt-3 ml-6">
                           <span 
                             className={`text-xs px-2 py-1 rounded ${
                               slot.is_available 

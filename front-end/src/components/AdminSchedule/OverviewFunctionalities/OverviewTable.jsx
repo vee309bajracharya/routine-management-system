@@ -4,7 +4,7 @@ import OverviewTableRow from './OverviewTableRow'
 
 const OverviewTable = ({ routines, isLoading, onView, onEdit, onDeleteConfirm, onStatusChange, onArchiveConfirm }) => {
   if (isLoading) {
-    return <div className='flex justify-center items-center py-10'><Loader2 className='animate-spin dark:invert my-5' size={40} /></div>;
+    return <div className='flex justify-center items-center py-10'><Loader2 className='animate-spin dark:invert my-5 text-main-blue' size={40} /></div>;
   }
 
   if (!routines || routines.length === 0) {

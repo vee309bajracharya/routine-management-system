@@ -111,9 +111,7 @@ const SemesterList = () => {
             Delete {sem.semester_name}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            Are you sure you want to delete this semester?
-            <br />
-            This action cannot be undone.
+            Are you sure to delete this semester? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button
@@ -293,6 +291,7 @@ const SemesterList = () => {
             className="dropdown-select cursor-pointer text-sm outline-none sm:w-auto"
             value={statusFilter}
             onChange={(e) => handleFilterChange("status", e.target.value)}
+            id="status"
           >
             <option value="">Active</option>
             <option value="1">True</option>
@@ -308,10 +307,12 @@ const SemesterList = () => {
             </span>
             <input
               type="text"
-              placeholder="Search by Semester / Academic Year"
+              placeholder="Semester Name, Academic Year"
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              autoComplete="off"
+              id="search"
             />
           </div>
           <button
@@ -327,7 +328,7 @@ const SemesterList = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading semesters...</p>
+          <p className="state-loading">Loading Semesters</p>
         </div>
       ) : semesters.length === 0 ? (
         <div className="state-empty-bg">
@@ -525,13 +526,14 @@ const SemesterList = () => {
 
               <h2 className="form-header text-xl md:text-2xl pr-8">Edit Semester Details</h2>
               <p className="form-subtitle-info">
-                Semester: {selectedSem.semester_name}
+                {selectedSem.semester_name}
               </p>
 
               {/* Academic Year read-only */}
               <div className="mb-4">
-                <label className="form-title sm:text-sm">Academic Year</label>
+                <label className="form-title sm:text-sm" htmlFor="academic-year">Academic Year</label>
                 <input
+                  id="academic-year"
                   type="text"
                   value={selectedSem.academic_year?.year_name || "N/A"}
                   disabled
@@ -545,14 +547,16 @@ const SemesterList = () => {
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="form-title sm:text-sm">Semester Name</label>
+                    <label className="form-title sm:text-sm" htmlFor="semester_name">Semester Name</label>
                     <input
                       type="text"
+                      id="semester_name"
                       name="semester_name"
                       value={values.semester_name}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="dropdown-select text-sm"
+                      autoComplete="off"
                     />
                     {touched.semester_name && errors.semester_name && (
                       <p className="showError text-xs">{errors.semester_name}</p>
@@ -560,16 +564,18 @@ const SemesterList = () => {
                   </div>
 
                   <div>
-                    <label className="form-title sm:text-sm">Semester Number</label>
+                    <label className="form-title sm:text-sm" htmlFor="semester_number">Semester Number</label>
                     <input
                       type="number"
+                      id="semester_number"
                       name="semester_number"
                       value={values.semester_number}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       min="1"
-                      max="8"
+                      max="10"
                       className="dropdown-select text-sm"
+                      autoComplete="off"
                     />
                     {touched.semester_number && errors.semester_number && (
                       <p className="showError text-xs">{errors.semester_number}</p>
@@ -577,9 +583,10 @@ const SemesterList = () => {
                   </div>
 
                   <div>
-                    <label className="form-title sm:text-sm">Start Date</label>
+                    <label className="form-title sm:text-sm" htmlFor="start_date">Start Date</label>
                     <input
                       type="date"
+                      id="start_date"
                       name="start_date"
                       value={values.start_date}
                       onChange={handleChange}
@@ -592,9 +599,10 @@ const SemesterList = () => {
                   </div>
 
                   <div>
-                    <label className="form-title sm:text-sm">End Date</label>
+                    <label className="form-title sm:text-sm" htmlFor="end_date">End Date</label>
                     <input
                       type="date"
+                      id="end_date"
                       name="end_date"
                       value={values.end_date}
                       onChange={handleChange}
@@ -608,7 +616,7 @@ const SemesterList = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Status</label>
+                  <div className="form-title sm:text-sm">Status</div>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-8 mt-2">
                     {[
                       { value: true, label: "True" },
@@ -617,9 +625,11 @@ const SemesterList = () => {
                       <label
                         key={String(status.value)}
                         className="form-selection-label"
+                        htmlFor={`status_${status.value}`}
                       >
                         <input
                           type="radio"
+                          id={`status_${status.value}`}
                           name="is_active"
                           checked={values.is_active === status.value}
                           onChange={() =>
@@ -641,14 +651,14 @@ const SemesterList = () => {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
+                    className="modal-form-actions-cancel cancel-btn"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
+                    className="modal-form-actions-update auth-btn"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

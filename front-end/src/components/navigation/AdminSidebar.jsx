@@ -140,12 +140,12 @@ const AdminSidebar = ({ collapsed, sidebarItems, role }) => {
 
                       {!collapsed && (
                         <>
-                          <span className="ml-3 flex-grow text-left dark:text-white text-sm whitespace-nowrap ">
+                          <span className="ml-3 flex-grow text-left dark:text-white text-sm whitespace-nowrap cursor-pointer">
                             {item.label}
                           </span>
                           <motion.img
                             src={Downarrow}
-                            className={`w-3 h-3 transition-transform ${
+                            className={`w-3 h-3 transition-transform cursor-pointer ${
                               isOpen ? "rotate-180" : ""
                             } ${
                               isActiveByBasePath || isOpen

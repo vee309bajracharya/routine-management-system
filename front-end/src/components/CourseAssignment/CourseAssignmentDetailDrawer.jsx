@@ -64,8 +64,8 @@ const CourseAssignmentDetailDrawer = ({
                         {assignmentDetails.course?.name || "N/A"}
                       </h3>
                     </div>
-                    <p className="text-xs sm:text-sm text-main-blue font-medium mb-3">
-                      COURSE CODE: COAS-{String(assignmentDetails.id).padStart(3, "0")}
+                    <p className="text-xs sm:text-sm font-medium mb-3 dark:text-white">
+                      Course Code: <span className="font-semibold text-main-blue ">COAS-{String(assignmentDetails.id).padStart(3, "0")}</span>
                     </p>
                     <div className="flex gap-2 flex-wrap justify-between items-center">
                       <span className="px-2 py-1 rounded text-xs bg-main-gray dark:bg-dark-hover text-primary-text dark:text-white whitespace-nowrap">
@@ -78,7 +78,7 @@ const CourseAssignmentDetailDrawer = ({
                             : "drawer-status-inactive"
                         }`}
                       >
-                        ● {assignmentDetails.status?.toUpperCase()}
+                      {assignmentDetails.status?.toUpperCase()}
                       </span>
                     </div>
                   </div>
@@ -140,7 +140,7 @@ const CourseAssignmentDetailDrawer = ({
                         <p className="grid-value truncate">
                           {assignmentDetails.teacher?.name || "N/A"}
                         </p>
-                        <p className="text-xs sm:text-sm text-sub-text mt-1 uppercase">
+                        <p className="text-xs sm:text-sm text-sub-text mt-1">
                           {assignmentDetails.teacher?.department?.code || "N/A"} Department
                         </p>
                       </div>
@@ -159,7 +159,7 @@ const CourseAssignmentDetailDrawer = ({
                         </p>
                       ) : (
                         <div className="flex items-center justify-center h-full py-4">
-                          <p className="text-sub-text text-xs sm:text-sm italic">
+                          <p className="text-sub-text text-xs sm:text-sm">
                             No additional notes provided
                           </p>
                         </div>

@@ -117,9 +117,7 @@ const AcademicYearsList = () => {
             Delete {year.year_name}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            Are you sure you want to delete this academic year?
-            <br />
-            This action cannot be undone.
+            Are you sure to delete this academic year? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button onClick={closeToast} className="toast-cancel">
@@ -287,6 +285,7 @@ const AcademicYearsList = () => {
         {/* Status Filter */}
         <div className="w-full sm:w-auto">
           <select
+            id="status"
             className="dropdown-select cursor-pointer text-sm outline-none sm:w-auto"
             value={statusFilter}
             onChange={(e) => handleFilterChange("status", e.target.value)}
@@ -304,8 +303,9 @@ const AcademicYearsList = () => {
               <Search size={18} />
             </span>
             <input
+              id="search"
               type="text"
-              placeholder="Search by Name / Department Code"
+              placeholder="Academic Year Name, Department Code"
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
@@ -324,7 +324,7 @@ const AcademicYearsList = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading academic years...</p>
+          <p className="state-loading">Loading Academic Years</p>
         </div>
       ) : academicYears.length === 0 ? (
         <div className="state-empty-bg">
@@ -339,7 +339,7 @@ const AcademicYearsList = () => {
                 <thead className="table-thead">
                   <tr>
                     <th className="table-th">Academic Year ID</th>
-                    <th className="table-th">Department</th>
+                    <th className="table-th">Department Code</th>
                     <th className="table-th">Academic Year Name</th>
                     <th className="table-th">Start Date</th>
                     <th className="table-th">End Date</th>
@@ -543,19 +543,21 @@ const AcademicYearsList = () => {
 
               <h2 className="form-header text-xl md:text-2xl pr-8">Edit Academic Year Details</h2>
               <p className="form-subtitle-info">
-                Academic Year: {selectedYear.year_name}
+                {selectedYear.year_name}
               </p>
 
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 <div>
-                  <label className="form-title sm:text-sm">Academic Year Name</label>
+                  <label className="form-title sm:text-sm" htmlFor="year_name">Academic Year Name</label>
                   <input
                     type="text"
+                    id="year_name"
                     name="year_name"
                     value={values.year_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="dropdown-select text-sm"
+                    autoComplete="off"
                   />
                   {touched.year_name && errors.year_name && (
                     <p className="showError text-xs">{errors.year_name}</p>
@@ -564,9 +566,10 @@ const AcademicYearsList = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="form-title sm:text-sm">Start Date</label>
+                    <label className="form-title sm:text-sm" htmlFor="start_date">Start Date</label>
                     <input
                       type="date"
+                      id="start_date"
                       name="start_date"
                       value={values.start_date}
                       onChange={handleChange}
@@ -579,9 +582,10 @@ const AcademicYearsList = () => {
                   </div>
 
                   <div>
-                    <label className="form-title sm:text-sm">End Date</label>
+                    <label className="form-title sm:text-sm" htmlFor="end_date">End Date</label>
                     <input
                       type="date"
+                      id="end_date"
                       name="end_date"
                       value={values.end_date}
                       onChange={handleChange}
@@ -595,7 +599,7 @@ const AcademicYearsList = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Active</label>
+                  <div className="form-title sm:text-sm">Active</div>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-8 mt-2">
                     {[
                       { value: true, label: "True" },
@@ -604,9 +608,11 @@ const AcademicYearsList = () => {
                       <label
                         key={String(status.value)}
                         className="flex items-center gap-2 cursor-pointer"
+                        htmlFor={`is_active_${status.value}`}
                       >
                         <input
                           type="radio"
+                          id={`is_active_${status.value}`}
                           name="is_active"
                           checked={values.is_active === status.value}
                           onChange={() =>
@@ -628,14 +634,14 @@ const AcademicYearsList = () => {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
+                    className="modal-form-actions-cancel cancel-btn"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
+                    className="modal-form-actions-update auth-btn"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

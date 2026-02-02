@@ -108,9 +108,7 @@ const BatchList = () => {
             Delete {batch.batch_name}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            Are you sure you want to delete this batch?
-            <br />
-            This action cannot be undone.
+            Are you sure to delete this batch? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button
@@ -280,6 +278,7 @@ const BatchList = () => {
             className="dropdown-select cursor-pointer text-sm outline-none sm:w-auto"
             value={filterStatus}
             onChange={(e) => handleFilterChange("status", e.target.value)}
+            id="status"
           >
             <option value="">Status</option>
             <option value="active">Active</option>
@@ -296,10 +295,12 @@ const BatchList = () => {
             </span>
             <input
               type="text"
-              placeholder="Search by Batch / Semester / Department"
+              placeholder="Batch, Semester, Department"
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              autoComplete="off"
+              id="search"
             />
           </div>
           <button
@@ -315,7 +316,7 @@ const BatchList = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading batches...</p>
+          <p className="state-loading">Loading Batches</p>
         </div>
       ) : batches.length === 0 ? (
         <div className="state-empty-bg">
@@ -541,28 +542,32 @@ const BatchList = () => {
 
               <h2 className="form-header text-xl md:text-2xl pr-8">Edit Batch Details</h2>
               <p className="form-subtitle-info">
-                Batch: {selectedBatch.batch_name}
+                {selectedBatch.batch_name}
               </p>
 
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 {/* LOCKED INFO SECTION */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-3 border border-box-outline p-3 sm:p-4 rounded-lg sm:rounded-2xl bg-gray-50 dark:bg-gray-800">
                   <div className="col-span-1">
-                    <label className="form-title sm:text-sm">Department</label>
+                    <label className="form-title sm:text-sm" htmlFor="department">Department</label>
                     <input
                       type="text"
                       value={selectedBatch.department?.code || "N/A"}
                       className="dropdown-select cursor-not-allowed text-sm"
+                      id="department"
+                      autoComplete="off"
                       disabled
                     />
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title sm:text-sm">Semester</label>
+                    <label className="form-title sm:text-sm" htmlFor="semester">Semester</label>
                     <input
                       type="text"
                       value={selectedBatch.semester?.semester_name || "N/A"}
                       className="dropdown-select cursor-not-allowed text-sm"
+                      id="semester"
+                      autoComplete="off"
                       disabled
                     />
                   </div>
@@ -574,14 +579,16 @@ const BatchList = () => {
                 {/* EDITABLE FIELDS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="col-span-1">
-                    <label className="form-title sm:text-sm">Batch Name</label>
+                    <label className="form-title sm:text-sm" htmlFor="batch_name">Batch Name</label>
                     <input
                       type="text"
+                      id="batch_name"
                       name="batch_name"
                       value={values.batch_name}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="dropdown-select text-sm"
+                      autoComplete="off"
                     />
                     {touched.batch_name && errors.batch_name && (
                       <p className="showError text-xs">{errors.batch_name}</p>
@@ -589,14 +596,16 @@ const BatchList = () => {
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title sm:text-sm">Batch Code</label>
+                    <label className="form-title sm:text-sm" htmlFor="code">Batch Code</label>
                     <input
                       type="text"
+                      id="code"
                       name="code"
                       value={values.code}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="dropdown-select text-sm"
+                      autoComplete="off"
                     />
                     {touched.code && errors.code && (
                       <p className="showError text-xs">{errors.code}</p>
@@ -604,16 +613,18 @@ const BatchList = () => {
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title sm:text-sm">Year Level</label>
+                    <label className="form-title sm:text-sm" htmlFor="year_level">Year Level</label>
                     <input
                       type="number"
+                      id="year_level"
                       name="year_level"
                       value={values.year_level}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       className="dropdown-select text-sm"
                       min="1"
-                      max="8"
+                      max="10"
+                      autoComplete="off"
                     />
                     {touched.year_level && errors.year_level && (
                       <p className="showError text-xs">{errors.year_level}</p>
@@ -621,15 +632,17 @@ const BatchList = () => {
                   </div>
 
                   <div className="col-span-1">
-                    <label className="form-title sm:text-sm">Shift</label>
+                    <div className="form-title sm:text-sm">Shift</div>
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-2">
                       {["Morning", "Day", "Evening"].map((shift) => (
                         <label
                           key={shift}
                           className="flex items-center gap-2 cursor-pointer"
+                          htmlFor={`shift_${shift}`}
                         >
                           <input
                             type="radio"
+                            id={`shift_${shift}`}
                             name="shift"
                             value={shift}
                             checked={values.shift === shift}
@@ -647,15 +660,17 @@ const BatchList = () => {
                   </div>
 
                   <div className="col-span-1 sm:col-span-2">
-                    <label className="form-title sm:text-sm">Status</label>
+                    <div className="form-title sm:text-sm">Status</div>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-2">
                       {["active", "inactive", "completed"].map((status) => (
                         <label
                           key={status}
                           className="flex items-center gap-2 cursor-pointer"
+                          htmlFor={`status_${status}`}
                         >
                           <input
                             type="radio"
+                            id={`status_${status}`}
                             name="status"
                             value={status}
                             checked={values.status === status}
@@ -680,14 +695,14 @@ const BatchList = () => {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
+                    className="modal-form-actions-cancel cancel-btn"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
+                    className="modal-form-actions-update auth-btn"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
