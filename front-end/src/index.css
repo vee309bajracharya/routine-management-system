@@ -245,13 +245,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply text-gray-400 hover:text-box-outline dark:hover:bg-dark-hover transition cursor-pointer absolute right-4 top-4 p-1 z-10
 }
 .search-btn{
-  @apply pl-9 pr-10 py-2 border border-box-outline rounded-md text-sm w-full bg-white dark:bg-dark-overlay dark:text-white focus:outline-none focus:ring-2 focus:ring-main-blue
+  @apply pl-9 pr-5 py-2 border border-box-outline rounded-md text-sm w-full bg-white dark:bg-dark-overlay dark:text-white focus:outline-none focus:ring-2 focus:ring-main-blue
 }
 .action-bar-container{
-  @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 lg:ml-4
+  @apply flex sm:flex-col lg:flex-row items-center gap-3
 }
 .search-input-wrapper{
-  @apply relative flex-1 sm:w-64
+  @apply relative flex-1 sm:w-64 md:w-96
 }
 .btn-link{
   @apply flex items-center gap-2 bg-main-blue whitespace-nowrap text-white px-4 py-2 rounded-md cursor-pointer text-sm hover:bg-hover-blue transition-colors
@@ -353,10 +353,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply text-xl font-semibold text-primary-text dark:text-white
 }
 .toast-cancel{
-  @apply px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors
+  @apply px-3 py-1.5 bg-gray-200 text-primary-text rounded-md hover:bg-gray-300 transition-colors cursor-pointer
 }
 .toast-delete{
-  @apply px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors
+  @apply px-3 py-1.5 rounded-md bg-error-red hover:bg-red-700 text-white transition-colors cursor-pointer
 }
 .draft{
   @apply bg-yellow-200 text-warning-orange flex-1 flex flex-col items-center justify-center min-w-0
@@ -374,7 +374,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply fixed inset-0 z-[60] flex items-center justify-center px-4
 }
 .editmodal-container{
-  @apply relative bg-white dark:bg-dark-overlay w-full max-w-xl rounded-2xl p-8 z-10
+  @apply relative bg-white dark:bg-dark-overlay w-full max-w-md rounded-2xl p-6 z-10
 }
 .pagination-container{
   @apply flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline
@@ -449,13 +449,19 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply px-2 py-1 rounded text-xs font-medium whitespace-nowrap
 }
 .form-subtitle-info{
-  @apply text-xs sm:text-sm text-main-blue font-medium mb-4 sm:mb-6
+  @apply text-xs sm:text-sm text-main-blue font-medium mb-4
 }
 .read-only-text{
   @apply  text-xs text-center text-sub-text
 }
 .modal-form-actions{
-  @apply flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 items-stretch sm:items-center pt-4 sm:pt-6
+  @apply flex xs:flex-col md:flex-row gap-3 pt-2
+}
+.modal-form-actions-cancel{
+  @apply flex-1 cancel-btn text-sm
+}
+.modal-form-actions-update{
+  @apply flex-1 auth-btn flex items-center justify-center text-sm
 }
 .form-selection-label{
   @apply flex items-center gap-2 cursor-pointer text-xs sm:text-sm
@@ -524,13 +530,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply sticky bottom-0 bg-white dark:bg-dark-overlay p-4 sm:p-6 border-t border-box-outline
 }
 .drawer-edit-btn{
-  @apply flex-1 flex items-center justify-center gap-2 bg-main-blue text-white px-4 py-2.5 rounded-lg hover:bg-hover-blue transition-colors text-sm sm:text-base
+  @apply flex-1 flex items-center justify-center gap-2 bg-main-blue text-white px-4 py-2.5 rounded-lg hover:bg-hover-blue transition-colors text-sm sm:text-base cursor-pointer
 }
 .tab-nav-list{
   @apply flex gap-4 sm:gap-6 px-4 sm:px-6 border-b border-box-outline overflow-x-auto
 }
 .tab-item{
-  @apply pb-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap
+  @apply pb-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer
 }
 .tab-item-active{
   @apply text-main-blue border-b-2 border-main-blue

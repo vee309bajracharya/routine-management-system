@@ -16,7 +16,7 @@ const FacultyTable = ({ users, selectedRole, openDrawer, openEditModal, deleteUs
             Delete FAC-{facultyId} {facultyName}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            Are you sure you want to permanently delete this user?
+            Are you sure to delete this user permanently?
             <br />
             This action cannot be undone.
           </p>

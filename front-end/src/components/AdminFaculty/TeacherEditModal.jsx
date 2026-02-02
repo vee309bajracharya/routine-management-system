@@ -145,10 +145,11 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
             <form onSubmit={formik.handleSubmit} className="space-y-3 sm:space-y-4">
               {/* Department */}
               <div>
-                <label className="form-title text-xs sm:text-sm">
+                <label className="form-title text-xs sm:text-sm" htmlFor="department_id">
                   Department <span className="text-error-red">*</span>
                 </label>
                 <select
+                  id="department_id"
                   name="department_id"
                   value={values.department_id}
                   onChange={handleChange}
@@ -169,13 +170,14 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
 
               {/* Employment Type */}
               <div>
-                <label className="form-title text-xs sm:text-sm">
+                <div className="form-title text-xs sm:text-sm">
                   Employment Type <span className="text-error-red">*</span>
-                </label>
+                </div>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2">
                   {["Full Time", "Part Time"].map((type) => (
-                    <label key={type} className="form-radio-title flex items-center gap-2 cursor-pointer text-xs sm:text-sm">
+                    <label key={type} className="form-radio-title flex items-center gap-2 cursor-pointer text-xs sm:text-sm" htmlFor={`employment_type_${type}`}>
                       <input
+                        id={`employment_type_${type}`}
                         type="radio"
                         name="employment_type"
                         value={type}
@@ -194,18 +196,18 @@ const TeacherEditModal = ({ isOpen, onClose, teacherData, onSuccess }) => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <div className="modal-form-actions">
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="flex-1 cancel-btn text-sm order-2 sm:order-1"
+                  className="modal-form-actions-cancel cancel-btn"
                   disabled={isLoading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 auth-btn flex items-center justify-center text-sm order-1 sm:order-2"
+                  className="modal-form-actions-update auth-btn"
                   disabled={isLoading || formik.isSubmitting}
                 >
                   {isLoading || formik.isSubmitting ? (

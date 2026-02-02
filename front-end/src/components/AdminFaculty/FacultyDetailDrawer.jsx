@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from "framer-motion";
-import {X, User, Phone, Mail, Calendar, Edit3, FlaskConical, Box, Building2,} from "lucide-react";
+import {X, User, Phone, Mail, Calendar, Edit, FlaskConical, Box, Building2,} from "lucide-react";
 
 const FacultyDetailsDrawer = ({ selectedUser, closeDrawer, openEditModal }) => {
   if (!selectedUser) return null;
@@ -262,7 +262,7 @@ const FacultyDetailsDrawer = ({ selectedUser, closeDrawer, openEditModal }) => {
                 onClick={handleEditClick}
                 className="drawer-edit-btn"
               >
-                <Edit3 size={16} /> Edit Profile
+                <Edit size={16} /> Edit Profile
               </button>
             </div>
           </motion.div>
