@@ -127,9 +127,7 @@ const DepartmentList = () => {
             Delete {dept.department_name}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            Are you sure you want to delete this department?
-            <br />
-            This action cannot be undone.
+            Are you sure to delete this department? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button onClick={closeToast} className="toast-cancel">
@@ -313,6 +311,7 @@ const DepartmentList = () => {
             className="dropdown-select cursor-pointer text-sm outline-none sm:w-auto"
             value={statusFilter}
             onChange={(e) => handleFilterChange("status", e.target.value)}
+            id="status"
           >
             <option value="">Status</option>
             <option value="active">Active</option>
@@ -328,7 +327,8 @@ const DepartmentList = () => {
             </span>
             <input
               type="text"
-              placeholder="Search by Name or Code"
+              id="search"
+              placeholder="Department Name, Code"
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
@@ -349,7 +349,7 @@ const DepartmentList = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading departments...</p>
+          <p className="state-loading">Loading Departments</p>
         </div>
       ) : departments.length === 0 ? (
         <div className="state-empty-bg">
@@ -593,21 +593,23 @@ const DepartmentList = () => {
                 <X size={20} />
               </button>
 
-              <h2 className="form-header text-xl md:text-2xl pr-8">Edit Department</h2>
+              <h2 className="form-header text-xl md:text-2xl pr-8">Edit Department Details</h2>
               <p className="form-subtitle-info">
-                Department: {selectedDept.department_name}
+                {selectedDept.department_name}
               </p>
 
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 <div>
-                  <label className="form-title sm:text-sm">Department Name</label>
+                  <label className="form-title sm:text-sm" htmlFor="department_name">Department Name</label>
                   <input
                     type="text"
+                    id="department_name"
                     name="department_name"
                     value={values.department_name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="dropdown-select text-sm"
+                    autoComplete="off"
                   />
                   {touched.department_name && errors.department_name && (
                     <p className="showError text-xs">{errors.department_name}</p>
@@ -615,9 +617,10 @@ const DepartmentList = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Department Code</label>
+                  <label className="form-title sm:text-sm" htmlFor="code">Department Code</label>
                   <input
                     type="text"
+                    id="code"
                     name="code"
                     value={values.code}
                     onChange={(e) => {
@@ -626,6 +629,7 @@ const DepartmentList = () => {
                     }}
                     onBlur={handleBlur}
                     className="dropdown-select uppercase text-sm"
+                    autoComplete="off"
                   />
                   {touched.code && errors.code && (
                     <p className="showError text-xs">{errors.code}</p>
@@ -633,8 +637,9 @@ const DepartmentList = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Head of Department</label>
+                  <label className="form-title sm:text-sm" htmlFor="head_teacher_id">Head of Department</label>
                   <select
+                    id="head_teacher_id"
                     name="head_teacher_id"
                     value={values.head_teacher_id}
                     onChange={handleChange}
@@ -654,14 +659,16 @@ const DepartmentList = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Description</label>
+                  <label className="form-title sm:text-sm" htmlFor="description">Description</label>
                   <textarea
+                    id="description"
                     name="description"
                     value={values.description}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="textarea-input h-20 sm:h-24 text-sm"
                     placeholder="Enter description..."
+                    autoComplete="off"
                   />
                   {touched.description && errors.description && (
                     <p className="showError text-xs">{errors.description}</p>
@@ -669,15 +676,17 @@ const DepartmentList = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Status</label>
+                  <div className="form-title sm:text-sm">Status</div>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-8 mt-2">
                     {["active", "inactive"].map((status) => (
                       <label
                         key={status}
                         className="flex items-center gap-2 cursor-pointer"
+                        htmlFor={`status_${status}`}
                       >
                         <input
                           type="radio"
+                          id={`status_${status}`}
                           name="status"
                           value={status}
                           checked={values.status === status}
@@ -700,14 +709,14 @@ const DepartmentList = () => {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
+                    className="modal-form-actions-cancel cancel-btn"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
+                    className="modal-form-actions-update auth-btn"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

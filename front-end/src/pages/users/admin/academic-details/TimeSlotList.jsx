@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect, useCallback } from "react";
 import { Edit, Trash2, Plus, Search, Eye, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -129,9 +128,7 @@ const TimeSlotList = () => {
             Delete {slot.name}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            Are you sure you want to delete this time slot?
-            <br />
-            This action cannot be undone.
+            Are you sure to delete this time slot? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button
@@ -181,15 +178,16 @@ const TimeSlotList = () => {
       </div>
 
       {/* Filters & Actions  */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+      <div className="flex xs:flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
         {/* Filter Dropdowns */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1 min-w-0">
+        <div className="flex xs:flex-col lg:flex-row gap-3">
           <select
             className="dropdown-select cursor-pointer text-sm outline-none"
             value={filterShift}
             onChange={(e) => handleFilterChange("shift", e.target.value)}
+            id="filter-shift"
           >
-            <option value="">Shifts</option>
+            <option value="">Shift</option>
             <option value="Morning">Morning</option>
             <option value="Day">Day</option>
           </select>
@@ -198,6 +196,7 @@ const TimeSlotList = () => {
             className="dropdown-select cursor-pointer text-sm outline-none"
             value={filterStatus}
             onChange={(e) => handleFilterChange("status", e.target.value)}
+            id="filter-status"
           >
             <option value="">Status</option>
             <option value="1">Active</option>
@@ -213,10 +212,12 @@ const TimeSlotList = () => {
             </span>
             <input
               type="text"
-              placeholder="Search by Semester or Batch..."
+              placeholder="Semester, Batch"
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              autoComplete="off"
+              id="search-timeslots"
             />
           </div>
 
@@ -233,7 +234,7 @@ const TimeSlotList = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading time slots...</p>
+          <p className="state-loading">Loading Timeslots</p>
         </div>
       ) : timeSlots.length === 0 ? (
         <div className="state-empty-bg">

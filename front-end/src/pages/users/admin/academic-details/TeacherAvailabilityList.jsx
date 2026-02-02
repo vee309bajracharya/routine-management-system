@@ -56,7 +56,6 @@ const TeacherAvailabilityList = () => {
     }
   }, []);
 
-  // Add this new function right after fetchTeachers
   const refreshTeacherDetails = async (teacherId) => {
     try {
       const params = { page: currentPage, search: searchTerm?.trim() || null };
@@ -90,9 +89,7 @@ const TeacherAvailabilityList = () => {
 
   const deleteAvailability = async (id) => {
     try {
-      const response = await axiosClient.delete(
-        `/admin/teacher-availability/${id}`,
-      );
+      const response = await axiosClient.delete(`/admin/teacher-availability/${id}`);
       if (response.data.success) {
         toast.success("Deleted successfully");
         fetchTeachers(currentPage, { search: searchTerm });
@@ -107,10 +104,10 @@ const TeacherAvailabilityList = () => {
       ({ closeToast }) => (
         <div className="font-general-sans text-sm">
           <p className="font-semibold text-error-red mb-1">
-            Delete Availability?
+            Delete Teacher Availability?
           </p>
           <p className="text-sub-text mb-3">
-            Remove {teacherName}'s slot on {availability.day_of_week}?
+            Remove <span className="font-semibold">{teacherName}</span>'s slot on <span className="font-semibold">{availability.day_of_week}</span>?
           </p>
           <div className="flex gap-2 justify-end">
             <button onClick={closeToast} className="toast-cancel">
@@ -123,7 +120,7 @@ const TeacherAvailabilityList = () => {
               }}
               className="toast-delete"
             >
-              Delete
+              Confirm Delete
             </button>
           </div>
         </div>
@@ -170,6 +167,8 @@ const TeacherAvailabilityList = () => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
+            id="search"
+            autoComplete="off"
           />
         </div>
         <button
@@ -178,7 +177,7 @@ const TeacherAvailabilityList = () => {
           }
           className="btn-link justify-center font-medium"
         >
-          <Plus size={16} /> Add Availability
+          <Plus size={16} /> Add Teacher Availability
         </button>
       </div>
 
@@ -186,7 +185,7 @@ const TeacherAvailabilityList = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading teachers...</p>
+          <p className="state-loading">Loading Teacher Availability</p>
         </div>
       ) : teachers.length === 0 ? (
         <div className="state-empty-bg">
@@ -202,8 +201,8 @@ const TeacherAvailabilityList = () => {
                   <tr>
                     <th className="table-th">Teacher ID</th>
                     <th className="table-th">Teacher Name</th>
-                    <th className="table-th">Slots</th>
                     <th className="table-th">Available Time Range</th>
+                    <th className="table-th">Total Available Slots</th>
                     <th className="table-th text-center">Actions</th>
                   </tr>
                 </thead>
@@ -219,13 +218,12 @@ const TeacherAvailabilityList = () => {
                       >
                         {teacher.teacher_name}
                       </td>
-                      <td className="p-4">{teacher.availability_count}</td>
                       <td className="p-4">
                         <div className="flex flex-nowrap gap-3 overflow-x-auto max-w-4xl no-scrollbar py-2">
                           {teacher?.schedule && teacher.schedule.length > 0 ? (
                             <>
                               {/* four data showing */}
-                              {teacher.schedule.slice(0, 4).map((slot) => (
+                              {teacher.schedule.slice(0, 3).map((slot) => (
                                 <div
                                   key={slot.id}
                                   className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-hover-gray border border-box-outline dark:bg-dark-overlay dark:border-sub-text whitespace-nowrap shadow-sm hover:border-main-blue transition-colors"
@@ -243,21 +241,22 @@ const TeacherAvailabilityList = () => {
 
                               {/* More than 4 show count */}
                               {teacher.schedule.length > 4 && (
-                                <span className="text-xs text-sub-text self-center italic whitespace-nowrap">
+                                <span className="text-xs text-sub-text self-center whitespace-nowrap">
                                   + {teacher.schedule.length - 4} more
                                 </span>
                               )}
                             </>
                           ) : (
-                            <span className="text-xs text-gray-400 italic">
+                            <span className="text-xs text-gray-400">
                               No schedule added
                             </span>
                           )}
                         </div>
                       </td>
+                      <td className="p-4">{teacher.availability_count}</td>
                       <td className="p-4 text-center">
                         <button
-                          className="text-main-blue flex items-center justify-center gap-1 text-xs font-bold mx-auto hover:underline"
+                          className="text-main-blue flex items-center justify-center gap-1 text-xs font-bold mx-auto cursor-pointer"
                           onClick={() => handleViewClick(teacher)}
                         >
                           <Eye size={14} /> View Details
@@ -362,11 +361,10 @@ const TeacherAvailabilityList = () => {
                   <button
                     key={page}
                     onClick={() => loadPage(page)}
-                    className={`px-3 py-1.5 rounded-md text-sm ${
-                      page === currentPage
+                    className={`px-3 py-1.5 rounded-md text-sm ${page === currentPage
                         ? "bg-main-blue text-white"
                         : "border dark:text-white"
-                    }`}
+                      }`}
                   >
                     {page}
                   </button>

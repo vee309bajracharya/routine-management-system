@@ -104,8 +104,9 @@ const RoutineSelectionModal = ({ isOpen, onClose, department }) => {
                     <div className="space-y-5">
                         {/* Academic Year Select */}
                         <div>
-                            <label className="block text-sm font-semibold mb-2">Academic Year</label>
+                            <label className="block text-sm font-semibold mb-2" htmlFor="academic_year">Academic Year</label>
                             <select
+                                id="academic_year"
                                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-main-blue outline-none transition-all"
                                 onChange={handleYearChange}
                                 value={selectedYear?.id || ""}
@@ -119,10 +120,11 @@ const RoutineSelectionModal = ({ isOpen, onClose, department }) => {
 
                         {/* Semester Select (Enabled if Year is selected) */}
                         <div>
-                            <label className='block text-sm font-semibold mb-2'>
+                            <label className='block text-sm font-semibold mb-2' htmlFor="semester">
                                 Semester
                             </label>
                             <select
+                                id="semester"
                                 disabled={!selectedYear}
                                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-main-blue outline-none transition-all"
                                 onChange={handleSemesterChange}
@@ -137,10 +139,11 @@ const RoutineSelectionModal = ({ isOpen, onClose, department }) => {
 
                         {/* Batch Select (Enabled if Semester is selected) */}
                         <div>
-                            <label className='block text-sm font-semibold mb-2'>
+                            <label className='block text-sm font-semibold mb-2' htmlFor="batch">
                                 Batch
                             </label>
                             <select
+                                id="batch"
                                 disabled={!selectedSemester}
                                 className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-main-blue outline-none transition-all"
                                 onChange={(e) => setSelectedBatchId(e.target.value)}

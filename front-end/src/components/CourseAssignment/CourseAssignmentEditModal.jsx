@@ -174,37 +174,43 @@ const CourseAssignmentEditModal = ({
             {isLoadingDetails ? (
               <div className="state-container">
                 <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-                <p className="state-text">Loading details...</p>
+                <p className="state-text">Loading Details</p>
               </div>
             ) : (
               <form className="space-y-4 sm:space-y-6" onSubmit={formik.handleSubmit}>
                 {/* LOCKED INFO SECTION */}
                 <div className="read-only-grid">
                   <div>
-                    <label className="form-title sm:text-sm">Department</label>
+                    <label className="form-title sm:text-sm" htmlFor="department">Department</label>
                     <input
                       type="text"
+                      id="department"
                       value={assignmentDetails.department?.code || "N/A"}
                       disabled
                       className="dropdown-select cursor-not-allowed text-sm"
+                      autoComplete="off"
                     />
                   </div>
                   <div>
-                    <label className="form-title sm:text-sm">Semester</label>
+                    <label className="form-title sm:text-sm" htmlFor="semester">Semester</label>
                     <input
                       type="text"
+                      id="semester"
                       value={assignmentDetails.semester?.name || "N/A"}
                       disabled
                       className="dropdown-select cursor-not-allowed text-sm"
+                      autoComplete="off"
                     />
                   </div>
                   <div>
-                    <label className="form-title sm:text-sm">Batch</label>
+                    <label className="form-title sm:text-sm" htmlFor="batch">Batch</label>
                     <input
                       type="text"
+                      id="batch"
                       value={assignmentDetails.batch?.name || "N/A"}
                       disabled
                       className="dropdown-select cursor-not-allowed text-sm"
+                      autoComplete="off"
                     />
                   </div>
                   <p className="sm:col-span-3 read-only-text">
@@ -215,9 +221,10 @@ const CourseAssignmentEditModal = ({
                 {/* Editable Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                   <div>
-                    <label className="form-title sm:text-sm">Course</label>
+                    <label className="form-title sm:text-sm" htmlFor="course">Course</label>
                     <select
                       name="course_id"
+                      id="course"
                       value={values.course_id}
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -239,9 +246,10 @@ const CourseAssignmentEditModal = ({
                   </div>
 
                   <div>
-                    <label className="form-title sm:text-sm">Teacher</label>
+                    <label className="form-title sm:text-sm" htmlFor="teacher">Teacher</label>
                     <select
                       name="teacher_id"
+                      id="teacher"
                       value={values.teacher_id}
                       onChange={handleChange}
                       onBlur={handleBlur}
@@ -263,15 +271,17 @@ const CourseAssignmentEditModal = ({
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="form-title sm:text-sm">Assignment Type</label>
+                    <div className="form-title sm:text-sm">Assignment Type</div>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-2">
                       {["Theory", "Practical", "Theory and Practical"].map((type) => (
                         <label
                           key={type}
                           className="form-selection-label"
+                          htmlFor={`assignment_type_${type}`}
                         >
                           <input
                             type="radio"
+                            id={`assignment_type_${type}`}
                             name="assignment_type"
                             value={type}
                             checked={values.assignment_type === type}
@@ -289,7 +299,7 @@ const CourseAssignmentEditModal = ({
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="form-title sm:text-sm">Status</label>
+                    <div className="form-title sm:text-sm">Status</div>
                     <div className="flex gap-4 sm:gap-6 mt-2">
                       {[
                         { value: "active", label: "Active" },
@@ -298,9 +308,11 @@ const CourseAssignmentEditModal = ({
                         <label
                           key={statusOption.value}
                           className="form-selection-label"
+                          htmlFor={`status_${statusOption.value}`}
                         >
                           <input
                             type="radio"
+                            id={`status_${statusOption.value}`}
                             name="status"
                             value={statusOption.value}
                             checked={values.status === statusOption.value}
@@ -337,14 +349,14 @@ const CourseAssignmentEditModal = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
+                    className="modal-form-actions-cancel cancel-btn"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
+                    className="modal-form-actions-update auth-btn"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

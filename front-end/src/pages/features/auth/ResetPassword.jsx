@@ -46,15 +46,16 @@ const ResetPassword = () => {
                 <form className="space-y-4 mt-6" onSubmit={formik.handleSubmit}>
                     {/* Email (Read Only - as retrieve from link) */}
                     <div>
-                        <label className="block text-primary-text mb-1 font-medium">Email</label>
-                        <input type="email" className="inputbox opacity-60" {...formik.getFieldProps('email')} readOnly />
+                        <label className="block text-primary-text mb-1 font-medium" htmlFor="email">Email</label>
+                        <input type="email" id="email" className="inputbox opacity-60" {...formik.getFieldProps('email')} readOnly />
                     </div>
 
                     {/* New Password */}
                     <div className="relative">
-                        <label className="block text-primary-text mb-1 font-medium">New Password</label>
+                        <label className="block text-primary-text mb-1 font-medium" htmlFor="password">New Password</label>
                         <input
                             type={showPassword ? 'text' : 'password'}
+                            id="password"
                             className="inputbox" {...formik.getFieldProps('password')}
                             autoComplete="off"
                         />
@@ -69,10 +70,11 @@ const ResetPassword = () => {
 
                     {/* Confirm Password */}
                     <div className="relative">
-                        <label className="block text-primary-text mb-1 font-medium">Confirm New Password</label>
+                        <label className="block text-primary-text mb-1 font-medium" htmlFor="password_confirmation">Confirm New Password</label>
 
                         <input
                             type={showPassword ? 'text' : 'password'}
+                            id="password_confirmation"
                             className="inputbox" {...formik.getFieldProps('password_confirmation')}
                             autoComplete="off"
                         />

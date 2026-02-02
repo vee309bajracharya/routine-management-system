@@ -248,7 +248,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply pl-9 pr-5 py-2 border border-box-outline rounded-md text-sm w-full bg-white dark:bg-dark-overlay dark:text-white focus:outline-none focus:ring-2 focus:ring-main-blue
 }
 .action-bar-container{
-  @apply flex sm:flex-col lg:flex-row items-center gap-3
+  @apply flex sm:flex-col md:flex-row items-center gap-3
 }
 .search-input-wrapper{
   @apply relative flex-1 sm:w-64 md:w-96
@@ -374,7 +374,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply fixed inset-0 z-[60] flex items-center justify-center px-4
 }
 .editmodal-container{
-  @apply relative bg-white dark:bg-dark-overlay w-full max-w-md rounded-2xl p-6 z-10
+  @apply relative bg-white dark:bg-dark-overlay w-full max-w-xl rounded-2xl p-6 z-10
 }
 .pagination-container{
   @apply flex items-center justify-between px-4 py-4 mt-4 border-t border-box-outline
@@ -449,7 +449,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply px-2 py-1 rounded text-xs font-medium whitespace-nowrap
 }
 .form-subtitle-info{
-  @apply text-xs sm:text-sm text-main-blue font-medium mb-4
+  @apply text-xs sm:text-sm text-main-blue font-medium mb-4 mt-2
 }
 .read-only-text{
   @apply  text-xs text-center text-sub-text
@@ -458,10 +458,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply flex xs:flex-col md:flex-row gap-3 pt-2
 }
 .modal-form-actions-cancel{
-  @apply flex-1 cancel-btn text-sm
+  @apply flex-1 text-sm
 }
 .modal-form-actions-update{
-  @apply flex-1 auth-btn flex items-center justify-center text-sm
+  @apply flex-1 flex items-center justify-center text-sm
 }
 .form-selection-label{
   @apply flex items-center gap-2 cursor-pointer text-xs sm:text-sm
@@ -539,7 +539,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   @apply pb-3 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer
 }
 .tab-item-active{
-  @apply text-main-blue border-b-2 border-main-blue
+  @apply text-main-blue border-b-2 border-main-blue cursor-pointer
 }
 .tab-item-inactive{
   @apply text-sub-text hover:text-primary-text dark:hover:text-white

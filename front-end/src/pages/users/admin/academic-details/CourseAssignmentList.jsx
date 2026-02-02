@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState, useEffect, useCallback } from "react";
 import { Edit, Trash2, Plus, Search, Eye, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -123,12 +122,10 @@ const CourseAssignmentList = () => {
       ({ closeToast }) => (
         <div className="font-general-sans">
           <p className="font-semibold text-base mb-2 text-error-red">
-            Delete Assignment?
+            Delete Course Assignment?
           </p>
-          <p className="text-xs mb-3 text-sub-text">
-            Remove {assignment.course?.name} assignment for {assignment.teacher?.name}?
-            <br />
-            This action cannot be undone.
+          <p className="text-xs mb-3 text-sub-text leading-5">
+            Remove <span className="font-semibold">{assignment.course?.name}</span> assignment for <span className="font-semibold">{assignment.teacher?.name}</span>? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button
@@ -184,8 +181,9 @@ const CourseAssignmentList = () => {
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-dark-hover text-primary-text dark:text-white disabled:opacity-50 cursor-pointer text-sm outline-none"
             value={filterStatus}
             onChange={(e) => handleFilterChange("status", e.target.value)}
+            id="filter-status"
           >
-            <option value="">All Status</option>
+            <option value="">Status</option>
             <option value="active">Active</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
@@ -200,10 +198,12 @@ const CourseAssignmentList = () => {
             </span>
             <input
               type="text"
-              placeholder="Search by Course/Teacher/Batch"
+              placeholder="Course, Teacher, Batch"
               className="search-btn w-full pl-10 py-2 text-sm"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              autoComplete="off"
+              id="search"
             />
           </div>
 
@@ -211,7 +211,7 @@ const CourseAssignmentList = () => {
             onClick={() => navigate("/admin/academic-structure/course-assignments")}
             className="btn-link justify-center font-medium"
           >
-            <Plus size={16} /> Assign Course Assignment
+            <Plus size={16} /> Add Course Assignment
           </button>
         </div>
       </div>
@@ -220,7 +220,7 @@ const CourseAssignmentList = () => {
       {isLoading ? (
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="text-sub-text text-sm">Loading assignments...</p>
+          <p className="text-sub-text text-sm">Loading Course Assignments</p>
         </div>
       ) : assignments.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 dark:bg-dark-hover rounded-lg">
@@ -257,7 +257,7 @@ const CourseAssignmentList = () => {
                         {assignment.course?.name || "N/A"}
                       </td>
                       <td className="p-4">{assignment.teacher?.name || "N/A"}</td>
-                      <td className="p-4 italic text-sm text-sub-text">{assignment.notes || "N/A"}</td>
+                      <td className="p-4 text-sm text-sub-text">{assignment.notes || "N/A"}</td>
                       <td className="p-4">
                         <span
                           className={`px-3 py-1 rounded-sm text-sm uppercase ${
@@ -349,7 +349,7 @@ const CourseAssignmentList = () => {
                   {assignment.notes && assignment.notes !== "N/A" && (
                     <div>
                       <p className="info-label">Notes</p>
-                      <p className="text-sm italic text-sub-text">
+                      <p className="text-sm text-sub-text">
                         {assignment.notes}
                       </p>
                     </div>
