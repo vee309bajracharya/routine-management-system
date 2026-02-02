@@ -112,9 +112,7 @@ const AdminRooms = () => {
             Delete {room.name}?
           </p>
           <p className="text-xs mb-3 text-sub-text">
-            Are you sure you want to delete this room?
-            <br />
-            This action cannot be undone.
+            Are you sure to delete this room? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button
@@ -280,6 +278,7 @@ const AdminRooms = () => {
               className="dropdown-select cursor-pointer text-sm outline-none"
               value={filterStatus}
               onChange={(e) => handleFilterChange("status", e.target.value)}
+              id="status-filter"
             >
               <option value="">Status</option>
               <option value="active">Active</option>
@@ -315,10 +314,12 @@ const AdminRooms = () => {
             </span>
             <input
               type="text"
-              placeholder="Search by Room Name / Number"
+              id="search"
+              placeholder="Room Name, Number"
               className="search-btn"
               value={searchTerm}
               onChange={(e) => handleFilterChange("search", e.target.value)}
+              autoComplete="off"
             />
           </div>
 
@@ -551,14 +552,16 @@ const AdminRooms = () => {
               </p>
               <form onSubmit={formik.handleSubmit} className="space-y-4">
                 <div>
-                  <label className="form-title sm:text-sm">Room Name</label>
+                  <label className="form-title sm:text-sm" htmlFor="room_name">Room Name</label>
                   <input
                     type="text"
+                    id="room_name"
                     name="name"
                     value={values.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="dropdown-select text-sm"
+                    autoComplete="off"
                   />
                   {touched.name && errors.name && (
                     <p className="showError text-xs">{errors.name}</p>
@@ -566,14 +569,16 @@ const AdminRooms = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Room Number</label>
+                  <label className="form-title sm:text-sm" htmlFor="room_number">Room Number</label>
                   <input
                     type="text"
+                    id="room_number"
                     name="room_number"
                     value={values.room_number}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="dropdown-select text-sm"
+                    autoComplete="off"
                   />
                   {touched.room_number && errors.room_number && (
                     <p className="showError text-xs">{errors.room_number}</p>
@@ -581,8 +586,9 @@ const AdminRooms = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Room Type</label>
+                  <label className="form-title sm:text-sm" htmlFor="room_type">Room Type</label>
                   <select
+                    id="room_type"
                     name="room_type"
                     value={values.room_type}
                     onChange={handleChange}
@@ -599,15 +605,17 @@ const AdminRooms = () => {
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Status</label>
+                  <div className="form-title sm:text-sm">Status</div>
                   <div className="flex gap-4 sm:gap-6 mt-2">
                     {["active", "inactive"].map((status) => (
                       <label
                         key={status}
                         className="form-selection-label"
+                        htmlFor={`status-${status}`}
                       >
                         <input
                           type="radio"
+                          id={`status-${status}`}
                           name="status"
                           value={status}
                           checked={values.status === status}
@@ -628,14 +636,14 @@ const AdminRooms = () => {
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="cancel-btn px-4 text-sm order-2 sm:order-1"
+                    className="modal-form-actions-cancel cancel-btn"
                     disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="auth-btn px-4 flex items-center justify-center text-sm order-1 sm:order-2"
+                    className="modal-form-actions-update auth-btn"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

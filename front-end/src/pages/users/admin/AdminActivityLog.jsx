@@ -160,6 +160,7 @@ const AdminActivityLog = () => {
             </span>
             <input
               type="text"
+              id="search"
               placeholder="Search by Event / Subject..."
               className="search-btn"
               value={searchTerm}
@@ -217,7 +218,7 @@ const AdminActivityLog = () => {
                       </td>
                       <td className="p-4">
                         <span
-                          className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase ${getEventBadgeClass(log.event)}`}
+                          className={`px-2.5 py-1 rounded-md text-xs font-semibold uppercase ${getEventBadgeClass(log.event)}`}
                         >
                           {log.event}
                         </span>
@@ -231,7 +232,7 @@ const AdminActivityLog = () => {
                       </td>
                       <td className="p-4">
                         <button
-                          className="text-main-blue font-bold hover:underline flex items-center gap-1 text-xs"
+                          className="text-main-blue font-semibold flex items-center gap-1 text-xs cursor-pointer"
                           onClick={() => handleViewDetails(log)}
                         >
                           <Eye size={14} /> View Details

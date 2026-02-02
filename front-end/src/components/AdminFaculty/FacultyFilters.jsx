@@ -38,7 +38,7 @@ const FacultyFilters = ({
   };
 
   return (
-    <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center mb-4 gap-3 sm:gap-4">
+    <section className="flex flex-col md:flex-row justify-between items-stretch lg:items-center mb-4 gap-3 sm:gap-4">
       {/* Role Filter Buttons */}
       <div className="flex items-center gap-2 text-xs sm:text-sm overflow-x-auto pb-2 lg:pb-0">
         {["all", "admin", "teacher"].map((role) => (
@@ -61,14 +61,16 @@ const FacultyFilters = ({
 
       {/* Search + Add Button */}
       <div className="action-bar-container">
-        <div className="relative w-full sm:w-auto">
+        <div className="relative sm:w-auto lg:w-full">
           <Search className="search-icon" />
           <input
+            id="faculty-search"
             type="text"
-            placeholder="Search by Name, Email, or Department"
+            placeholder="Name, Email, Department"
             value={localSearch}
             onChange={handleSearchChange}
             className="search-btn"
+            autoComplete="off"
           />
           
         </div>
@@ -80,7 +82,7 @@ const FacultyFilters = ({
           <span>Add Faculty</span>
         </button>
       </div>
-    </div>
+    </section>
   );
 };
 

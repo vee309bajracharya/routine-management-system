@@ -109,12 +109,7 @@ const TeacherAvailability = () => {
         notes: values.notes || null,
       };
 
-      console.log("Sending Payload:", payload);
-
-      const response = await axiosClient.post(
-        "/admin/teacher-availability",
-        payload
-      );
+      const response = await axiosClient.post("/admin/teacher-availability", payload);
 
       if (response.data.success) {
         toast.success(

@@ -147,7 +147,7 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
             <X size={20} />
           </button>
 
-          <div className="p-4 sm:p-6 pb-3 sm:pb-4">
+          <div className="p-4">
             <h2 className="form-header text-xl md:text-2xl pr-8">Edit Admin Profile</h2>
             <p className="form-subtitle-info">
               ID: FAC-{String(adminData.id).padStart(4, "0")}
@@ -173,41 +173,47 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
             {activeTab === "personal" ? (
               <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="form-title sm:text-sm">Full Name</label>
+                  <label className="form-title sm:text-sm" htmlFor="name">Full Name</label>
                   <input
                     type="text"
+                    id="name"
                     name="name"
                     value={values.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="dropdown-select text-sm"
+                    autoComplete="off"
                   />
                   {touched.name && errors.name && <p className="showError text-xs">{errors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Email</label>
+                  <label className="form-title sm:text-sm" htmlFor="email">Email</label>
                   <input
                     type="email"
+                    id="email"
                     name="email"
                     value={values.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className="dropdown-select text-sm"
+                    autoComplete="off"
                   />
                   {touched.email && errors.email && <p className="showError text-xs">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="form-title sm:text-sm">Phone</label>
+                  <label className="form-title sm:text-sm" htmlFor="phone">Phone</label>
                   <input
                     type="text"
+                    id="phone"
                     name="phone"
                     value={values.phone}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     maxLength="10"
                     className="dropdown-select text-sm"
+                    autoComplete="off"
                   />
                   {touched.phone && errors.phone && <p className="showError text-xs">{errors.phone}</p>}
                 </div>
@@ -219,15 +225,17 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
                 </p>
 
                 <div className="relative">
-                  <label className="form-title sm:text-sm">Current Password</label>
+                  <label className="form-title sm:text-sm" htmlFor="current_password">Current Password</label>
                   <input
                     type={showCurrentPassword ? "text" : "password"}
+                    id="current_password"
                     name="current_password"
                     value={values.current_password}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Enter current password"
                     className="dropdown-select text-sm pr-10"
+                    autoComplete="off"
                   />
                   <button
                     type="button"
@@ -242,15 +250,17 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
                 </div>
 
                 <div className="relative">
-                  <label className="form-title sm:text-sm">New Password</label>
+                  <label className="form-title sm:text-sm" htmlFor="password">New Password</label>
                   <input
                     type={showPassword ? "text" : "password"}
+                    id="password"
                     name="password"
                     value={values.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Enter new password"
                     className="dropdown-select text-sm pr-10"
+                    autoComplete="off"
                   />
                   <button
                     type="button"
@@ -263,15 +273,17 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
                 </div>
 
                 <div className="relative">
-                  <label className="form-title sm:text-sm">Confirm New Password</label>
+                  <label className="form-title sm:text-sm" htmlFor="password_confirmation">Confirm Password</label>
                   <input
                     type={showConfirmPassword ? "text" : "password"}
+                    id="password_confirmation"
                     name="password_confirmation"
                     value={values.password_confirmation}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     placeholder="Confirm new password"
                     className="dropdown-select text-sm pr-10"
+                    autoComplete="off"
                   />
                   <button
                     type="button"
@@ -287,18 +299,18 @@ const AdminEditModal = ({ isOpen, onClose, adminData, onSuccess }) => {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-6">
+            <div className="modal-form-actions">
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 cancel-btn text-sm order-2 sm:order-1"
+                className="modal-form-actions-cancel cancel-btn"
                 disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 auth-btn flex items-center justify-center text-sm order-1 sm:order-2"
+                className="modal-form-actions-update auth-btn"
                 disabled={isLoading || formik.isSubmitting}
               >
                 {isLoading || formik.isSubmitting ? (
