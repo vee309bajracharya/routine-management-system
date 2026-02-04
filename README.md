@@ -48,6 +48,13 @@ An automated solution for educational institutions designed to manage class sche
 * **PDF Generation:** Automated routine export functionality using `barryvdh/laravel-dompdf`.
 * **Real-time Notifications:** Automated mail triggers to teachers upon routine published with routine web-view available in their accounts.
 
+### Data Safety & Reliability
+* **Routine Versioning & Snapshots:** Capability to save multiple "Routine Versions" of a schedule. Admins can load any saved snapshot at any time.
+  
+* **Time-Windowed Restore Routine Entry:** A "Safety Buffer" mechanism that allows admin to undo any accidental routine entry deletion within a 5-minute pop-up window
+
+* **Hybrid Routine Entry Deletion Logic:** Implementation of Soft-Deletes for quick recovery, complemented by a "Clear All" function that confirms if admin saved current routine entries version before performing a permanent delete operation.
+
 ### Administrative Tools
 * **Activity Logs:** Audit trails record of administrative actions powered by `spatie/laravel-activitylog`.
 * **Responsive UI:** A seamless experience across mobile, tablet, and desktop devices.
