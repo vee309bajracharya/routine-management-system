@@ -165,7 +165,7 @@ const CourseAssignmentEditModal = ({
             </button>
 
             <h2 className="form-header text-xl md:text-2xl pr-8">
-              Edit Course Assignment
+              Edit Course Assignment Details
             </h2>
             <p className="form-subtitle-info">
               Assignment ID: COAS-{String(assignmentDetails.id).padStart(3, "0")}

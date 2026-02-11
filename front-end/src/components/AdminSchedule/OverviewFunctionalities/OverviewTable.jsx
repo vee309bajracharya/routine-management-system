@@ -29,7 +29,7 @@ const OverviewTable = ({ routines, isLoading, onView, onEdit, onDeleteConfirm, o
   return (
     <>
       {/* Desktop Table View */}
-      <section className='hidden md:block overflow-x-auto bg-white dark:bg-dark-overlay mt-4 text-primary-text dark:text-white rounded-md'>
+      <section className='hidden lg:block overflow-x-auto bg-white dark:bg-dark-overlay mt-4 text-primary-text dark:text-white rounded-md'>
         <table className='w-full text-sm align-middle'>
           <thead className='bg-gray-100 dark:bg-dark-hover'>
             <tr>
@@ -61,7 +61,7 @@ const OverviewTable = ({ routines, isLoading, onView, onEdit, onDeleteConfirm, o
       </section>
 
       {/* Mobile Card View */}
-      <div className="mobile-card-list md:hidden mt-4">
+      <div className="block lg:hidden mt-4 space-y-4">
         {routines.map((routine) => (
           <div
             key={routine.id}

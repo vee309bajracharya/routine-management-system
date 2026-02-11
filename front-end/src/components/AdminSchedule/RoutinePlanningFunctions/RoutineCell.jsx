@@ -30,7 +30,7 @@ const RoutineCell = ({ day, timeSlot, slotType, entry }) => {
     }, entry);
   };
 
-  const cellClasses = "border-r border-gray-300 last:border-r-0 p-2 min-h-[110px] flex items-center justify-center transition-all cursor-pointer group";
+  const cellClasses = "border-r border-b border-gray-300 last:border-r-0 p-2 min-h-[110px] flex items-center justify-center transition-all cursor-pointer group";
 
   // Case 1: Break Time Slot (empty cell during break time) → Show BREAK
   if (!entry && isBreak) {

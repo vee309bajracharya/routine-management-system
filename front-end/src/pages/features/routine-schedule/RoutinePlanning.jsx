@@ -131,7 +131,8 @@ const RoutinePlanning = () => {
   return (
     <section className="font-general-sans mt-4">
 
-      <section className="flex justify-between items-center gap-4 text-xs">
+      {/* Desktop Action Bar */}
+      <section className="hidden lg:flex justify-between items-center gap-4 text-xs">
 
         {/* Left actions */}
         <div className="flex gap-3">
@@ -186,6 +187,69 @@ const RoutinePlanning = () => {
               <>
                 <Download size={16} />
                 Download
+              </>
+            )}
+          </button>
+        </div>
+      </section>
+
+      {/* Mobile/Tablet Action Bar */}
+      <section className="lg:hidden space-y-3">
+        {/* Row 1: Create and Clear buttons */}
+        <div className="flex gap-2 text-xs">
+          <button
+            onClick={() => setShowCreateRoutineModal(true)}
+            className="overview-btn flex-1"
+          >
+            Create New Routine
+          </button>
+
+          <button
+            onClick={handleClearRoutine}
+            className="overview-btn flex-1"
+          >
+            Clear All
+          </button>
+        </div>
+
+        {/* Row 2: Copy Entries (full width) */}
+        <div className="text-xs">
+          <CopyEntries />
+        </div>
+
+        {/* Row 3: Status, Save, and Download */}
+        <div className="flex items-center gap-2 text-xs flex-wrap">
+          {/* Status */}
+          <div className="bg-white dark:bg-dark-overlay rounded-md">
+            <RoutineStatusManager
+              routine={currentRoutine}
+              onPublish={handlePublishRoutine}
+            />
+          </div>
+
+          {/* Save */}
+          <button
+            onClick={() => setShowSaveModal(true)}
+            className="overview-btn flex-1"
+          >
+            Save
+          </button>
+
+          {/* Export */}
+          <button
+            className={`export-btn flex items-center justify-center gap-2 flex-1 ${isDownloading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            onClick={handleDownloadPdf}
+            disabled={isDownloading}
+          >
+            {isDownloading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                <span className="hidden sm:inline">Downloading...</span>
+              </>
+            ) : (
+              <>
+                <Download size={16} />
+                <span className="">Download</span>
               </>
             )}
           </button>
