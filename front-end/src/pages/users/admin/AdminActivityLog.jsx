@@ -161,7 +161,7 @@ const AdminActivityLog = () => {
             <input
               type="text"
               id="search"
-              placeholder="Search by Event / Subject..."
+              placeholder="Event / Subject"
               className="search-btn"
               value={searchTerm}
               onChange={handleSearchChange}

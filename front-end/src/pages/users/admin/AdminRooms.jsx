@@ -336,7 +336,7 @@ const AdminRooms = () => {
       {isLoading ? (
         <div className="state-container">
           <Loader2 size={40} className="animate-spin text-main-blue mb-3" />
-          <p className="state-loading">Loading rooms...</p>
+          <p className="state-loading">Loading Rooms</p>
         </div>
       ) : rooms.length === 0 ? (
         <div className="state-empty-bg">

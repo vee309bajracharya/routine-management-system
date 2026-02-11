@@ -160,7 +160,7 @@ const TeacherAvailabilityList = () => {
           </span>
           <input
             type="text"
-            placeholder="Search by Teacher Name"
+            placeholder="Teacher Name"
             className="search-btn"
             value={searchTerm}
             onChange={(e) => {
