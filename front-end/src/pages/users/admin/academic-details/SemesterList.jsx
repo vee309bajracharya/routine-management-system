@@ -145,19 +145,19 @@ const SemesterList = () => {
   const formik = useFormik({
     initialValues: selectedSem
       ? {
-          semester_name: selectedSem.semester_name || "",
-          semester_number: selectedSem.semester_number || "",
-          start_date: selectedSem.start_date || "",
-          end_date: selectedSem.end_date || "",
-          is_active: selectedSem.is_active ?? true,
-        }
+        semester_name: selectedSem.semester_name || "",
+        semester_number: selectedSem.semester_number || "",
+        start_date: selectedSem.start_date || "",
+        end_date: selectedSem.end_date || "",
+        is_active: selectedSem.is_active ?? true,
+      }
       : {
-          semester_name: "",
-          semester_number: "",
-          start_date: "",
-          end_date: "",
-          is_active: true,
-        },
+        semester_name: "",
+        semester_number: "",
+        start_date: "",
+        end_date: "",
+        is_active: true,
+      },
     validationSchema: SemesterEditValidationSchema,
     onSubmit: handleEditSubmit,
     enableReinitialize: true,
@@ -348,10 +348,11 @@ const SemesterList = () => {
                     <th className="table-th">Semester Number</th>
                     <th className="table-th">Start Date</th>
                     <th className="table-th">End Date</th>
+                    <th className="table-th">Status</th>
                     <th className="table-th">Actions</th>
                   </tr>
                 </thead>
-                
+
                 <tbody className="divide-y divide-box-outline">
                   {semesters.map((sem) => (
                     <tr key={sem.id} className="table-tbody-tr">
@@ -361,6 +362,10 @@ const SemesterList = () => {
                       <td className="p-4 text-center">{sem.semester_number}</td>
                       <td className="p-4">{sem.start_date}</td>
                       <td className="p-4">{sem.end_date}</td>
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-sm text-xs capitalize ${sem.is_active ? "table-active" : "table-inactive"}`}> {sem.is_active ? "Active" : "Inactive"}</span>
+                      </td>
                       <td className="p-4">
                         <section className="flex items-center gap-3">
                           <button
@@ -476,11 +481,10 @@ const SemesterList = () => {
                   <button
                     key={page}
                     onClick={() => loadPage(page)}
-                    className={`px-3 py-1.5 rounded-md text-sm ${
-                      page === currentPage
-                        ? "bg-main-blue text-white"
-                        : "border dark:text-white"
-                    }`}
+                    className={`px-3 py-1.5 rounded-md text-sm ${page === currentPage
+                      ? "bg-main-blue text-white"
+                      : "border dark:text-white"
+                      }`}
                   >
                     {page}
                   </button>
