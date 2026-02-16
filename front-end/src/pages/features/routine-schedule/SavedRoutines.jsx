@@ -150,7 +150,7 @@ const SavedRoutines = () => {
             <div className="bg-white dark:bg-dark-overlay rounded-lg overflow-hidden">
                 {isLoading ? (
                     <div className="flex justify-center items-center py-10">
-                        <Loader2 className="animate-spin dark:invert mx-auto" size={40} />
+                        <Loader2 className="animate-spin mx-auto text-main-blue" size={40} />
                     </div>
                 ) : savedVersions.length === 0 ? (
                     <div className="text-center py-10 text-sub-text dark:text-white">
