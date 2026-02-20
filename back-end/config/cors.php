@@ -21,6 +21,8 @@ return [
 
     'allowed_origins' => [
         'http://localhost:5173', //vite
+        'http://127.0.0.1:8000', // Production IP
+        'http://localhost:8000', // Production Localhost
     ],
 
     'allowed_origins_patterns' => [],
