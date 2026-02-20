@@ -11,7 +11,7 @@ services:
       - "8000:8000"
     volumes:
       - ./back-end:/var/www/html
-    working_dir: /var/www/html
+      - ./docker/entrypoint.sh:/usr/local/bin/entrypoint.sh
     environment:
       # Database config
       DB_CONNECTION: mysql
@@ -37,16 +37,6 @@ services:
       OCTANE_CACHE_ROWS: 1000
       OCTANE_CACHE_BYTES: 10000
 
-    command: >
-      sh -c "
-        if [ ! -d vendor ]; then composer install --optimize-autoloader; fi &&
-        if [ ! -d node_modules ]; then npm install; fi &&
-        npm install chokidar &&
-        php artisan config:cache &&
-        php artisan route:cache &&
-        php artisan migrate --force &&
-        php artisan octane:start --server=swoole --host=0.0.0.0 --port=8000 --workers=4 --task-workers=6 --watch
-      "
     depends_on:
       - mysql
       - redis
