@@ -162,8 +162,12 @@ const TimeSlots = () => {
 
       if (error.response?.status === 422) {
         const errors = error.response.data.errors || error.response.data.error;
-        const firstError = Object.values(errors)[0]?.[0];
-        toast.error(firstError || "Validation failed");
+        if (errors && typeof errors === "object") {
+          const firstError = Object.values(errors)[0]?.[0];
+          toast.error(firstError || "Validation failed");
+        } else {
+          toast.error("Validation failed");
+        }
       } else {
         toast.error(error.userMessage || "Failed to create time slot");
       }
@@ -348,7 +352,7 @@ const TimeSlots = () => {
               <div className="form-title">
                 Slot Type <span className="text-error-red">*</span>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
+              <div className="flex flex-wrap items-center flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-2">
                 {["Lecture", "Practical", "Break"].map((type) => (
                   <label
                     key={type}

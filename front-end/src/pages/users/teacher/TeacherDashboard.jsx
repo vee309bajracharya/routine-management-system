@@ -107,18 +107,18 @@ const TeacherDashboard = () => {
   const loadPage = (page) => setCurrentPage(page);
 
   /* STATUS BADGE STYLING */
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "Ongoing":
-        return "bg-primary5-blue text-main-blue";
-      case "Upcoming":
-        return "bg-green-100 text-success-green dark:bg-green-900/30 dark:text-green-400";
-      case "Completed":
-        return "bg-main-gray text-gray-600 dark:bg-gray-700 dark:text-gray-400";
-      default:
-        return "bg-main-gray text-gray-600";
-    }
-  };
+  // const getStatusStyle = (status) => {
+  //   switch (status) {
+  //     case "Ongoing":
+  //       return "bg-primary5-blue text-main-blue";
+  //     case "Upcoming":
+  //       return "bg-green-100 text-success-green dark:bg-green-900/30 dark:text-green-400";
+  //     case "Completed":
+  //       return "bg-main-gray text-gray-600 dark:bg-gray-700 dark:text-gray-400";
+  //     default:
+  //       return "bg-main-gray text-gray-600";
+  //   }
+  // };
 
   return (
     <section className="p-6 min-h-screen font-general-sans">
@@ -153,19 +153,8 @@ const TeacherDashboard = () => {
                 key={cls.id}
                 className="flex dark:border-box-outline rounded-lg bg-white dark:bg-dark-box-outline shadow-md"
               >
-                {cls.status === "Ongoing" && (
-                  <div className="w-1 sm:w-1.5 bg-main-blue rounded-l-lg"></div>
-                )}
-
                 <div className="p-3 sm:p-4 flex-1">
                   <div className="flex justify-between items-center mb-2 gap-2">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded ${getStatusStyle(
-                        cls.status,
-                      )}`}
-                    >
-                      {cls.status}
-                    </span>
                     <span className="text-xs text-gray-600 dark:text-gray-400 capitalize">
                       {cls.batch?.shift || "N/A"} Session
                     </span>
