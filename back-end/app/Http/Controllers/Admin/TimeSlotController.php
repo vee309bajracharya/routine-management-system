@@ -182,7 +182,7 @@ class TimeSlotController extends Controller
             'duration_minutes' => 'required|integer|min:15|max:180',
             'shift' => 'required|in:Morning,Day',
             'slot_type' => 'required|in:Lecture,Break,Practical',
-            'applicable_days' => 'nullable|array',
+            'applicable_days' => 'required|array|min:1',
             'applicable_days.*' => 'in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
             'is_active' => 'nullable|boolean',
         ]);
@@ -191,24 +191,36 @@ class TimeSlotController extends Controller
 
 
         // check for overlapping time slots
-        $overlap = TimeSlot::where('institution_id', $institutionId)
+        $existingSlots = TimeSlot::where('institution_id', $institutionId)
             ->where('semester_id', $request->semester_id)
             ->where('batch_id', $request->batch_id)
             ->where('shift', $request->shift)
             ->where('is_active', true)
-            ->where(function ($query) use ($request) {
-                $query->whereBetween('start_time', [$request->start_time, $request->end_time])
-                    ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
-                    ->orWhere(function ($q) use ($request) {
-                        $q->where('start_time', '<=', $request->start_time)
-                            ->where('end_time', '>=', $request->end_time);
-                    });
-            })
-            ->exists();
+            ->get();
 
-        if ($overlap)
-            return $this->errorResponse('Time slot overlaps with existing time slot', null, 422);
+        $hasConflict = false;
 
+        foreach ($existingSlots as $slot) {
+            // Check time overlap
+            $timeOverlap =
+                ($request->start_time < $slot->end_time &&
+                    $request->end_time > $slot->start_time);
+
+            // Check day overlap
+            $dayOverlap = array_intersect(
+                $slot->applicable_days ?? [],
+                $request->applicable_days ?? []
+            );
+
+            if ($timeOverlap && !empty($dayOverlap)) {
+                $hasConflict = true;
+                break;
+            }
+        }
+
+        if ($hasConflict) {
+            return $this->errorResponse('Time slot overlaps on selected days', null, 422);
+        }
 
         try {
             DB::beginTransaction();
@@ -277,7 +289,7 @@ class TimeSlotController extends Controller
             'shift' => 'sometimes|in:Morning,Day',
             'slot_type' => 'sometimes|in:Lecture,Break,Practical',
             'duration_minutes' => 'sometimes|integer|min:15|max:180',
-            'applicable_days' => 'nullable|array',
+            'applicable_days' => 'sometimes|array|min:1',
             'applicable_days.*' => 'in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
             'is_active' => 'nullable|boolean',
         ]);
@@ -286,7 +298,7 @@ class TimeSlotController extends Controller
 
         $institutionId = auth()->user()->institution_id;
         $timeSlot = TimeSlot::where('institution_id', $institutionId)->findOrFail($id);
-        
+
         // Validate time range
         $startTime = $request->start_time ?? $timeSlot->start_time->format('H:i');
         $endTime = $request->end_time ?? $timeSlot->end_time->format('H:i');
@@ -295,25 +307,37 @@ class TimeSlotController extends Controller
             return $this->errorResponse('End time must be after start time', null, 422);
 
         // Check for overlapping if times are being changed
-        if ($request->hasAny(['start_time', 'end_time'])) {
-            $overlap = TimeSlot::where('institution_id', $institutionId)
-                ->where('id', '!=', $id)
-                ->where('batch_id', $timeSlot->batch_id)
-                ->where('semester_id', $timeSlot->semester_id)
-                ->where('shift', $timeSlot->shift)
-                ->where('is_active', true)
-                ->where(function ($query) use ($startTime, $endTime) {
-                    $query->whereBetween('start_time', [$startTime, $endTime])
-                        ->orWhereBetween('end_time', [$startTime, $endTime])
-                        ->orWhere(function ($q) use ($startTime, $endTime) {
-                            $q->where('start_time', '<=', $startTime)
-                                ->where('end_time', '>=', $endTime);
-                        });
-                })
-                ->exists();
+        $existingSlots = TimeSlot::where('institution_id', $institutionId)
+            ->where('id', '!=', $id)
+            ->where('batch_id', $timeSlot->batch_id)
+            ->where('semester_id', $timeSlot->semester_id)
+            ->where('shift', $timeSlot->shift)
+            ->where('is_active', true)
+            ->get();
 
-            if ($overlap)
-                return $this->errorResponse('Timeslot overlaps with existing timeslot', null, 422);
+        $hasConflict = false;
+
+        foreach ($existingSlots as $slot) {
+            // Check time overlap
+            $timeOverlap =
+                ($startTime < $slot->end_time &&
+                    $endTime > $slot->start_time);
+
+            // Check day overlap
+            $dayOverlap = array_intersect(
+                $slot->applicable_days ?? [],
+                $applicableDays ?? []
+            );
+
+            if ($timeOverlap && !empty($dayOverlap)) {
+                $hasConflict = true;
+                break;
+            }
+        }
+
+        if ($hasConflict) {
+            return $this->errorResponse(
+                'Time slot overlaps on selected days',null,422);
         }
 
         DB::beginTransaction();

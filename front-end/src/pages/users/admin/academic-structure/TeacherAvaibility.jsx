@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, Loader2, Info } from "lucide-react";
+import { Clock, Loader2 } from "lucide-react";
 import { useFormik } from "formik";
 import axiosClient from "../../../../services/api/axiosClient";
 import { toast } from "react-toastify";
@@ -249,10 +249,6 @@ const TeacherAvailability = () => {
                       />
                     </div>
 
-                    <Info
-                      size={16}
-                      className="text-sub-text cursor-pointer sm:ml-auto hover:text-main-blue"
-                    />
                   </div>
                 );
               })

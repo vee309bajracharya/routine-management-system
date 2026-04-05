@@ -241,6 +241,21 @@ const RoutineEntryModal = () => {
         closeModal();
     };
 
+    // handle room unlock
+    const handleUnlockRoom = () => {
+        if (!currentRoutine?.id) return;
+
+        setSessionState(prev => ({
+            ...prev,
+            [currentRoutine.id]: {
+                ...prev[currentRoutine.id],
+                lockedRoom: null
+            }
+        }));
+
+        setFieldValue("room_id", "");
+    };
+
     if (!isModalOpen) return null;
     if (!isModalOpen || modalMode !== 'create') return null;
 
@@ -438,9 +453,18 @@ const RoutineEntryModal = () => {
                                 <p className="showError">{errors.room_id}</p>
                             )}
                             {lockedRoomId && (
-                                <span className="text-xs text-sub-text mt-1 px-3">
-                                    Room is locked for this routine
-                                </span>
+                                <div className="flex items-center justify-between mt-1 px-1">
+                                    <span className="text-xs text-sub-text mt-1 px-3">
+                                        Room is locked for this routine
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleUnlockRoom}
+                                        className="text-xs text-primary-blue cursor-pointer mt-1 font-medium">
+                                        Unlock Room
+                                    </button>
+                                </div>
                             )}
                         </div>
 
