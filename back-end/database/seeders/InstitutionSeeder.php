@@ -22,11 +22,6 @@ class InstitutionSeeder extends Seeder
                 'contact_email' => 'info@demo.edu.np',
                 'contact_phone' => '01-6699887',
                 'logo' => null,
-                'settings' => json_encode([
-                    'working_days' => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                    'session_duration' => 45,
-                    'break_duration' => 30,
-                ]),
                 'status' => 'active',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

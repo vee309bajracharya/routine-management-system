@@ -23,7 +23,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-database/seeders/UserSeeder.php
 
 **/caddy
 frankenphp
