@@ -47,7 +47,7 @@ const Semesters = () => {
       const response = await axiosClient.post("/admin/semesters", {
         academic_year_id: values.academic_year_id,
         semester_name: values.semester_name,
-        semester_number: parseInt(values.semester_number),
+        semester_number: values.semester_number ? parseInt(values.semester_number): null, 
         start_date: values.start_date,
         end_date: values.end_date,
       });
@@ -61,9 +61,14 @@ const Semesters = () => {
       toast.error(error.userMessage || "Failed to create semester");
 
       if (error.response?.status === 422) {
-        const errors = error.response.data.error || error.response.data.errors;
-        const firstError = Object.values(errors)[0]?.[0];
-        toast.error(firstError || "Validation failed");
+        const backendErrors =
+          error.response.data?.error ||
+          error.response.data?.errors ||
+          {};
+
+        const firstError = Object.values(backendErrors)?.[0]?.[0];
+
+        toast.error(firstError || error.response.data?.message || "Validation failed");
       } else {
         toast.error(error.userMessage || "Failed to create semester");
       }
@@ -97,7 +102,7 @@ const Semesters = () => {
               disabled={isLoadingYears}
             >
               <option value="">
-                 Select Academic Year
+                Select Academic Year
               </option>
               {academicYears.map((year) => (
                 <option key={year.id} value={year.id}>
